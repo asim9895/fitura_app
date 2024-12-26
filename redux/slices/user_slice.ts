@@ -7,8 +7,8 @@ interface UserState {
   weight: string;
   age: number | null;
   profile_completed: boolean;
-  selected_date: string;
-  creation_date: string | null;
+  selected_date: Date;
+  creation_date: Date | null;
   target_calorie: number;
   target_steps: number;
   target_water: number;
@@ -21,7 +21,7 @@ interface UserCreation {
   weight: string;
   age: number | null;
   profile_completed?: boolean;
-  creation_date: string | null;
+  creation_date: Date;
 }
 
 const initial_state: UserState = {
@@ -31,7 +31,7 @@ const initial_state: UserState = {
   weight: "",
   age: null,
   profile_completed: false,
-  selected_date: new Date().toISOString().split("T")[0],
+  selected_date: new Date(),
   creation_date: null,
   target_calorie: 2400,
   target_steps: 6000,
@@ -62,7 +62,7 @@ const user_slice = createSlice({
     },
     set_selected_date: (
       state,
-      action: PayloadAction<{ selected_date: string }>
+      action: PayloadAction<{ selected_date: Date }>
     ) => {
       state.selected_date = action.payload.selected_date;
     },

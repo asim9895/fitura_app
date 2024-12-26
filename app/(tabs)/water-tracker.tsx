@@ -4,11 +4,16 @@ import { useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
 import { globalStylesWrapper } from "@/styles/global.style";
 import DatesList from "@/components/DatesList";
+import DateHeader from "@/components/DateHeader";
 
 const WaterTrackerPage = () => {
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
+  const handleDateSelect = (date: any) => {
+    console.log("Selected date:", date);
+    // Do something with the selected date
+  };
 
   const globalStyles = globalStylesWrapper(colors);
 
@@ -18,8 +23,13 @@ const WaterTrackerPage = () => {
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
-      <DatesList route="Water" />
-      <Text style={{ color: colors.text }}>Index</Text>
+      <DateHeader route="Water" />
+      <DatesList
+        onDateSelect={(date: any) => {
+          console.log("Selected date:", date);
+          // Do something with the selected date
+        }}
+      />
     </View>
   );
 };

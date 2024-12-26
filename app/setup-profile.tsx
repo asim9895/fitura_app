@@ -4,6 +4,7 @@ import * as Progress from "react-native-progress";
 import { useNavigation } from "expo-router";
 import { set_user_profile } from "@/redux/slices/user_slice";
 import { useAppDispatch } from "@/hooks/redux_hooks";
+import { todays_date } from "@/utils/variables";
 
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
@@ -19,7 +20,7 @@ const SetupProfilePage = () => {
         weight: "60",
         gender: "female",
         profile_completed: true,
-        creation_date: new Date().toISOString().split("T")[0],
+        creation_date: todays_date,
       })
     );
   };

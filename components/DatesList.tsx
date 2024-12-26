@@ -1,165 +1,258 @@
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
+  ListRenderItemInfo,
   Platform,
   Image,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-
+import {
+  format,
+  addWeeks,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameDay,
+  differenceInWeeks,
+  addDays,
+} from "date-fns";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
 import { font_family } from "@/theme/font_family";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
-
 import { set_selected_date } from "@/redux/slices/user_slice";
-import { formatDate, todays_date } from "@/utils/variables";
-import DateHeader from "./DateHeader";
 import { icons } from "@/data/icons";
-import { Route } from "@/types";
 
-const DatesList: React.FC<{ route: Route }> = ({ route }) => {
-  const dispatch = useAppDispatch();
+interface DatesListProps {
+  onDateSelect: (date: Date) => void;
+}
+
+type Week = Date[];
+
+const DatesList: React.FC<DatesListProps> = ({ onDateSelect }) => {
+  const { selected_date, creation_date } = useAppSelector(
+    (state) => state.user
+  );
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
-  const { selected_date } = useAppSelector((state) => state.user);
+  const today = new Date(); // Hardcoded today's date as per requirement
+  const installDateTime = creation_date ? new Date(creation_date) : new Date();
 
-  const [dates, setDates] = useState<string[]>([]);
+  const [weeks, setWeeks] = useState<Week[]>([]);
+  const flatListRef = useRef<FlatList<Week> | null>(null);
+  const initializedRef = useRef<boolean>(false);
 
-  const flatListRef = useRef<FlatList<string>>(null);
-  useEffect(() => {
-    const generateDates = () => {
-      const startDate = new Date(2024, 11, 20); // Months are 0-indexed
-      const tempDates: string[] = [];
+  const dispatch = useAppDispatch();
 
-      // Generate the next 1000 days as an example
-      for (let i = 0; i < 1000; i++) {
-        const nextDate = new Date(startDate);
-        nextDate.setDate(startDate.getDate() + i);
-        tempDates.push(nextDate.toISOString().split("T")[0]); // Format: YYYY-MM-DD
-      }
+  const generateInitialWeeks = (): Week[] => {
+    const result: Week[] = [];
+    const startDate = startOfWeek(installDateTime, { weekStartsOn: 0 });
+    const totalWeeks = differenceInWeeks(today, startDate) + 13; // Add 12 future weeks
 
-      setDates(tempDates);
-    };
+    for (let i = 0; i < totalWeeks; i++) {
+      const weekStart = addWeeks(startDate, i);
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
 
-    generateDates();
-  }, []);
+      const days = eachDayOfInterval({
+        start: weekStart,
+        end: weekEnd,
+      });
 
-  // Check if the selected date is today
-  const isToday = selected_date === todays_date;
-
-  // Scroll to today's date
-  const scrollToToday = () => {
-    dispatch(set_selected_date({ selected_date: todays_date }));
-
-    // Find the index of today's date and scroll to it
-    const todayIndex = dates.indexOf(todays_date);
-    if (flatListRef.current && todayIndex !== -1) {
-      flatListRef.current.scrollToIndex({ index: todayIndex, animated: true });
+      result.push(days);
     }
+    return result;
   };
 
-  const renderItem = ({ item }: { item: string }) => {
-    const result = formatDate(item);
+  const loadMoreFutureWeeks = (): void => {
+    const lastWeek = weeks[weeks.length - 1];
+    const nextWeekStart = addDays(lastWeek[6], 1);
+    const newWeeks: Week[] = [];
+
+    for (let i = 0; i < 12; i++) {
+      const weekStart = addWeeks(nextWeekStart, i);
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
+
+      const days = eachDayOfInterval({
+        start: weekStart,
+        end: weekEnd,
+      });
+
+      newWeeks.push(days);
+    }
+
+    setWeeks((prevWeeks) => [...prevWeeks, ...newWeeks]);
+  };
+
+  // Initialize weeks
+  useEffect(() => {
+    if (!initializedRef.current) {
+      const initialWeeks = generateInitialWeeks();
+      setWeeks(initialWeeks);
+      initializedRef.current = true;
+
+      // Scroll to today's week after a short delay
+      setTimeout(() => {
+        const todayWeekIndex = initialWeeks.findIndex((week) =>
+          week.some((day) => isSameDay(day, today))
+        );
+
+        if (todayWeekIndex !== -1 && flatListRef.current) {
+          flatListRef.current?.scrollToIndex({
+            index: todayWeekIndex,
+            animated: false,
+          });
+        }
+      }, 100);
+
+      onDateSelect(today);
+    }
+  }, []);
+
+  const renderDay = (date: Date): React.ReactElement => {
+    const isSelected = selected_date ? isSameDay(date, selected_date) : false;
+    const isTodayDate = isSameDay(date, today);
+    const isInstallDate = isSameDay(date, installDateTime);
+    const isBeforeInstall = date <= installDateTime;
+
     return (
       <TouchableOpacity
         style={[
+          styles.dayContainer,
+          isSelected && styles.selectedDay,
+          isTodayDate && styles.todayDay,
+          isInstallDate && styles.installDay,
           {
-            backgroundColor:
-              selected_date === item ? colors.button : colors.foreground,
-            padding: 10,
-            paddingVertical: 5,
-            marginHorizontal: 5,
-            borderRadius: 10,
-            alignItems: "center",
+            backgroundColor: isSelected ? colors.button : colors.foreground,
           },
         ]}
         onPress={() => {
-          dispatch(set_selected_date({ selected_date: item }));
+          // if (!isBeforeInstall) {
+          dispatch(set_selected_date({ selected_date: date }));
+          onDateSelect(date);
+          // }
         }}
+        // disabled={isBeforeInstall}
       >
         <Text
-          style={{
-            fontFamily: font_family.poppins_medium,
-            fontSize: 10,
-            color: selected_date === item ? colors.text_white : colors.text,
-          }}
+          style={[
+            styles.dayText,
+            isSelected && styles.selectedText,
+            isBeforeInstall && styles.disabledText,
+            {
+              fontSize: 9,
+              fontFamily: font_family.poppins_regular,
+              color: isSelected ? colors.text_white : colors.text,
+            },
+          ]}
         >
-          {result[1]}
+          {format(date, "EEE")}
         </Text>
         <Text
-          style={{
-            fontFamily: font_family.poppins_medium,
-            fontSize: 15,
-            color: selected_date === item ? colors.text_white : colors.text,
-          }}
+          style={[
+            styles.dateText,
+            isSelected && styles.selectedText,
+            isBeforeInstall && styles.disabledText,
+            {
+              fontSize: 19,
+              fontFamily: font_family.poppins_medium,
+              color: isSelected ? colors.text_white : colors.text,
+            },
+          ]}
         >
-          {result[0]}
+          {format(date, "d")}
         </Text>
         <Text
-          style={{
-            fontFamily: font_family.poppins_medium,
-            fontSize: 8,
-            color: selected_date === item ? colors.text_white : colors.text,
-          }}
+          style={[
+            styles.monthText,
+            isSelected && styles.selectedText,
+            isBeforeInstall && styles.disabledText,
+            {
+              fontSize: 9,
+              fontFamily: font_family.poppins_regular,
+              color: isSelected ? colors.text_white : colors.text,
+            },
+          ]}
         >
-          {result[2]} - {result[3]}
+          {format(date, "MMM")}
+        </Text>
+        <Text
+          style={[
+            styles.yearText,
+            isSelected && styles.selectedText,
+            isBeforeInstall && styles.disabledText,
+            {
+              fontSize: 9,
+              fontFamily: font_family.poppins_regular,
+              color: isSelected ? colors.text_white : colors.text,
+            },
+          ]}
+        >
+          {format(date, "yyyy")}
         </Text>
       </TouchableOpacity>
     );
   };
 
-  const ITEM_WIDTH = 55; // Width of each item
-  const DAYS_IN_A_WEEK = 6;
+  const renderWeek = ({
+    item: week,
+  }: ListRenderItemInfo<Week>): React.ReactElement => (
+    <View style={styles.weekContainer}>
+      {week.map((day) => (
+        <View key={day.toString()} style={styles.dayWrapper}>
+          {renderDay(day)}
+        </View>
+      ))}
+    </View>
+  );
 
-  const handleMomentumScrollEnd = (event: any) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(offsetX / (ITEM_WIDTH * DAYS_IN_A_WEEK));
-    const newScrollPosition = index * (ITEM_WIDTH * DAYS_IN_A_WEEK);
+  const goToToday = (): void => {
+    dispatch(set_selected_date({ selected_date: today }));
+    onDateSelect(today);
 
-    flatListRef.current?.scrollToOffset({
-      offset: newScrollPosition,
-      animated: true,
-    });
+    const todayWeekIndex = weeks.findIndex((week) =>
+      week.some((day) => isSameDay(day, today))
+    );
+
+    if (todayWeekIndex !== -1 && flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        index: todayWeekIndex,
+        animated: true,
+      });
+    }
   };
 
   return (
-    <View
-      style={{
-        marginTop: Platform.OS === "ios" ? 20 : 0,
-        borderBottomColor: colors.foreground,
-        borderBottomWidth: 0.5,
-        padding: 10,
-        paddingVertical: Platform.OS === "ios" ? 20 : 10,
-      }}
-    >
-      <DateHeader route={route} />
-      <FlatList
+    <View>
+      <FlatList<Week>
         ref={flatListRef}
-        data={dates}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
+        data={weeks}
+        renderItem={renderWeek}
         horizontal
+        pagingEnabled
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContainer}
-        initialScrollIndex={dates.indexOf(selected_date)} // Start from the selected date
-        getItemLayout={(data, index) => ({
-          length: 55, // Approximate width of each item
-          offset: 55 * index,
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        onEndReached={loadMoreFutureWeeks}
+        onEndReachedThreshold={0.5}
+        getItemLayout={(_, index) => ({
+          length: Dimensions.get("window").width,
+          offset: Dimensions.get("window").width * index,
           index,
         })}
-        onMomentumScrollEnd={handleMomentumScrollEnd} // Handle week snapping
+        keyExtractor={(week) => week[0].toISOString()}
       />
-
-      {!isToday && (
+      {selected_date && !isSameDay(selected_date, today) && (
         <TouchableOpacity
-          onPress={scrollToToday}
+          onPress={goToToday}
           activeOpacity={0.8}
           style={{
             alignItems: "center",
             marginTop: 20,
             position: "absolute",
-            top: Platform?.OS === "ios" ? "130%" : "110%",
+            top: Platform?.OS === "ios" ? "50%" : "80%",
             right: "40%",
             zIndex: 10,
             backgroundColor: colors.text,
@@ -191,35 +284,69 @@ const DatesList: React.FC<{ route: Route }> = ({ route }) => {
   );
 };
 const styles = StyleSheet.create({
-  flatListContainer: {
+  weekContainer: {
+    flexDirection: "row",
+    width: Dimensions.get("window").width,
+    justifyContent: "space-around",
     paddingHorizontal: 10,
+    height: 105,
   },
-  dateContainer: {
+  dayWrapper: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  dayContainer: {
+    alignItems: "center",
     padding: 10,
-    backgroundColor: "#f0f0f0",
-    marginHorizontal: 5,
-    borderRadius: 10,
+    paddingVertical: 2,
+    borderRadius: 8,
+    backgroundColor: "red",
+  },
+  selectedDay: {
+    backgroundColor: "#007AFF",
+  },
+  todayDay: {
+    borderWidth: 1,
+    borderColor: "#007AFF",
+  },
+  installDay: {
+    borderWidth: 1,
+    borderColor: "#4CAF50",
   },
   dateText: {
     fontSize: 16,
-    color: "#333",
-  },
-  selectedDateContainer: {
-    backgroundColor: "#007bff",
-  },
-  selectedDateText: {
-    color: "#fff",
     fontWeight: "bold",
   },
+  dayText: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  monthText: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  yearText: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  selectedText: {
+    color: "white",
+  },
+  disabledText: {
+    color: "#cccccc",
+  },
   todayButton: {
-    marginTop: 20,
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    backgroundColor: "#007AFF",
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    alignItems: "center",
+    bottom: 100,
   },
   todayButtonText: {
-    color: "#fff",
+    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },

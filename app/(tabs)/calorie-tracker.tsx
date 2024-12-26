@@ -13,6 +13,7 @@ import DatesList from "@/components/DatesList";
 import { useAppSelector } from "@/hooks/redux_hooks";
 import { font_family } from "@/theme/font_family";
 import * as Progress from "react-native-progress";
+import DateHeader from "@/components/DateHeader";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -27,7 +28,13 @@ const CalorieTrackerPage = () => {
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
-      <DatesList route="Calorie" />
+      <DateHeader route="Calorie" />
+      <DatesList
+        onDateSelect={(date: any) => {
+          console.log("Selected date:", date);
+          // Do something with the selected date
+        }}
+      />
 
       <ScrollView style={{ margin: 15 }}>
         <View

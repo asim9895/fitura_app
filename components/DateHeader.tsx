@@ -5,8 +5,8 @@ import { useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
 import { formatDate, todays_date } from "@/utils/variables";
 import { font_family } from "@/theme/font_family";
-import { Route } from "@/types";
 import { icons } from "@/data/icons";
+import { Route } from "@/types";
 
 const DateHeader: React.FC<{ route: Route }> = ({ route }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
@@ -19,12 +19,13 @@ const DateHeader: React.FC<{ route: Route }> = ({ route }) => {
   return (
     <SafeAreaView
       style={{
-        marginBottom: Platform.OS === "ios" ? 15 : 10,
+        marginBottom: Platform.OS === "ios" ? 10 : 5,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        marginHorizontal: 15,
+        marginHorizontal: 10,
         alignItems: "center",
+        marginTop: 5,
       }}
     >
       <Text

@@ -1,4 +1,4 @@
-export const todays_date = new Date().toISOString().split("T")[0];
+export const todays_date = new Date();
 
 export const formatDate = (dateString: any) => {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

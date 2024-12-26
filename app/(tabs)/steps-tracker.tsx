@@ -4,6 +4,7 @@ import { AppRootState } from "@/redux/store";
 import { useAppSelector } from "@/hooks/redux_hooks";
 import { globalStylesWrapper } from "@/styles/global.style";
 import DatesList from "@/components/DatesList";
+import DateHeader from "@/components/DateHeader";
 
 const StepsTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -18,7 +19,13 @@ const StepsTrackerPage = () => {
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
-      <DatesList route="Steps" />
+      <DateHeader route="Steps" />
+      <DatesList
+        onDateSelect={(date: any) => {
+          console.log("Selected date:", date);
+          // Do something with the selected date
+        }}
+      />
       <Text style={{ color: colors.text }}>Index</Text>
     </View>
   );
