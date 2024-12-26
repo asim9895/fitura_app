@@ -28,7 +28,7 @@ const ProfilePage = () => {
         weight: "60",
         gender: "female",
         profile_completed: true,
-        creation_date: todays_date,
+        creation_date: new Date("2024-12-23T13:42:30.685Z"),
       })
     );
   };

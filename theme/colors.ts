@@ -31,12 +31,12 @@ export interface Colors {
 
 // themes.js
 export const light: Colors = {
-  background: "#f4f4f8",
+  background: "#ffffff",
   text: "#000000",
   error: "crimson",
-  foreground: "#fffefe",
+  foreground: "#f3f7f6",
   light_gray: "#868686",
-  button: "#007AFF",
+  button: "#539be9",
   text_white: "#ffffff",
   text_black: "#000000",
   icon_color: "#868686",
@@ -49,7 +49,7 @@ export const dark: Colors = {
   error: "crimson",
   foreground: "#222223",
   light_gray: "#868686",
-  button: "#007AFF",
+  button: "#539be9",
   text_white: "#ffffff",
   text_black: "#000000",
   icon_color: "#868686",

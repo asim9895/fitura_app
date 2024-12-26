@@ -10,4 +10,6 @@ export const icons = {
   undo: require("../assets/icons/undo.png"),
   streak: require("../assets/icons/streak.png"),
   star: require("../assets/icons/star.png"),
+  crown: require("../assets/icons/crown.png"),
+  right_arrow: require("../assets/icons/right-arrow.png"),
 };

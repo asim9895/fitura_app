@@ -1,5 +1,6 @@
 import {
   Dimensions,
+  Image,
   Platform,
   ScrollView,
   StatusBar,
@@ -14,6 +15,8 @@ import { useAppSelector } from "@/hooks/redux_hooks";
 import { font_family } from "@/theme/font_family";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
+import { calorie_data } from "@/data/test";
+import { icons } from "@/data/icons";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -22,85 +25,79 @@ const CalorieTrackerPage = () => {
 
   const globalStyles = globalStylesWrapper(colors);
 
+  const all_calorie_of_achieved_goal = calorie_data
+    ?.map((steps: any) => {
+      const date = new Date(steps.date);
+      const steps_of_day = steps.data.reduce((total: any, step: any) => {
+        return total + step.steps;
+      }, 0);
+      return {
+        date: date,
+        steps: steps_of_day,
+      };
+    })
+    ?.map((data: any) => {
+      return data?.date;
+    });
+
   return (
     <View style={[globalStyles.background]}>
       <StatusBar
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
-      <DateHeader route="Calorie" />
+      <DateHeader days={all_calorie_of_achieved_goal?.length} />
       <DatesList
         onDateSelect={(date: any) => {
           console.log("Selected date:", date);
           // Do something with the selected date
         }}
+        achievement_dates={all_calorie_of_achieved_goal}
       />
 
-      <ScrollView style={{ margin: 15 }}>
+      <ScrollView
+        style={{ marginHorizontal: 15, marginBottom: 70 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View
           style={{
             backgroundColor: colors.foreground,
             padding: 10,
             borderRadius: 10,
+            marginTop: 15,
           }}
         >
           <Text
             style={{
               color: colors.light_gray,
               fontFamily: font_family.poppins_semiBold,
-              fontSize: 15,
+              fontSize: 17,
             }}
           >
             Calories left to eat today
           </Text>
 
-          <View
+          <Text
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 10,
-              padding: 5,
+              color: colors.text,
+              fontFamily: font_family.poppins_semiBold,
+              fontSize: 14,
+              paddingHorizontal: 5,
             }}
           >
             <Text
               style={{
                 color: colors.text,
                 fontFamily: font_family.poppins_semiBold,
-                fontSize: 14,
+                fontSize: 25,
               }}
             >
-              <Text
-                style={{
-                  color: colors.text,
-                  fontFamily: font_family.poppins_semiBold,
-                  fontSize: 19,
-                }}
-              >
-                2215
-              </Text>{" "}
-              kcal
-            </Text>
-            <Text
-              style={{
-                color: colors.button,
-                fontFamily: font_family.poppins_semiBold,
-                fontSize: 15,
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.poppins_medium,
-                  fontSize: 13,
-                }}
-              >
-                Total Budget:
-              </Text>{" "}
-              2152
-            </Text>
-          </View>
-          <View style={{ marginTop: 10 }}>
+              2215
+            </Text>{" "}
+            kcal
+          </Text>
+
+          <View style={{ marginTop: 5 }}>
             <Progress.Bar
               progress={0.4}
               width={Dimensions.get("window").width / 1.15}
@@ -137,6 +134,7 @@ const CalorieTrackerPage = () => {
                   fontFamily: font_family.poppins_semiBold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
+                  fontSize: 17,
                 }}
               >
                 2152
@@ -173,6 +171,7 @@ const CalorieTrackerPage = () => {
                   fontFamily: font_family.poppins_semiBold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
+                  fontSize: 17,
                 }}
               >
                 2132
@@ -210,6 +209,7 @@ const CalorieTrackerPage = () => {
                   fontFamily: font_family.poppins_semiBold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
+                  fontSize: 17,
                 }}
               >
                 2321
@@ -247,6 +247,7 @@ const CalorieTrackerPage = () => {
                   fontFamily: font_family.poppins_semiBold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
+                  fontSize: 17,
                 }}
               >
                 4324
@@ -262,9 +263,57 @@ const CalorieTrackerPage = () => {
               </Text>
             </View>
           </View>
+
+          <View
+            style={{
+              backgroundColor: colors.background,
+              height: 14,
+              marginTop: 10,
+              borderRadius: 10,
+            }}
+          ></View>
+          <View
+            style={{
+              backgroundColor: colors.background,
+              marginTop: 10,
+              borderRadius: 10,
+              padding: 10,
+              paddingVertical: 9,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: font_family.poppins_semiBold,
+                fontSize: 17,
+                marginTop: 4,
+              }}
+            >
+              Today Budget
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text
+                style={{
+                  color: colors.button,
+                  fontFamily: font_family.poppins_semiBold,
+                  marginTop: 4,
+                  fontSize: 18,
+                }}
+              >
+                2234
+                <Text style={{ fontSize: 12 }}> kcal</Text>
+              </Text>
+              <Image
+                source={icons.right_arrow}
+                style={{ width: 15, height: 15, marginLeft: 15 }}
+                tintColor={colors.button}
+              />
+            </View>
+          </View>
         </View>
       </ScrollView>
-      <Text style={{ color: colors.text }}>Index</Text>
     </View>
   );
 };

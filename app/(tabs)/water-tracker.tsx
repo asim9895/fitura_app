@@ -5,17 +5,29 @@ import { AppRootState } from "@/redux/store";
 import { globalStylesWrapper } from "@/styles/global.style";
 import DatesList from "@/components/DatesList";
 import DateHeader from "@/components/DateHeader";
+import { water_data } from "@/data/test";
 
 const WaterTrackerPage = () => {
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
-  const handleDateSelect = (date: any) => {
-    console.log("Selected date:", date);
-    // Do something with the selected date
-  };
 
   const globalStyles = globalStylesWrapper(colors);
+
+  const all_water_of_achieved_goal = water_data
+    ?.map((steps: any) => {
+      const date = new Date(steps.date);
+      const steps_of_day = steps.data.reduce((total: any, step: any) => {
+        return total + step.steps;
+      }, 0);
+      return {
+        date: date,
+        steps: steps_of_day,
+      };
+    })
+    ?.map((data: any) => {
+      return data?.date;
+    });
 
   return (
     <View style={[globalStyles.background]}>
@@ -23,12 +35,13 @@ const WaterTrackerPage = () => {
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
-      <DateHeader route="Water" />
+      <DateHeader days={all_water_of_achieved_goal?.length} />
       <DatesList
         onDateSelect={(date: any) => {
           console.log("Selected date:", date);
           // Do something with the selected date
         }}
+        achievement_dates={all_water_of_achieved_goal}
       />
     </View>
   );
