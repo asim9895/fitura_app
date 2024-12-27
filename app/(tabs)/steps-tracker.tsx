@@ -10,6 +10,7 @@ import { isSameDay } from "date-fns";
 import { font_family } from "@/theme/font_family";
 import { icons } from "@/data/icons";
 import * as Progress from "react-native-progress";
+import { format_number } from "@/helper/format_number";
 
 type SingleStepEntry = {
   id: string;
@@ -89,7 +90,7 @@ const StepsTrackerPage = () => {
       />
 
       <ScrollView
-        style={{ marginHorizontal: 20 }}
+        style={{ marginHorizontal: 15 }}
         showsVerticalScrollIndicator={false}
       >
         <View
@@ -112,7 +113,7 @@ const StepsTrackerPage = () => {
             <View>
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   fontSize: 18,
                   color: colors.text,
                   width: 100,
@@ -153,29 +154,29 @@ const StepsTrackerPage = () => {
               <Text
                 style={{
                   color: colors.text,
-                  fontFamily: font_family.poppins_bold,
+                  fontFamily: font_family.font_bold,
                   fontSize: 30,
                   marginTop: 10,
                 }}
               >
-                {total_steps_for_day}
+                {format_number(total_steps_for_day)}
               </Text>
               <Text
                 style={{
                   color: colors.light_gray,
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   fontSize: 16,
                   marginTop: 0,
                 }}
               >
-                / {target_steps}
+                / {format_number(target_steps)}
               </Text>
             </View>
           </View>
 
           <Text
             style={{
-              fontFamily: font_family.poppins_semiBold,
+              fontFamily: font_family.font_semibold,
               color: colors.light_gray,
               fontSize: 15,
               textAlign: "center",
@@ -184,14 +185,14 @@ const StepsTrackerPage = () => {
             Target Steps:{" "}
             <Text
               style={{
-                fontFamily: font_family.poppins_bold,
+                fontFamily: font_family.font_bold,
                 color: colors.button,
                 fontSize: 17,
                 textAlign: "center",
               }}
             >
               {" "}
-              {target_steps}
+              {format_number(target_steps)}
             </Text>
           </Text>
         </View>
@@ -207,7 +208,7 @@ const StepsTrackerPage = () => {
           >
             <Text
               style={{
-                fontFamily: font_family.poppins_semiBold,
+                fontFamily: font_family.font_semibold,
                 fontSize: 18,
                 width: 100,
                 color: colors.text,
@@ -227,7 +228,7 @@ const StepsTrackerPage = () => {
                   backgroundColor: colors.foreground,
                   flexDirection: "row",
                   alignItems: "center",
-                  paddingVertical: 0,
+                  paddingVertical: 3,
                   paddingHorizontal: 10,
                   borderRadius: 5,
                 }}
@@ -244,7 +245,7 @@ const StepsTrackerPage = () => {
                 />
                 <Text
                   style={{
-                    fontFamily: font_family.poppins_semiBold,
+                    fontFamily: font_family.font_semibold,
                     fontSize: 15,
                     color: colors.text,
                     paddingTop: 2,
@@ -277,7 +278,7 @@ const StepsTrackerPage = () => {
                     style={{
                       color: colors.text,
                       fontSize: 16,
-                      fontFamily: font_family.poppins_medium,
+                      fontFamily: font_family.font_medium,
                       textTransform: "capitalize",
                     }}
                   >
@@ -287,10 +288,10 @@ const StepsTrackerPage = () => {
                     style={{
                       color: colors.button,
                       fontSize: 18,
-                      fontFamily: font_family.poppins_semiBold,
+                      fontFamily: font_family.font_semibold,
                     }}
                   >
-                    {step.steps}
+                    {format_number(step.steps)}
                   </Text>
                 </View>
               );
@@ -306,7 +307,7 @@ const StepsTrackerPage = () => {
               <Text
                 style={{
                   fontSize: 20,
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.text,
                 }}
               >
@@ -335,7 +336,7 @@ const StepsTrackerPage = () => {
                 />
                 <Text
                   style={{
-                    fontFamily: font_family.poppins_semiBold,
+                    fontFamily: font_family.font_semibold,
                     fontSize: 15,
                     color: colors.text,
                     paddingTop: 2,

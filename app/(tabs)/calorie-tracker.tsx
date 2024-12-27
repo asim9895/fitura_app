@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import DatesList from "@/components/DatesList";
@@ -17,11 +17,13 @@ import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
 import { calorie_data } from "@/data/test";
 import { icons } from "@/data/icons";
+import { format_number } from "@/helper/format_number";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
+  const [current_selection, setcurrent_selection] = useState("Calories");
 
   const globalStyles = globalStylesWrapper(colors);
 
@@ -66,7 +68,7 @@ const CalorieTrackerPage = () => {
           <Text
             style={{
               color: colors.light_gray,
-              fontFamily: font_family.poppins_semiBold,
+              fontFamily: font_family.font_semibold,
               fontSize: 16,
               marginBottom: 5,
             }}
@@ -77,7 +79,7 @@ const CalorieTrackerPage = () => {
           <Text
             style={{
               color: colors.text,
-              fontFamily: font_family.poppins_semiBold,
+              fontFamily: font_family.font_semibold,
               fontSize: 14,
               paddingHorizontal: 5,
             }}
@@ -85,11 +87,11 @@ const CalorieTrackerPage = () => {
             <Text
               style={{
                 color: colors.text,
-                fontFamily: font_family.poppins_semiBold,
+                fontFamily: font_family.font_semibold,
                 fontSize: 25,
               }}
             >
-              2215
+              {format_number(2213)}
             </Text>{" "}
             kcal
           </Text>
@@ -120,7 +122,7 @@ const CalorieTrackerPage = () => {
           >
             <View
               style={{
-                width: "17%",
+                width: "18.5%",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 justifyContent: "center",
@@ -128,19 +130,21 @@ const CalorieTrackerPage = () => {
             >
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
                   fontSize: 17,
+                  textAlign: "center",
                 }}
               >
-                2152
+                {format_number(2152)}
               </Text>
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.button,
                   fontSize: 10,
+                  textAlign: "center",
                 }}
               >
                 Budget
@@ -148,8 +152,8 @@ const CalorieTrackerPage = () => {
             </View>
             <Text
               style={{
-                width: "10%",
-                fontFamily: font_family.poppins_semiBold,
+                width: "8%",
+                fontFamily: font_family.font_semibold,
                 color: colors.text,
               }}
             >
@@ -157,7 +161,7 @@ const CalorieTrackerPage = () => {
             </Text>
             <View
               style={{
-                width: "17%",
+                width: "18.5%",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 justifyContent: "center",
@@ -165,19 +169,21 @@ const CalorieTrackerPage = () => {
             >
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
                   fontSize: 17,
+                  textAlign: "center",
                 }}
               >
-                2132
+                {format_number(2132)}
               </Text>
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.green,
                   fontSize: 10,
+                  textAlign: "center",
                 }}
               >
                 Eaten
@@ -186,8 +192,8 @@ const CalorieTrackerPage = () => {
 
             <Text
               style={{
-                width: "10%",
-                fontFamily: font_family.poppins_semiBold,
+                width: "8%",
+                fontFamily: font_family.font_semibold,
                 color: colors.text,
               }}
             >
@@ -195,7 +201,7 @@ const CalorieTrackerPage = () => {
             </Text>
             <View
               style={{
-                width: "17%",
+                width: "18.5%",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 justifyContent: "center",
@@ -203,19 +209,20 @@ const CalorieTrackerPage = () => {
             >
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
                   fontSize: 17,
                 }}
               >
-                2321
+                {format_number(2321)}
               </Text>
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.error,
                   fontSize: 10,
+                  textAlign: "center",
                 }}
               >
                 Burned
@@ -224,8 +231,8 @@ const CalorieTrackerPage = () => {
 
             <Text
               style={{
-                width: "10%",
-                fontFamily: font_family.poppins_semiBold,
+                width: "8%",
+                fontFamily: font_family.font_semibold,
                 color: colors.text,
               }}
             >
@@ -233,7 +240,7 @@ const CalorieTrackerPage = () => {
             </Text>
             <View
               style={{
-                width: "17%",
+                width: "18.5%",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 justifyContent: "center",
@@ -241,19 +248,21 @@ const CalorieTrackerPage = () => {
             >
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.text,
                   marginBottom: Platform.OS === "ios" ? 5 : 0,
                   fontSize: 17,
+                  textAlign: "center",
                 }}
               >
-                4324
+                {format_number(4324)}
               </Text>
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   color: colors.light_gray,
                   fontSize: 10,
+                  textAlign: "center",
                 }}
               >
                 Left
@@ -283,7 +292,7 @@ const CalorieTrackerPage = () => {
             <Text
               style={{
                 color: colors.text,
-                fontFamily: font_family.poppins_semiBold,
+                fontFamily: font_family.font_semibold,
                 fontSize: 17,
                 marginTop: 4,
               }}
@@ -294,12 +303,12 @@ const CalorieTrackerPage = () => {
               <Text
                 style={{
                   color: colors.button,
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   marginTop: 4,
                   fontSize: 18,
                 }}
               >
-                2234
+                {format_number(2234)}
                 <Text style={{ fontSize: 12 }}> kcal</Text>
               </Text>
               <Image
@@ -309,6 +318,53 @@ const CalorieTrackerPage = () => {
               />
             </View>
           </View>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: colors.foreground,
+            padding: 7,
+            marginTop: 10,
+            flexDirection: "row",
+            borderRadius: 10,
+          }}
+        >
+          <Text
+            onPress={() => setcurrent_selection("Calories")}
+            style={{
+              width: "50%",
+              fontFamily: font_family.font_semibold,
+              color: colors.text,
+              fontSize: 17,
+              textAlign: "center",
+              padding: 7,
+              borderRadius: 7,
+              backgroundColor:
+                current_selection === "Calories"
+                  ? colors.background
+                  : colors.foreground,
+            }}
+          >
+            Calories (2132)
+          </Text>
+          <Text
+            onPress={() => setcurrent_selection("Burned")}
+            style={{
+              width: "50%",
+              fontFamily: font_family.font_semibold,
+              color: colors.text,
+              fontSize: 17,
+              textAlign: "center",
+              padding: 7,
+              borderRadius: 7,
+              backgroundColor:
+                current_selection === "Burned"
+                  ? colors.background
+                  : colors.foreground,
+            }}
+          >
+            Burned (2321)
+          </Text>
         </View>
       </ScrollView>
     </View>

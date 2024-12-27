@@ -100,7 +100,7 @@ const StepsTrackerPage = () => {
           <View>
             <Text
               style={{
-                fontFamily: font_family.poppins_semiBold,
+                fontFamily: font_family.font_semibold,
                 fontSize: 18,
                 color: colors.text,
                 width: 100,
@@ -141,7 +141,7 @@ const StepsTrackerPage = () => {
             <Text
               style={{
                 color: colors.text,
-                fontFamily: font_family.poppins_bold,
+                fontFamily: font_family.font_bold,
                 fontSize: 30,
                 marginTop: 10,
               }}
@@ -151,7 +151,7 @@ const StepsTrackerPage = () => {
             <Text
               style={{
                 color: colors.light_gray,
-                fontFamily: font_family.poppins_semiBold,
+                fontFamily: font_family.font_semibold,
                 fontSize: 16,
                 marginTop: 0,
               }}
@@ -163,7 +163,7 @@ const StepsTrackerPage = () => {
 
         <Text
           style={{
-            fontFamily: font_family.poppins_semiBold,
+            fontFamily: font_family.font_semibold,
             color: colors.light_gray,
             fontSize: 15,
             textAlign: "center",
@@ -172,7 +172,7 @@ const StepsTrackerPage = () => {
           Target Steps:{" "}
           <Text
             style={{
-              fontFamily: font_family.poppins_bold,
+              fontFamily: font_family.font_bold,
               color: colors.button,
               fontSize: 17,
               textAlign: "center",
@@ -195,7 +195,7 @@ const StepsTrackerPage = () => {
         >
           <Text
             style={{
-              fontFamily: font_family.poppins_semiBold,
+              fontFamily: font_family.font_semibold,
               fontSize: 18,
               width: 100,
               color: colors.text,
@@ -233,7 +233,7 @@ const StepsTrackerPage = () => {
               />
               <Text
                 style={{
-                  fontFamily: font_family.poppins_semiBold,
+                  fontFamily: font_family.font_semibold,
                   fontSize: 15,
                   color: colors.text,
                   paddingTop: 2,
@@ -259,7 +259,7 @@ const StepsTrackerPage = () => {
       <Text
         style={{
           fontSize: 20,
-          fontFamily: font_family.poppins_semiBold,
+          fontFamily: font_family.font_semibold,
           color: colors.text,
         }}
       >
@@ -288,7 +288,7 @@ const StepsTrackerPage = () => {
         />
         <Text
           style={{
-            fontFamily: font_family.poppins_semiBold,
+            fontFamily: font_family.font_semibold,
             fontSize: 15,
             color: colors.text,
             paddingTop: 2,

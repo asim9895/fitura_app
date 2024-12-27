@@ -20,7 +20,7 @@ const TabsLayout = () => {
         tabBarShowLabel: true,
         animation: "none",
         tabBarLabelStyle: {
-          fontFamily: font_family.poppins_medium,
+          fontFamily: font_family.font_medium,
           fontSize: 11,
         },
         lazy: true,

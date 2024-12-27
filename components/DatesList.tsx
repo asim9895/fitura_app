@@ -19,12 +19,15 @@ import {
   isSameDay,
   differenceInWeeks,
   addDays,
+  isBefore,
+  startOfDay,
 } from "date-fns";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
 import { font_family } from "@/theme/font_family";
 import { set_selected_date } from "@/redux/slices/user_slice";
 import { icons } from "@/data/icons";
+import { format_number } from "@/helper/format_number";
 
 interface DatesListProps {
   onDateSelect: (date: Date) => void;
@@ -58,7 +61,7 @@ const DatesList: React.FC<DatesListProps> = ({
     const result: Week[] = [];
     const startDate = startOfWeek(installDateTime, { weekStartsOn: 0 });
 
-    const totalWeeks = differenceInWeeks(today, startDate) + 13; // Add 12 future weeks
+    const totalWeeks = differenceInWeeks(today, startDate) + 1; // Add 12 future weeks
 
     for (let i = 0; i < totalWeeks; i++) {
       const weekStart = addWeeks(startDate, i);
@@ -76,11 +79,15 @@ const DatesList: React.FC<DatesListProps> = ({
 
   const loadMoreFutureWeeks = (): void => {
     const lastWeek = weeks[weeks.length - 1];
-    const nextWeekStart = addDays(lastWeek[6], 1);
-    const newWeeks: Week[] = [];
+    const today = new Date();
 
-    for (let i = 0; i < 12; i++) {
-      const weekStart = addWeeks(nextWeekStart, i);
+    const isTodayInLastWeek = lastWeek.some((date) => isSameDay(date, today));
+
+    if (isTodayInLastWeek) {
+      const nextWeekStart = addDays(lastWeek[6], 1);
+      const newWeeks: Week[] = [];
+
+      const weekStart = nextWeekStart;
       const weekEnd = endOfWeek(weekStart, { weekStartsOn: 0 });
 
       const days = eachDayOfInterval({
@@ -89,9 +96,8 @@ const DatesList: React.FC<DatesListProps> = ({
       });
 
       newWeeks.push(days);
+      setWeeks((prevWeeks) => [...prevWeeks, ...newWeeks]);
     }
-
-    setWeeks((prevWeeks) => [...prevWeeks, ...newWeeks]);
   };
 
   // Initialize weeks
@@ -132,9 +138,20 @@ const DatesList: React.FC<DatesListProps> = ({
       isSameDay(achievementDate?.date, date)
     )?.count;
 
+    console.log(
+      date,
+      installDateTime,
+      isBefore(date, installDateTime),
+      isBefore(new Date(1987, 1, 11), new Date(1987, 1, 11))
+    );
+
+    const condition_to_disable =
+      isBefore(startOfDay(date), startOfDay(installDateTime)) || date > today;
+
     return (
       <View>
         <TouchableOpacity
+          disabled={condition_to_disable}
           style={[
             styles.dayContainer,
             isSelected && {
@@ -159,8 +176,8 @@ const DatesList: React.FC<DatesListProps> = ({
             style={[
               {
                 fontSize: 9,
-                fontFamily: font_family.poppins_regular,
-                color: isSelected ? colors.text : colors.light_gray,
+                fontFamily: font_family.font_regular,
+                color: condition_to_disable ? colors.light_gray : colors.text,
               },
             ]}
           >
@@ -170,8 +187,8 @@ const DatesList: React.FC<DatesListProps> = ({
             style={[
               {
                 fontSize: 16,
-                fontFamily: font_family.poppins_semiBold,
-                color: isSelected ? colors.text : colors.light_gray,
+                fontFamily: font_family.font_semibold,
+                color: condition_to_disable ? colors.light_gray : colors.text,
                 marginBottom: -3,
                 marginTop: -2,
               },
@@ -183,8 +200,8 @@ const DatesList: React.FC<DatesListProps> = ({
             style={[
               {
                 fontSize: 8,
-                fontFamily: font_family.poppins_regular,
-                color: isSelected ? colors.text : colors.light_gray,
+                fontFamily: font_family.font_regular,
+                color: condition_to_disable ? colors.light_gray : colors.text,
               },
             ]}
           >
@@ -194,8 +211,8 @@ const DatesList: React.FC<DatesListProps> = ({
             style={[
               {
                 fontSize: 8,
-                fontFamily: font_family.poppins_regular,
-                color: isSelected ? colors.text : colors.light_gray,
+                fontFamily: font_family.font_regular,
+                color: condition_to_disable ? colors.light_gray : colors.text,
               },
             ]}
           >
@@ -211,12 +228,12 @@ const DatesList: React.FC<DatesListProps> = ({
           style={{
             fontSize: 9,
             marginTop: 3,
-            fontFamily: font_family.poppins_semiBold,
+            fontFamily: font_family.font_semibold,
             color: colors.light_gray,
             textAlign: "center",
           }}
         >
-          {count === 0 ? "-" : count}
+          {count === 0 ? "-" : count !== undefined ? format_number(count) : "-"}
         </Text>
       </View>
     );
@@ -298,7 +315,7 @@ const DatesList: React.FC<DatesListProps> = ({
           />
           <Text
             style={{
-              fontFamily: font_family.poppins_semiBold,
+              fontFamily: font_family.font_semibold,
               color: colors.background,
               paddingTop: Platform.OS === "ios" ? 0 : 3,
             }}
@@ -316,7 +333,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     justifyContent: "space-around",
     paddingHorizontal: 10,
-    height: 110,
+    height: 95,
   },
   dayWrapper: {
     flex: 1,

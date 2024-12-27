@@ -39,7 +39,7 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
       <Text
         style={{
           fontSize: 18,
-          fontFamily: font_family.poppins_semiBold,
+          fontFamily: font_family.font_semibold,
           color: colors.text,
         }}
       >
@@ -65,7 +65,7 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
           />
           <Text
             style={{
-              fontFamily: font_family.poppins_medium,
+              fontFamily: font_family.font_medium,
               fontSize: 16,
               color: colors.text_black,
               paddingTop: 2,
@@ -90,7 +90,7 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
           />
           <Text
             style={{
-              fontFamily: font_family.poppins_medium,
+              fontFamily: font_family.font_medium,
               fontSize: 16,
               color: colors.text_black,
               paddingTop: 2,
