@@ -5,7 +5,7 @@ import { AppRootState } from "@/redux/store";
 import { formatDate, todays_date } from "@/utils/variables";
 import { font_family } from "@/theme/font_family";
 import { icons } from "@/data/icons";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, isSameDay } from "date-fns";
 
 const DateHeader: React.FC<{ days: number }> = ({ days }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
@@ -23,14 +23,15 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
 
   const display_format = `${formatted_date[1]}, ${formatted_date[0]} ${formatted_date[2]}, 20${formatted_date[3]}`;
 
+  console.log(selected_date, todays_date);
   return (
     <SafeAreaView
       style={{
-        marginBottom: Platform.OS === "ios" ? 3 : 0,
+        marginBottom: Platform.OS === "ios" ? 15 : 10,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        marginHorizontal: 10,
+        marginHorizontal: 20,
         alignItems: "center",
         marginTop: 15,
       }}
@@ -42,7 +43,7 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
           color: colors.text,
         }}
       >
-        {selected_date === todays_date ? "Today" : display_format}
+        {isSameDay(selected_date, todays_date) ? "Today" : display_format}
       </Text>
       <View
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}

@@ -12,4 +12,7 @@ export const icons = {
   star: require("../assets/icons/star.png"),
   crown: require("../assets/icons/crown.png"),
   right_arrow: require("../assets/icons/right-arrow.png"),
+  edit: require("../assets/icons/edit.png"),
+  shoe: require("../assets/icons/shoe.png"),
+  plus: require("../assets/icons/plus.png"),
 };

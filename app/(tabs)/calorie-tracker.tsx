@@ -25,20 +25,16 @@ const CalorieTrackerPage = () => {
 
   const globalStyles = globalStylesWrapper(colors);
 
-  const all_calorie_of_achieved_goal = calorie_data
-    ?.map((steps: any) => {
-      const date = new Date(steps.date);
-      const steps_of_day = steps.data.reduce((total: any, step: any) => {
-        return total + step.steps;
-      }, 0);
-      return {
-        date: date,
-        steps: steps_of_day,
-      };
-    })
-    ?.map((data: any) => {
-      return data?.date;
-    });
+  const all_calorie_of_achieved_goal = calorie_data?.map((steps: any) => {
+    const date = new Date(steps.date);
+    const steps_of_day = steps.data.reduce((total: any, step: any) => {
+      return total + step.steps;
+    }, 0);
+    return {
+      date: date,
+      count: steps_of_day,
+    };
+  });
 
   return (
     <View style={[globalStyles.background]}>
@@ -62,7 +58,7 @@ const CalorieTrackerPage = () => {
         <View
           style={{
             backgroundColor: colors.foreground,
-            padding: 10,
+            padding: 15,
             borderRadius: 10,
             marginTop: 15,
           }}
@@ -71,7 +67,8 @@ const CalorieTrackerPage = () => {
             style={{
               color: colors.light_gray,
               fontFamily: font_family.poppins_semiBold,
-              fontSize: 17,
+              fontSize: 16,
+              marginBottom: 5,
             }}
           >
             Calories left to eat today
@@ -100,7 +97,7 @@ const CalorieTrackerPage = () => {
           <View style={{ marginTop: 5 }}>
             <Progress.Bar
               progress={0.4}
-              width={Dimensions.get("window").width / 1.15}
+              width={Dimensions.get("window").width / 1.2}
               height={10}
               borderRadius={25}
               color={colors.button}

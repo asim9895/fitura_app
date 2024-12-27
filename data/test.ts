@@ -16,17 +16,17 @@ export const steps: StepData[] = [
       {
         id: "1",
         steps: 4000,
-        day_time: "morning",
+        day_time: "evening cardio",
       },
       {
         id: "2",
         steps: 4000,
-        day_time: "evening",
+        day_time: "wedding",
       },
       {
         id: "3",
         steps: 5000,
-        day_time: "afternoon",
+        day_time: "hiking",
       },
     ],
   },
@@ -48,6 +48,28 @@ export const steps: StepData[] = [
         id: "3",
         steps: 3000,
         day_time: "afternoon",
+      },
+    ],
+  },
+  {
+    id: "3",
+    date: new Date("2024-12-27T13:42:30.685Z"),
+    data: [
+      {
+        id: "1",
+        steps: 3000,
+        day_time: "jogging",
+      },
+      {
+        id: "2",
+        steps: 4000,
+        day_time: "evening walk",
+      },
+      {
+        id: "3",
+        steps: 3000,
+        day_time:
+          "evening walk evening walkevening walkevening walkevening walkevening walkevening walkevening walkevening walkevening walkevening walk",
       },
     ],
   },

@@ -25,12 +25,14 @@ import { AppRootState } from "@/redux/store";
 import { font_family } from "@/theme/font_family";
 import { set_selected_date } from "@/redux/slices/user_slice";
 import { icons } from "@/data/icons";
-import { Route } from "@/types";
 
 interface DatesListProps {
   onDateSelect: (date: Date) => void;
 
-  achievement_dates: Date[];
+  achievement_dates: {
+    date: Date;
+    count: number;
+  }[];
 }
 
 type Week = Date[];
@@ -55,6 +57,7 @@ const DatesList: React.FC<DatesListProps> = ({
   const generateInitialWeeks = (): Week[] => {
     const result: Week[] = [];
     const startDate = startOfWeek(installDateTime, { weekStartsOn: 0 });
+
     const totalWeeks = differenceInWeeks(today, startDate) + 13; // Add 12 future weeks
 
     for (let i = 0; i < totalWeeks; i++) {
@@ -122,76 +125,100 @@ const DatesList: React.FC<DatesListProps> = ({
     const isInstallDate = isSameDay(date, installDateTime);
 
     const isAchievementDate = achievement_dates.some((achievementDate) =>
-      isSameDay(achievementDate, date)
+      isSameDay(achievementDate?.date, date)
     );
 
-    return (
-      <TouchableOpacity
-        style={[
-          styles.dayContainer,
-          isSelected && { backgroundColor: colors.foreground, borderWidth: 0 },
-          isTodayDate && { borderColor: colors.foreground, borderWidth: 1 },
-          isInstallDate && { borderColor: colors.light_gray, borderWidth: 0.3 },
-        ]}
-        onPress={() => {
-          // if (!isBeforeInstall) {
-          dispatch(set_selected_date({ selected_date: date }));
-          onDateSelect(date);
-          // }
-        }}
-        // disabled={isBeforeInstall}
-      >
-        <Text
-          style={[
-            {
-              fontSize: 9,
-              fontFamily: font_family.poppins_regular,
-              color: isSelected ? colors.text : colors.light_gray,
-            },
-          ]}
-        >
-          {format(date, "EEE")}
-        </Text>
-        <Text
-          style={[
-            {
-              fontSize: 20,
-              fontFamily: font_family.poppins_semiBold,
-              color: isSelected ? colors.text : colors.light_gray,
-              marginBottom: -8,
-              marginTop: -4,
-            },
-          ]}
-        >
-          {format(date, "d")}
-        </Text>
-        <Text
-          style={[
-            {
-              fontSize: 9,
-              fontFamily: font_family.poppins_regular,
-              color: isSelected ? colors.text : colors.light_gray,
-            },
-          ]}
-        >
-          {format(date, "MMM")}
-        </Text>
-        <Text
-          style={[
-            {
-              fontSize: 9,
-              fontFamily: font_family.poppins_regular,
-              color: isSelected ? colors.text : colors.light_gray,
-            },
-          ]}
-        >
-          {format(date, "yyyy")}
-        </Text>
+    const count = achievement_dates.find((achievementDate) =>
+      isSameDay(achievementDate?.date, date)
+    )?.count;
 
-        {isAchievementDate && (
-          <Image source={icons.crown} style={{ width: 10, height: 10 }} />
-        )}
-      </TouchableOpacity>
+    return (
+      <View>
+        <TouchableOpacity
+          style={[
+            styles.dayContainer,
+            isSelected && {
+              backgroundColor: colors.foreground,
+              borderWidth: 0,
+            },
+            isTodayDate && { borderColor: colors.foreground, borderWidth: 1 },
+            isInstallDate && {
+              borderColor: colors.light_gray,
+              borderWidth: 0.5,
+            },
+          ]}
+          onPress={() => {
+            // if (!isBeforeInstall) {
+            dispatch(set_selected_date({ selected_date: date }));
+            onDateSelect(date);
+            // }
+          }}
+          // disabled={isBeforeInstall}
+        >
+          <Text
+            style={[
+              {
+                fontSize: 9,
+                fontFamily: font_family.poppins_regular,
+                color: isSelected ? colors.text : colors.light_gray,
+              },
+            ]}
+          >
+            {format(date, "EEE")}
+          </Text>
+          <Text
+            style={[
+              {
+                fontSize: 16,
+                fontFamily: font_family.poppins_semiBold,
+                color: isSelected ? colors.text : colors.light_gray,
+                marginBottom: -3,
+                marginTop: -2,
+              },
+            ]}
+          >
+            {format(date, "d")}
+          </Text>
+          <Text
+            style={[
+              {
+                fontSize: 8,
+                fontFamily: font_family.poppins_regular,
+                color: isSelected ? colors.text : colors.light_gray,
+              },
+            ]}
+          >
+            {format(date, "MMM")}
+          </Text>
+          <Text
+            style={[
+              {
+                fontSize: 8,
+                fontFamily: font_family.poppins_regular,
+                color: isSelected ? colors.text : colors.light_gray,
+              },
+            ]}
+          >
+            {format(date, "yyyy")}
+          </Text>
+        </TouchableOpacity>
+        <View style={{ alignItems: "center", marginTop: 3 }}>
+          {isAchievementDate && (
+            <Image source={icons.crown} style={{ width: 10, height: 10 }} />
+          )}
+        </View>
+        <Text
+          style={{
+            fontSize: 9,
+            marginTop: 3,
+            fontFamily: font_family.poppins_semiBold,
+            color: colors.light_gray,
+            textAlign: "center",
+          }}
+        >
+          {count === 0 ? "-" : count}
+        </Text>
+      </View>
     );
   };
 
@@ -250,7 +277,7 @@ const DatesList: React.FC<DatesListProps> = ({
           activeOpacity={0.8}
           style={{
             alignItems: "center",
-            marginTop: 20,
+            marginTop: 30,
             position: "absolute",
             top: Platform?.OS === "ios" ? "50%" : "80%",
             right: "40%",
@@ -289,19 +316,19 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     justifyContent: "space-around",
     paddingHorizontal: 10,
-    height: 100,
+    height: 110,
   },
   dayWrapper: {
     flex: 1,
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 4,
   },
   dayContainer: {
     alignItems: "center",
     padding: 10,
     paddingVertical: 2,
     borderRadius: 8,
-    height: 87,
+    // height: 87,
   },
 });
 

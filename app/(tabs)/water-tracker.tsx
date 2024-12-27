@@ -14,20 +14,16 @@ const WaterTrackerPage = () => {
 
   const globalStyles = globalStylesWrapper(colors);
 
-  const all_water_of_achieved_goal = water_data
-    ?.map((steps: any) => {
-      const date = new Date(steps.date);
-      const steps_of_day = steps.data.reduce((total: any, step: any) => {
-        return total + step.steps;
-      }, 0);
-      return {
-        date: date,
-        steps: steps_of_day,
-      };
-    })
-    ?.map((data: any) => {
-      return data?.date;
-    });
+  const all_water_of_achieved_goal = water_data?.map((steps: any) => {
+    const date = new Date(steps.date);
+    const steps_of_day = steps.data.reduce((total: any, step: any) => {
+      return total + step.steps;
+    }, 0);
+    return {
+      date: date,
+      count: steps_of_day,
+    };
+  });
 
   return (
     <View style={[globalStyles.background]}>

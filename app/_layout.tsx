@@ -9,12 +9,52 @@ import { useColorScheme } from "react-native";
 import { dark, light } from "@/theme/colors";
 import { set_theme } from "@/redux/slices/theme_slice";
 import { persistor, store } from "@/redux/store";
+import { set_selected_date } from "@/redux/slices/user_slice";
+import { todays_date } from "@/utils/variables";
+import { useAppDispatch } from "@/hooks/redux_hooks";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+// Separate component for the main app content
+function MainApp({ loaded }: { loaded: boolean }) {
+  const dispatch = useAppDispatch();
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (loaded) {
+      dispatch(set_selected_date({ selected_date: todays_date }));
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, dispatch]);
+
+  useEffect(() => {
+    if (loaded) {
+      dispatch(
+        set_theme({
+          theme: colorScheme,
+          colors: colorScheme === "dark" ? dark : light,
+        })
+      );
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, dispatch, colorScheme]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="setup-profile" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
   const [loaded] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
@@ -27,30 +67,10 @@ export default function RootLayout() {
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  // useEffect(() => {
-  //   const selectedTheme = colorScheme === "dark" ? dark : light;
-  //   store.dispatch(set_theme({ theme: colorScheme, colors: selectedTheme }));
-  // }, [colorScheme]);
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="setup-profile" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
+        <MainApp loaded={loaded} />
       </PersistGate>
     </Provider>
   );
