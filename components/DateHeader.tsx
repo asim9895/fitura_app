@@ -19,11 +19,9 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
     creation_date && todays_date
       ? differenceInCalendarDays(todays_date, creation_date) + 1
       : 0;
-  console.log(streak_from_creation_date);
 
   const display_format = `${formatted_date[1]}, ${formatted_date[0]} ${formatted_date[2]}, 20${formatted_date[3]}`;
 
-  console.log(selected_date, todays_date);
   return (
     <SafeAreaView
       style={{

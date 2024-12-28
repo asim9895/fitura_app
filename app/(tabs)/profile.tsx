@@ -24,8 +24,8 @@ const ProfilePage = () => {
       set_user_profile({
         name: "Jane Doe",
         age: 28,
-        height: "170",
-        weight: "60",
+        height: 170,
+        weight: 90.55,
         gender: "female",
         profile_completed: true,
         creation_date: new Date("2024-12-23T13:42:30.685Z"),
@@ -71,7 +71,6 @@ const ProfilePage = () => {
       <Button
         title="Go to Setup Profile"
         onPress={() => {
-          console.log("go to setup profile");
           navigation.navigate("setup-profile" as never);
         }}
       />

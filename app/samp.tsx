@@ -313,6 +313,7 @@ const StepsTrackerPage = () => {
           // Do something with the selected date
         }}
         achievement_dates={all_steps_of_achieved_goal}
+        budget_data={700}
       />
 
       <FlatList<SingleStepEntry>

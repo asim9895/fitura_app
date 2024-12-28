@@ -15,4 +15,7 @@ export const icons = {
   edit: require("../assets/icons/edit.png"),
   shoe: require("../assets/icons/shoe.png"),
   plus: require("../assets/icons/plus.png"),
+  water: require("../assets/icons/water.png"),
+  calories: require("../assets/icons/calories.png"),
+  fire: require("../assets/icons/fire.png"),
 };

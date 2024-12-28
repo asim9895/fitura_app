@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import DatesList from "@/components/DatesList";
@@ -15,28 +15,118 @@ import { useAppSelector } from "@/hooks/redux_hooks";
 import { font_family } from "@/theme/font_family";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
-import { calorie_data } from "@/data/test";
+import { calorie_burned, calorie_eaten, steps } from "@/data/test";
 import { icons } from "@/data/icons";
-import { format_number } from "@/helper/format_number";
+import { format_number } from "@/utils/variables";
+import { isSameDay } from "date-fns";
+import {
+  CalorieBurnedData,
+  CalorieEatenData,
+  SingleCalorieBurnedEntry,
+  SingleCalorieEatenEntry,
+} from "@/types";
+import { count_step_calories } from "@/utils/count_step_calories";
 
 const CalorieTrackerPage = () => {
+  const [calorie_eaten_data, setcalorie_eaten_data] = useState<
+    SingleCalorieEatenEntry[]
+  >([]);
+  const [calorie_burned_data, setcalorie_burned_data] = useState<
+    SingleCalorieBurnedEntry[]
+  >([]);
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
   const [current_selection, setcurrent_selection] = useState("Calories");
-
+  const { selected_date, target_calorie, weight } = useAppSelector(
+    (state: AppRootState) => state.user
+  );
   const globalStyles = globalStylesWrapper(colors);
 
-  const all_calorie_of_achieved_goal = calorie_data?.map((steps: any) => {
-    const date = new Date(steps.date);
-    const steps_of_day = steps.data.reduce((total: any, step: any) => {
-      return total + step.steps;
-    }, 0);
-    return {
-      date: date,
-      count: steps_of_day,
-    };
-  });
+  const all_calorie_of_achieved_goal = calorie_eaten?.map(
+    (calories: CalorieEatenData) => {
+      const date = new Date(calories.date);
+      const calories_of_day = calories.data.reduce(
+        (total: any, item: SingleCalorieEatenEntry) => {
+          return total + item.eaten;
+        },
+        0
+      );
+      return {
+        date: date,
+        count: calories_of_day,
+      };
+    }
+  );
+
+  const total_calorie_eaten_for_day = calorie_eaten
+    .filter((data: any) => {
+      const date = new Date(data.date);
+      return isSameDay(date, selected_date);
+    })
+    .reduce(
+      (total, calorie_eaten) =>
+        total +
+        calorie_eaten.data.reduce((total, calorie) => total + calorie.eaten, 0),
+      0
+    );
+
+  const total_steps_for_day = steps
+    .filter((data: any) => {
+      const date = new Date(data.date);
+      return isSameDay(date, selected_date);
+    })
+    .reduce(
+      (total, step) =>
+        total + step.data.reduce((total, step) => total + step.steps, 0),
+      0
+    );
+
+  const total_calorie_burned_for_day = calorie_burned
+    .filter((data: CalorieBurnedData) => {
+      const date = new Date(data.date);
+      return isSameDay(date, selected_date);
+    })
+    .reduce(
+      (total, calorie_burned) =>
+        total +
+        calorie_burned.data.reduce(
+          (total, calorie) => total + calorie.burned,
+          0
+        ),
+      0
+    );
+
+  const set_calorie_eaten_data = (selected_date: Date) => {
+    const intake_of_selected_date: CalorieEatenData[] = calorie_eaten.filter(
+      (step) => {
+        return isSameDay(new Date(step.date), selected_date);
+      }
+    );
+
+    if (intake_of_selected_date?.length > 0) {
+      setcalorie_eaten_data(intake_of_selected_date[0]?.data);
+    } else {
+      setcalorie_eaten_data([]);
+    }
+  };
+  useEffect(() => {
+    set_calorie_eaten_data(selected_date);
+  }, [selected_date]);
+
+  const total_calories_burned_by_steps = count_step_calories(
+    total_steps_for_day,
+    weight
+  );
+
+  const complete_calories_burned =
+    total_calorie_burned_for_day + Number(total_calories_burned_by_steps);
+
+  const total_calories_left_to_eat =
+    target_calorie - total_calorie_eaten_for_day + complete_calories_burned;
+
+  const progress_percent_calculator =
+    total_calorie_eaten_for_day / (target_calorie + complete_calories_burned);
 
   return (
     <View style={[globalStyles.background]}>
@@ -51,6 +141,7 @@ const CalorieTrackerPage = () => {
           // Do something with the selected date
         }}
         achievement_dates={all_calorie_of_achieved_goal}
+        budget_data={target_calorie}
       />
 
       <ScrollView
@@ -76,29 +167,35 @@ const CalorieTrackerPage = () => {
             Calories left to eat today
           </Text>
 
-          <Text
-            style={{
-              color: colors.text,
-              fontFamily: font_family.font_semibold,
-              fontSize: 14,
-              paddingHorizontal: 5,
-            }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Image source={icons.calories} style={{ width: 20, height: 20 }} />
             <Text
               style={{
                 color: colors.text,
                 fontFamily: font_family.font_semibold,
-                fontSize: 25,
+                fontSize: 14,
+                paddingHorizontal: 5,
               }}
             >
-              {format_number(2213)}
-            </Text>{" "}
-            kcal
-          </Text>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  fontSize: 25,
+                }}
+              >
+                {total_calorie_eaten_for_day >
+                target_calorie + complete_calories_burned
+                  ? 0
+                  : format_number(total_calories_left_to_eat)}
+              </Text>{" "}
+              kcal
+            </Text>
+          </View>
 
           <View style={{ marginTop: 5 }}>
             <Progress.Bar
-              progress={0.4}
+              progress={progress_percent_calculator}
               width={Dimensions.get("window").width / 1.2}
               height={10}
               borderRadius={25}
@@ -122,7 +219,7 @@ const CalorieTrackerPage = () => {
           >
             <View
               style={{
-                width: "18.5%",
+                width: "20%",
                 flexDirection: "column",
                 alignItems: "flex-start",
                 justifyContent: "center",
@@ -137,7 +234,7 @@ const CalorieTrackerPage = () => {
                   textAlign: "center",
                 }}
               >
-                {format_number(2152)}
+                {format_number(target_calorie)}
               </Text>
               <Text
                 style={{
@@ -176,7 +273,7 @@ const CalorieTrackerPage = () => {
                   textAlign: "center",
                 }}
               >
-                {format_number(2132)}
+                {format_number(total_calorie_eaten_for_day)}
               </Text>
               <Text
                 style={{
@@ -215,7 +312,7 @@ const CalorieTrackerPage = () => {
                   fontSize: 17,
                 }}
               >
-                {format_number(2321)}
+                {format_number(complete_calories_burned)}
               </Text>
               <Text
                 style={{
@@ -255,7 +352,10 @@ const CalorieTrackerPage = () => {
                   textAlign: "center",
                 }}
               >
-                {format_number(4324)}
+                {total_calorie_eaten_for_day >
+                target_calorie + complete_calories_burned
+                  ? 0
+                  : format_number(total_calories_left_to_eat)}
               </Text>
               <Text
                 style={{
@@ -270,14 +370,6 @@ const CalorieTrackerPage = () => {
             </View>
           </View>
 
-          <View
-            style={{
-              backgroundColor: colors.background,
-              height: 14,
-              marginTop: 10,
-              borderRadius: 10,
-            }}
-          ></View>
           <View
             style={{
               backgroundColor: colors.background,
@@ -327,44 +419,73 @@ const CalorieTrackerPage = () => {
             marginTop: 10,
             flexDirection: "row",
             borderRadius: 10,
+            width: "100%",
           }}
         >
-          <Text
-            onPress={() => setcurrent_selection("Calories")}
+          <View
             style={{
               width: "50%",
-              fontFamily: font_family.font_semibold,
-              color: colors.text,
-              fontSize: 17,
-              textAlign: "center",
-              padding: 7,
-              borderRadius: 7,
+              flexDirection: "row",
+              alignItems: "center",
               backgroundColor:
                 current_selection === "Calories"
                   ? colors.background
                   : colors.foreground,
+              padding: 7,
+              borderRadius: 7,
+              justifyContent: "center",
             }}
           >
-            Calories (2132)
-          </Text>
-          <Text
-            onPress={() => setcurrent_selection("Burned")}
+            <Image
+              source={icons.calories}
+              style={{ width: 15, height: 15, marginRight: 5 }}
+            />
+            <Text
+              onPress={() => setcurrent_selection("Calories")}
+              style={{
+                fontFamily: font_family.font_semibold,
+                color: colors.text,
+                fontSize: 16,
+              }}
+            >
+              Calories{" "}
+              <Text style={{ color: colors.button, fontSize: 14 }}>
+                ({format_number(total_calorie_eaten_for_day)})
+              </Text>
+            </Text>
+          </View>
+          <View
             style={{
               width: "50%",
-              fontFamily: font_family.font_semibold,
-              color: colors.text,
-              fontSize: 17,
-              textAlign: "center",
               padding: 7,
               borderRadius: 7,
               backgroundColor:
                 current_selection === "Burned"
                   ? colors.background
                   : colors.foreground,
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
             }}
           >
-            Burned (2321)
-          </Text>
+            <Image
+              source={icons.fire}
+              style={{ width: 15, height: 15, marginRight: 5 }}
+            />
+            <Text
+              onPress={() => setcurrent_selection("Burned")}
+              style={{
+                fontFamily: font_family.font_semibold,
+                color: colors.text,
+                fontSize: 16,
+              }}
+            >
+              Burned{" "}
+              <Text style={{ color: colors.error, fontSize: 14 }}>
+                ({format_number(complete_calories_burned)})
+              </Text>
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </View>

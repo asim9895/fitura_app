@@ -27,15 +27,15 @@ import { AppRootState } from "@/redux/store";
 import { font_family } from "@/theme/font_family";
 import { set_selected_date } from "@/redux/slices/user_slice";
 import { icons } from "@/data/icons";
-import { format_number } from "@/helper/format_number";
+import { format_number } from "@/utils/variables";
 
 interface DatesListProps {
   onDateSelect: (date: Date) => void;
-
   achievement_dates: {
     date: Date;
     count: number;
   }[];
+  budget_data: number;
 }
 
 type Week = Date[];
@@ -43,6 +43,7 @@ type Week = Date[];
 const DatesList: React.FC<DatesListProps> = ({
   onDateSelect,
   achievement_dates,
+  budget_data,
 }) => {
   const { selected_date, creation_date } = useAppSelector(
     (state) => state.user
@@ -138,13 +139,6 @@ const DatesList: React.FC<DatesListProps> = ({
       isSameDay(achievementDate?.date, date)
     )?.count;
 
-    console.log(
-      date,
-      installDateTime,
-      isBefore(date, installDateTime),
-      isBefore(new Date(1987, 1, 11), new Date(1987, 1, 11))
-    );
-
     const condition_to_disable =
       isBefore(startOfDay(date), startOfDay(installDateTime)) || date > today;
 
@@ -220,7 +214,7 @@ const DatesList: React.FC<DatesListProps> = ({
           </Text>
         </TouchableOpacity>
         <View style={{ alignItems: "center", marginTop: 3 }}>
-          {isAchievementDate && (
+          {isAchievementDate && count !== undefined && count > budget_data && (
             <Image source={icons.crown} style={{ width: 10, height: 10 }} />
           )}
         </View>
@@ -242,7 +236,12 @@ const DatesList: React.FC<DatesListProps> = ({
   const renderWeek = ({
     item: week,
   }: ListRenderItemInfo<Week>): React.ReactElement => (
-    <View style={styles.weekContainer}>
+    <View
+      style={[
+        styles.weekContainer,
+        { borderBottomWidth: 1, borderBottomColor: colors.foreground },
+      ]}
+    >
       {week.map((day) => (
         <View key={day.toString()} style={styles.dayWrapper}>
           {renderDay(day)}

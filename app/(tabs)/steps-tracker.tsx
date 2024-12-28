@@ -10,26 +10,16 @@ import { isSameDay } from "date-fns";
 import { font_family } from "@/theme/font_family";
 import { icons } from "@/data/icons";
 import * as Progress from "react-native-progress";
-import { format_number } from "@/helper/format_number";
-
-type SingleStepEntry = {
-  id: string;
-  steps: number;
-  day_time: string;
-};
-
-interface StepData {
-  id: string;
-  date: Date;
-  data: SingleStepEntry[];
-}
+import { format_number } from "@/utils/variables";
+import { SingleStepEntry, StepData } from "@/types";
+import { count_step_calories } from "@/utils/count_step_calories";
 
 const StepsTrackerPage = () => {
   const [steps_data, setsteps_data] = useState<SingleStepEntry[]>([]);
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
-  const { selected_date, target_steps } = useAppSelector(
+  const { selected_date, target_steps, weight } = useAppSelector(
     (state: AppRootState) => state.user
   );
 
@@ -49,8 +39,6 @@ const StepsTrackerPage = () => {
   useEffect(() => {
     set_steps_data(selected_date);
   }, [selected_date]);
-
-  console.log(steps_data);
 
   const total_steps_for_day = steps
     .filter((data: any) => {
@@ -74,6 +62,11 @@ const StepsTrackerPage = () => {
     };
   });
 
+  const total_calories_burned_by_steps = count_step_calories(
+    total_steps_for_day,
+    weight
+  );
+
   return (
     <View style={[globalStyles.background]}>
       <StatusBar
@@ -83,10 +76,10 @@ const StepsTrackerPage = () => {
       <DateHeader days={all_steps_of_achieved_goal?.length} />
       <DatesList
         onDateSelect={(date: any) => {
-          console.log("Selected date:", date);
           // Do something with the selected date
         }}
         achievement_dates={all_steps_of_achieved_goal}
+        budget_data={target_steps}
       />
 
       <ScrollView
@@ -119,7 +112,7 @@ const StepsTrackerPage = () => {
                   width: 100,
                 }}
               >
-                Today
+                Steps
               </Text>
             </View>
             <View>
@@ -174,27 +167,52 @@ const StepsTrackerPage = () => {
             </View>
           </View>
 
-          <Text
+          <View
             style={{
-              fontFamily: font_family.font_semibold,
-              color: colors.light_gray,
-              fontSize: 15,
-              textAlign: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
-            Target Steps:{" "}
             <Text
               style={{
-                fontFamily: font_family.font_bold,
-                color: colors.button,
-                fontSize: 17,
-                textAlign: "center",
+                fontFamily: font_family.font_semibold,
+                color: colors.light_gray,
+                fontSize: 13,
               }}
             >
-              {" "}
-              {format_number(target_steps)}
+              Target Steps:{" "}
+              <Text
+                style={{
+                  fontFamily: font_family.font_bold,
+                  color: colors.button,
+                  fontSize: 13,
+                }}
+              >
+                {" "}
+                {format_number(target_steps)}
+              </Text>
             </Text>
-          </Text>
+            <Text
+              style={{
+                fontFamily: font_family.font_semibold,
+                color: colors.light_gray,
+                fontSize: 13,
+              }}
+            >
+              Calories Burned:{" "}
+              <Text
+                style={{
+                  fontFamily: font_family.font_bold,
+                  color: colors.button,
+                  fontSize: 13,
+                }}
+              >
+                {" "}
+                {format_number(Number(total_calories_burned_by_steps))} kcal
+              </Text>
+            </Text>
+          </View>
         </View>
 
         {steps_data?.length > 0 && (
@@ -258,7 +276,7 @@ const StepsTrackerPage = () => {
           </View>
         )}
 
-        <View style={{ marginBottom: 100 }}>
+        <View style={{ marginBottom: 150 }}>
           {steps_data.length > 0 ? (
             steps_data.map((step: SingleStepEntry) => {
               return (
@@ -273,26 +291,48 @@ const StepsTrackerPage = () => {
                     display: "flex",
                   }}
                 >
-                  <Text
-                    numberOfLines={2}
+                  <View
                     style={{
-                      color: colors.text,
-                      fontSize: 16,
-                      fontFamily: font_family.font_medium,
-                      textTransform: "capitalize",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      width: "100%",
                     }}
                   >
-                    {step.day_time}
-                  </Text>
-                  <Text
-                    style={{
-                      color: colors.button,
-                      fontSize: 18,
-                      fontFamily: font_family.font_semibold,
-                    }}
-                  >
-                    {format_number(step.steps)}
-                  </Text>
+                    <View style={{ width: "15%" }}>
+                      <Image
+                        source={icons.shoe}
+                        style={{ width: 30, height: 30 }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        width: "85%",
+                      }}
+                    >
+                      <Text
+                        numberOfLines={2}
+                        style={{
+                          color: colors.text,
+                          fontSize: 16,
+                          fontFamily: font_family.font_medium,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {step.day_time}
+                      </Text>
+                      <Text
+                        style={{
+                          color: colors.button,
+                          fontSize: 18,
+                          fontFamily: font_family.font_semibold,
+                        }}
+                      >
+                        {format_number(step.steps)}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               );
             })
@@ -330,7 +370,6 @@ const StepsTrackerPage = () => {
                     width: 13,
                     height: 13,
                     marginRight: 10,
-                    marginBottom: 2,
                   }}
                   tintColor={colors.light_gray}
                 />

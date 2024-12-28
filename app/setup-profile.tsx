@@ -4,7 +4,6 @@ import * as Progress from "react-native-progress";
 import { useNavigation } from "expo-router";
 import { set_user_profile } from "@/redux/slices/user_slice";
 import { useAppDispatch } from "@/hooks/redux_hooks";
-import { todays_date } from "@/utils/variables";
 
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
@@ -16,8 +15,8 @@ const SetupProfilePage = () => {
       set_user_profile({
         name: "Jane Doe",
         age: 28,
-        height: "170",
-        weight: "60",
+        height: 170,
+        weight: 90.55,
         gender: "female",
         profile_completed: true,
         creation_date: new Date("2024-12-23T13:42:30.685Z"),
@@ -57,7 +56,6 @@ const SetupProfilePage = () => {
         <Button
           title="Go to Dashboard"
           onPress={() => {
-            console.log("go to setup profile");
             navigation.navigate("(tabs)" as never);
           }}
         />

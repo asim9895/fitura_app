@@ -3,12 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface UserState {
   name: string;
   gender: string;
-  height: string;
-  weight: string;
+  height: number;
+  weight: number;
   age: number | null;
   profile_completed: boolean;
   selected_date: Date;
   creation_date: Date | null;
+  recommended_target_calorie: number;
   target_calorie: number;
   target_steps: number;
   target_water: number;
@@ -17,8 +18,8 @@ interface UserState {
 interface UserCreation {
   name: string;
   gender: string;
-  height: string;
-  weight: string;
+  height: number;
+  weight: number;
   age: number | null;
   profile_completed?: boolean;
   creation_date: Date;
@@ -27,15 +28,16 @@ interface UserCreation {
 const initial_state: UserState = {
   name: "",
   gender: "",
-  height: "",
-  weight: "",
+  height: 0,
+  weight: 0,
   age: null,
   profile_completed: false,
   selected_date: new Date(),
   creation_date: null,
-  target_calorie: 2400,
-  target_steps: 6000,
-  target_water: 2000,
+  recommended_target_calorie: 0,
+  target_calorie: 5000,
+  target_steps: 12000,
+  target_water: 10000,
 };
 
 const user_slice = createSlice({
@@ -55,8 +57,8 @@ const user_slice = createSlice({
       state.name = "";
       state.gender = "";
       state.age = null;
-      state.height = "";
-      state.weight = "";
+      state.height = 0;
+      state.weight = 0;
       state.profile_completed = false;
       state.creation_date = null;
     },
