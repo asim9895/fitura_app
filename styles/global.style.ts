@@ -11,6 +11,19 @@ export const globalStylesWrapper = (colors: Colors) =>
     row_center: {
       flexDirection: "row",
       alignItems: "center",
+    },
+    column_start: {
+      flexDirection: "column",
+      alignItems: "flex-start",
+    },
+    column_start_center: {
+      flexDirection: "column",
+      alignItems: "flex-start",
+      justifyContent: "center",
+    },
+    row_center_center: {
+      flexDirection: "row",
+      alignItems: "center",
       justifyContent: "center",
     },
     row_space_between: {
@@ -18,4 +31,5 @@ export const globalStylesWrapper = (colors: Colors) =>
       alignItems: "center",
       justifyContent: "space-between",
     },
+    screen_spacing: { marginHorizontal: 15 },
   });

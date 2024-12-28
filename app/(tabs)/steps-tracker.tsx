@@ -1,4 +1,13 @@
-import { View, Text, StatusBar, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  StatusBar,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Button,
+  TextInput,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { AppRootState } from "@/redux/store";
 import { useAppSelector } from "@/hooks/redux_hooks";
@@ -13,9 +22,11 @@ import * as Progress from "react-native-progress";
 import { format_number } from "@/utils/variables";
 import { SingleStepEntry, StepData } from "@/types";
 import { count_step_calories } from "@/utils/count_step_calories";
+import Modal from "react-native-modal";
 
 const StepsTrackerPage = () => {
   const [steps_data, setsteps_data] = useState<SingleStepEntry[]>([]);
+  const [add_step_modal, setadd_step_modal] = useState(false);
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
@@ -69,6 +80,123 @@ const StepsTrackerPage = () => {
 
   return (
     <View style={[globalStyles.background]}>
+      <View>
+        <Modal
+          isVisible={add_step_modal}
+          animationIn={"fadeIn"}
+          animationOut={"fadeOut"}
+          backdropOpacity={0.5}
+          backdropColor={colors.foreground}
+        >
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: colors.background,
+                padding: 10,
+                borderRadius: 10,
+                width: "90%",
+                paddingVertical: 20,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: font_family.font_bold,
+                  color: colors.text,
+                  textAlign: "center",
+                  fontSize: 20,
+                }}
+              >
+                Add Steps
+              </Text>
+              <TextInput
+                placeholder="Activity, Event or Part of day"
+                placeholderTextColor={colors.light_gray}
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  fontSize: 15,
+                  backgroundColor: colors.foreground,
+                  padding: 10,
+                  margin: 10,
+                  borderRadius: 10,
+                }}
+              />
+              <TextInput
+                placeholder="Steps"
+                placeholderTextColor={colors.light_gray}
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  fontSize: 15,
+                  backgroundColor: colors.foreground,
+                  padding: 10,
+                  margin: 10,
+                  borderRadius: 10,
+                }}
+              />
+
+              <View
+                style={{
+                  width: "100%",
+                  flexDirection: "row",
+                  padding: 10,
+                  justifyContent: "space-around",
+                }}
+              >
+                <View
+                  style={{
+                    width: "45%",
+                    backgroundColor: colors.button,
+                    padding: 10,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: colors.text_white,
+                      textAlign: "center",
+                      fontFamily: font_family.font_bold,
+                      fontSize: 17,
+                    }}
+                  >
+                    Add
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setadd_step_modal(false)}
+                  style={{
+                    width: "45%",
+                    backgroundColor: colors.foreground,
+                    padding: 10,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: colors.text,
+                      textAlign: "center",
+                      fontFamily: font_family.font_bold,
+                      fontSize: 17,
+                    }}
+                  >
+                    Close
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
       <StatusBar
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
@@ -353,7 +481,11 @@ const StepsTrackerPage = () => {
               >
                 No steps added
               </Text>
-              <View
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  setadd_step_modal(true);
+                }}
                 style={{
                   backgroundColor: colors.foreground,
                   flexDirection: "row",
@@ -383,7 +515,7 @@ const StepsTrackerPage = () => {
                 >
                   Add Steps
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           )}
         </View>

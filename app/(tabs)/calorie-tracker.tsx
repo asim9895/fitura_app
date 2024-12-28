@@ -1,10 +1,10 @@
 import {
   Dimensions,
   Image,
-  Platform,
   ScrollView,
   StatusBar,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -12,7 +12,6 @@ import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import DatesList from "@/components/DatesList";
 import { useAppSelector } from "@/hooks/redux_hooks";
-import { font_family } from "@/theme/font_family";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
 import { calorie_burned, calorie_eaten, steps } from "@/data/test";
@@ -26,22 +25,27 @@ import {
   SingleCalorieEatenEntry,
 } from "@/types";
 import { count_step_calories } from "@/utils/count_step_calories";
+import EatenCaloriesListing from "@/components/EatenCaloriesListing";
+import BurnedCaloriesListing from "@/components/BurnedCaloriesListing";
+import { calorieTrackerStylesWrapper } from "@/styles/app/tabs/calorie-tracker.style";
 
 const CalorieTrackerPage = () => {
+  const { colors, theme } = useAppSelector(
+    (state: AppRootState) => state.theme
+  );
+  const globalStyles = globalStylesWrapper(colors);
+  const calorieTrackerStyles = calorieTrackerStylesWrapper(colors);
   const [calorie_eaten_data, setcalorie_eaten_data] = useState<
     SingleCalorieEatenEntry[]
   >([]);
   const [calorie_burned_data, setcalorie_burned_data] = useState<
     SingleCalorieBurnedEntry[]
   >([]);
-  const { colors, theme } = useAppSelector(
-    (state: AppRootState) => state.theme
-  );
+
   const [current_selection, setcurrent_selection] = useState("Calories");
   const { selected_date, target_calorie, weight } = useAppSelector(
     (state: AppRootState) => state.user
   );
-  const globalStyles = globalStylesWrapper(colors);
 
   const all_calorie_of_achieved_goal = calorie_eaten?.map(
     (calories: CalorieEatenData) => {
@@ -145,45 +149,21 @@ const CalorieTrackerPage = () => {
       />
 
       <ScrollView
-        style={{ marginHorizontal: 15, marginBottom: 70 }}
+        style={globalStyles.screen_spacing}
         showsVerticalScrollIndicator={false}
       >
-        <View
-          style={{
-            backgroundColor: colors.foreground,
-            padding: 15,
-            borderRadius: 10,
-            marginTop: 15,
-          }}
-        >
-          <Text
-            style={{
-              color: colors.light_gray,
-              fontFamily: font_family.font_semibold,
-              fontSize: 16,
-              marginBottom: 5,
-            }}
-          >
+        <View style={calorieTrackerStyles.calorie_info_container}>
+          <Text style={calorieTrackerStyles.calorie_left_to_eat_today}>
             Calories left to eat today
           </Text>
 
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Image source={icons.calories} style={{ width: 20, height: 20 }} />
-            <Text
-              style={{
-                color: colors.text,
-                fontFamily: font_family.font_semibold,
-                fontSize: 14,
-                paddingHorizontal: 5,
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.text,
-                  fontFamily: font_family.font_semibold,
-                  fontSize: 25,
-                }}
-              >
+          <View style={globalStyles.row_center}>
+            <Image
+              source={icons.calories}
+              style={calorieTrackerStyles.calorie_icon}
+            />
+            <Text style={calorieTrackerStyles.main_calorie}>
+              <Text style={calorieTrackerStyles.highlighted_main_calorie}>
                 {total_calorie_eaten_for_day >
                 target_calorie + complete_calories_burned
                   ? 0
@@ -206,287 +186,162 @@ const CalorieTrackerPage = () => {
           </View>
 
           <View
-            style={{
-              marginTop: 15,
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-              backgroundColor: colors.background,
-              borderRadius: 10,
-            }}
+            style={[
+              calorieTrackerStyles.calorie_distribution_container,
+              globalStyles.row_center_center,
+            ]}
           >
-            <View
-              style={{
-                width: "20%",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginBottom: Platform.OS === "ios" ? 5 : 0,
-                  fontSize: 17,
-                  textAlign: "center",
-                }}
-              >
+            <View style={[{ width: "20%" }, globalStyles.column_start_center]}>
+              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
                 {format_number(target_calorie)}
               </Text>
               <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.button,
-                  fontSize: 10,
-                  textAlign: "center",
-                }}
+                style={[
+                  { color: colors.button },
+                  calorieTrackerStyles.calorie_distribution_title_2,
+                ]}
               >
                 Budget
               </Text>
             </View>
-            <Text
-              style={{
-                width: "8%",
-                fontFamily: font_family.font_semibold,
-                color: colors.text,
-              }}
-            >
+            <Text style={calorieTrackerStyles.calorie_distribution_symbol}>
               -
             </Text>
             <View
-              style={{
-                width: "18.5%",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
+              style={[{ width: "18.5%" }, globalStyles.column_start_center]}
             >
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginBottom: Platform.OS === "ios" ? 5 : 0,
-                  fontSize: 17,
-                  textAlign: "center",
-                }}
-              >
+              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
                 {format_number(total_calorie_eaten_for_day)}
               </Text>
               <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.green,
-                  fontSize: 10,
-                  textAlign: "center",
-                }}
+                style={[
+                  { color: colors.green },
+                  calorieTrackerStyles.calorie_distribution_title_2,
+                ]}
               >
                 Eaten
               </Text>
             </View>
 
-            <Text
-              style={{
-                width: "8%",
-                fontFamily: font_family.font_semibold,
-                color: colors.text,
-              }}
-            >
+            <Text style={calorieTrackerStyles.calorie_distribution_symbol}>
               +
             </Text>
             <View
-              style={{
-                width: "18.5%",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
+              style={[{ width: "18.5%" }, globalStyles.column_start_center]}
             >
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginBottom: Platform.OS === "ios" ? 5 : 0,
-                  fontSize: 17,
-                }}
-              >
+              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
                 {format_number(complete_calories_burned)}
               </Text>
               <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.error,
-                  fontSize: 10,
-                  textAlign: "center",
-                }}
+                style={[
+                  { color: colors.error },
+                  calorieTrackerStyles.calorie_distribution_title_2,
+                ]}
               >
                 Burned
               </Text>
             </View>
 
-            <Text
-              style={{
-                width: "8%",
-                fontFamily: font_family.font_semibold,
-                color: colors.text,
-              }}
-            >
+            <Text style={calorieTrackerStyles.calorie_distribution_symbol}>
               =
             </Text>
             <View
-              style={{
-                width: "18.5%",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "center",
-              }}
+              style={[{ width: "18.5%" }, globalStyles.column_start_center]}
             >
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginBottom: Platform.OS === "ios" ? 5 : 0,
-                  fontSize: 17,
-                  textAlign: "center",
-                }}
-              >
+              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
                 {total_calorie_eaten_for_day >
                 target_calorie + complete_calories_burned
                   ? 0
                   : format_number(total_calories_left_to_eat)}
               </Text>
               <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.light_gray,
-                  fontSize: 10,
-                  textAlign: "center",
-                }}
+                style={[
+                  { color: colors.button },
+                  calorieTrackerStyles.calorie_distribution_title_2,
+                ]}
               >
                 Left
               </Text>
             </View>
           </View>
 
-          <View
-            style={{
-              backgroundColor: colors.background,
-              marginTop: 10,
-              borderRadius: 10,
-              padding: 10,
-              paddingVertical: 9,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                color: colors.text,
-                fontFamily: font_family.font_semibold,
-                fontSize: 17,
-                marginTop: 4,
-              }}
-            >
+          <View style={calorieTrackerStyles.total_budget_container}>
+            <Text style={calorieTrackerStyles.total_budget_title}>
               Today Budget
             </Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_semibold,
-                  marginTop: 4,
-                  fontSize: 18,
-                }}
-              >
-                {format_number(2234)}
+            <View style={globalStyles.row_center}>
+              <Text style={calorieTrackerStyles.total_budget_value}>
+                {format_number(target_calorie)}
                 <Text style={{ fontSize: 12 }}> kcal</Text>
               </Text>
               <Image
                 source={icons.right_arrow}
-                style={{ width: 15, height: 15, marginLeft: 15 }}
+                style={calorieTrackerStyles.total_budget_icon}
                 tintColor={colors.button}
               />
             </View>
           </View>
         </View>
 
-        <View
-          style={{
-            backgroundColor: colors.foreground,
-            padding: 7,
-            marginTop: 10,
-            flexDirection: "row",
-            borderRadius: 10,
-            width: "100%",
-          }}
-        >
-          <View
-            style={{
-              width: "50%",
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor:
-                current_selection === "Calories"
-                  ? colors.background
-                  : colors.foreground,
-              padding: 7,
-              borderRadius: 7,
-              justifyContent: "center",
-            }}
+        <View style={calorieTrackerStyles.tabs_container}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setcurrent_selection("Calories")}
+            style={[
+              {
+                backgroundColor:
+                  current_selection === "Calories"
+                    ? colors.background
+                    : colors.foreground,
+              },
+              globalStyles.row_center_center,
+              calorieTrackerStyles.single_tab,
+            ]}
           >
             <Image
               source={icons.calories}
-              style={{ width: 15, height: 15, marginRight: 5 }}
+              style={calorieTrackerStyles.tab_icon}
             />
-            <Text
-              onPress={() => setcurrent_selection("Calories")}
-              style={{
-                fontFamily: font_family.font_semibold,
-                color: colors.text,
-                fontSize: 16,
-              }}
-            >
+            <Text style={calorieTrackerStyles.tab_text}>
               Calories{" "}
-              <Text style={{ color: colors.button, fontSize: 14 }}>
+              <Text style={calorieTrackerStyles.tab_sub_text}>
                 ({format_number(total_calorie_eaten_for_day)})
               </Text>
             </Text>
-          </View>
-          <View
-            style={{
-              width: "50%",
-              padding: 7,
-              borderRadius: 7,
-              backgroundColor:
-                current_selection === "Burned"
-                  ? colors.background
-                  : colors.foreground,
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setcurrent_selection("Burned")}
+            style={[
+              {
+                backgroundColor:
+                  current_selection === "Burned"
+                    ? colors.background
+                    : colors.foreground,
+              },
+              globalStyles.row_center_center,
+              calorieTrackerStyles.single_tab,
+            ]}
           >
-            <Image
-              source={icons.fire}
-              style={{ width: 15, height: 15, marginRight: 5 }}
-            />
-            <Text
-              onPress={() => setcurrent_selection("Burned")}
-              style={{
-                fontFamily: font_family.font_semibold,
-                color: colors.text,
-                fontSize: 16,
-              }}
-            >
+            <Image source={icons.fire} style={calorieTrackerStyles.tab_icon} />
+            <Text style={calorieTrackerStyles.tab_text}>
               Burned{" "}
-              <Text style={{ color: colors.error, fontSize: 14 }}>
+              <Text style={calorieTrackerStyles.tab_sub_text}>
                 ({format_number(complete_calories_burned)})
               </Text>
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
+
+        {current_selection === "Calories" ? (
+          <EatenCaloriesListing />
+        ) : (
+          <BurnedCaloriesListing
+            calories_burned_by_steps={Number(total_calories_burned_by_steps)}
+            calories_burned_data={calorie_burned_data}
+            calories_burned_by_workout={total_calorie_burned_for_day}
+          />
+        )}
       </ScrollView>
     </View>
   );

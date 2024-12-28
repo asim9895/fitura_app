@@ -18,4 +18,5 @@ export const icons = {
   water: require("../assets/icons/water.png"),
   calories: require("../assets/icons/calories.png"),
   fire: require("../assets/icons/fire.png"),
+  workout: require("../assets/icons/workout.png"),
 };

@@ -14,6 +14,7 @@ const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.light_gray,
         headerShown: false,
@@ -29,7 +30,6 @@ const TabsLayout = () => {
           backgroundColor: colors.background,
           borderTopWidth: 0.7,
           borderColor: colors.foreground,
-
           height: Platform.OS === "ios" ? 85 : 70,
           paddingTop: 10,
         },

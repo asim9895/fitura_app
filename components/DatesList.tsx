@@ -62,7 +62,8 @@ const DatesList: React.FC<DatesListProps> = ({
     const result: Week[] = [];
     const startDate = startOfWeek(installDateTime, { weekStartsOn: 0 });
 
-    const totalWeeks = differenceInWeeks(today, startDate) + 1; // Add 12 future weeks
+    const totalWeeks = differenceInWeeks(today, startDate) + 1; // Add 1 future weeks
+    console.log("totalWeeks", totalWeeks);
 
     for (let i = 0; i < totalWeeks; i++) {
       const weekStart = addWeeks(startDate, i);
@@ -266,6 +267,21 @@ const DatesList: React.FC<DatesListProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (selected_date && flatListRef.current) {
+      const selectedWeekIndex = weeks.findIndex((week) =>
+        week.some((day) => isSameDay(day, selected_date))
+      );
+
+      if (selectedWeekIndex !== -1) {
+        flatListRef.current.scrollToIndex({
+          index: selectedWeekIndex,
+          animated: true,
+        });
+      }
+    }
+  }, [selected_date, weeks]);
+
   return (
     <View>
       <FlatList<Week>
@@ -278,7 +294,7 @@ const DatesList: React.FC<DatesListProps> = ({
         initialNumToRender={3}
         maxToRenderPerBatch={3}
         windowSize={5}
-        onEndReached={loadMoreFutureWeeks}
+        // onEndReached={loadMoreFutureWeeks}
         onEndReachedThreshold={0.5}
         getItemLayout={(_, index) => ({
           length: Dimensions.get("window").width,
