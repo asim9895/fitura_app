@@ -1,3 +1,13 @@
+export type WeightLossIntensity = 0.25 | 0.5 | 0.75 | 1;
+
+export type ActivityFactor =
+  | "sedentary"
+  | "light"
+  | "moderate"
+  | "active"
+  | "very_active";
+
+export type Gender = "Male" | "Female";
 export type SingleStepEntry = {
   id: string;
   steps: number;
@@ -49,4 +59,10 @@ export interface CalorieBurnedData {
   id: string;
   date: Date;
   data: SingleCalorieBurnedEntry[];
+}
+
+export interface WeightData {
+  id: string;
+  date: Date;
+  weight: number;
 }

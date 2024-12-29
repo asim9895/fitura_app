@@ -1,11 +1,13 @@
+import { Gender, WeightLossIntensity } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
   name: string;
-  gender: string;
+  gender: Gender;
   height: number;
   weight: number;
-  age: number | null;
+  target_weight: number;
+  age: number;
   profile_completed: boolean;
   selected_date: Date;
   creation_date: Date | null;
@@ -13,24 +15,29 @@ interface UserState {
   target_calorie: number;
   target_steps: number;
   target_water: number;
+  weight_loss_intensity: WeightLossIntensity;
 }
 
 interface UserCreation {
   name: string;
-  gender: string;
+  gender: Gender;
   height: number;
   weight: number;
-  age: number | null;
+  target_weight: number;
+  age: number;
   profile_completed?: boolean;
   creation_date: Date;
+  weight_loss_intensity: WeightLossIntensity;
 }
 
 const initial_state: UserState = {
   name: "",
-  gender: "",
+  gender: "Male",
   height: 0,
   weight: 0,
-  age: null,
+  target_weight: 0,
+  age: 0,
+  weight_loss_intensity: 0.25,
   profile_completed: false,
   selected_date: new Date(),
   creation_date: null,
@@ -52,11 +59,13 @@ const user_slice = createSlice({
       state.weight = action.payload.weight;
       state.profile_completed = true;
       state.creation_date = action.payload.creation_date;
+      state.weight_loss_intensity = action.payload.weight_loss_intensity;
+      state.target_weight = action.payload.target_weight;
     },
     clear_user_profile: (state) => {
       state.name = "";
-      state.gender = "";
-      state.age = null;
+      state.gender = "Male";
+      state.age = 0;
       state.height = 0;
       state.weight = 0;
       state.profile_completed = false;
@@ -74,6 +83,9 @@ const user_slice = createSlice({
     ) => {
       state.target_steps = action.payload.target_steps;
     },
+    update_weight: (state, action: PayloadAction<{ weight: number }>) => {
+      state.weight = action.payload.weight;
+    },
   },
 });
 
@@ -82,6 +94,7 @@ export const {
   clear_user_profile,
   set_selected_date,
   update_steps_target,
+  update_weight,
 } = user_slice.actions;
 
 export default user_slice.reducer;

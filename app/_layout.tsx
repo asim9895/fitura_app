@@ -13,6 +13,7 @@ import { set_selected_date } from "@/redux/slices/user_slice";
 import { todays_date } from "@/utils/variables";
 import { useAppDispatch } from "@/hooks/redux_hooks";
 import { fonts } from "@/data/fonts";
+import { read_weight_data_api } from "@/api/weight_apis";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

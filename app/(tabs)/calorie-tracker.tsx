@@ -1,4 +1,5 @@
 import {
+  Button,
   Dimensions,
   Image,
   ScrollView,
@@ -11,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import DatesList from "@/components/DatesList";
-import { useAppSelector } from "@/hooks/redux_hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
 import { calorie_burned, calorie_eaten, steps } from "@/data/test";
@@ -27,8 +28,14 @@ import {
 import EatenCaloriesListing from "@/components/EatenCaloriesListing";
 import BurnedCaloriesListing from "@/components/BurnedCaloriesListing";
 import { calorieTrackerStylesWrapper } from "@/styles/app/tabs/calorie-tracker.style";
+import {
+  add_or_update_weight_of_selected_data_api,
+  read_weight_data_api,
+} from "@/api/weight_apis";
+import { update_weight } from "@/redux/slices/user_slice";
 
 const CalorieTrackerPage = () => {
+  const dispatch = useAppDispatch();
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );

@@ -17,9 +17,11 @@ const SetupProfilePage = () => {
         age: 28,
         height: 170,
         weight: 90.55,
-        gender: "female",
+        gender: "Female",
         profile_completed: true,
         creation_date: new Date("2024-12-23T13:42:30.685Z"),
+        weight_loss_intensity: 0.75,
+        target_weight: 72,
       })
     );
   };
