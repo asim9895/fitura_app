@@ -215,7 +215,7 @@ const DatesList: React.FC<DatesListProps> = ({
           </Text>
         </TouchableOpacity>
         <View style={{ alignItems: "center", marginTop: 3 }}>
-          {isAchievementDate && count !== undefined && count > budget_data && (
+          {isAchievementDate && count !== undefined && count >= budget_data && (
             <Image source={icons.crown} style={{ width: 10, height: 10 }} />
           )}
         </View>

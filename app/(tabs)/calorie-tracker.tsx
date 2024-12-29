@@ -23,11 +23,21 @@ import {
   CalorieEatenData,
   SingleCalorieBurnedEntry,
   SingleCalorieEatenEntry,
+  SingleStepEntry,
+  StepData,
 } from "@/types";
 import { count_step_calories } from "@/utils/count_step_calories";
 import EatenCaloriesListing from "@/components/EatenCaloriesListing";
 import BurnedCaloriesListing from "@/components/BurnedCaloriesListing";
 import { calorieTrackerStylesWrapper } from "@/styles/app/tabs/calorie-tracker.style";
+import {
+  total_calories_burned_by_steps,
+  total_steps_for_day,
+} from "@/helpers/steps_helper";
+import {
+  read_selected_date_steps_data_api,
+  read_steps_data_api,
+} from "@/api/steps_apis";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -41,6 +51,9 @@ const CalorieTrackerPage = () => {
   const [calorie_burned_data, setcalorie_burned_data] = useState<
     SingleCalorieBurnedEntry[]
   >([]);
+  const [steps_data, setsteps_data] = useState<SingleStepEntry[]>([]);
+
+  const [all_steps_data, setall_steps_data] = useState<StepData[]>([]);
 
   const [current_selection, setcurrent_selection] = useState("Calories");
   const { selected_date, target_calorie, weight } = useAppSelector(
@@ -75,16 +88,27 @@ const CalorieTrackerPage = () => {
       0
     );
 
-  const total_steps_for_day = steps
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total, step) =>
-        total + step.data.reduce((total, step) => total + step.steps, 0),
-      0
+  const fetch_selected_date_step_data = async (selected_date: Date) => {
+    const selected_day_steps_data = await read_selected_date_steps_data_api(
+      selected_date
     );
+    console.log("selected", selected_day_steps_data);
+    setsteps_data(selected_day_steps_data);
+  };
+
+  const fetch_all_steps_data = async () => {
+    const all_steps_data = await read_steps_data_api();
+
+    console.log(all_steps_data);
+    setall_steps_data(all_steps_data?.records);
+  };
+  useEffect(() => {
+    fetch_selected_date_step_data(selected_date);
+  }, [selected_date]);
+
+  useEffect(() => {
+    fetch_all_steps_data();
+  }, []);
 
   const total_calorie_burned_for_day = calorie_burned
     .filter((data: CalorieBurnedData) => {
@@ -118,13 +142,17 @@ const CalorieTrackerPage = () => {
     set_calorie_eaten_data(selected_date);
   }, [selected_date]);
 
-  const total_calories_burned_by_steps = count_step_calories(
-    total_steps_for_day,
-    weight
+  const total_steps = total_steps_for_day(all_steps_data, selected_date);
+  const calories_burned = total_calories_burned_by_steps(
+    weight,
+    all_steps_data,
+    steps_data,
+    selected_date,
+    total_steps
   );
 
   const complete_calories_burned =
-    total_calorie_burned_for_day + Number(total_calories_burned_by_steps);
+    total_calorie_burned_for_day + Number(calories_burned.totalCalories);
 
   const total_calories_left_to_eat =
     target_calorie - total_calorie_eaten_for_day + complete_calories_burned;

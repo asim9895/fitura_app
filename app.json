@@ -2,6 +2,8 @@
   "expo": {
     "name": "fitura_app",
     "slug": "fitura_app",
+    "platforms": ["ios", "android", "web"],
+
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,6 +14,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.fitura.fitura_app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -36,6 +39,15 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "googleClientId": "559994151423-r6ara5ouu8jtb4pgfmgbtfvb1nrv0595.apps.googleusercontent.com",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fab48eee-822e-42eb-b555-9a7dab77f934"
+      }
     }
   }
 }

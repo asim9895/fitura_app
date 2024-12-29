@@ -1,4 +1,6 @@
 export const todays_date = new Date();
+export const average_pace = "13'11";
+export const avergae_step_frequency = 102;
 
 export const formatDate = (dateString: any) => {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

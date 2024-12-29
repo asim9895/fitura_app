@@ -2,6 +2,8 @@ export type SingleStepEntry = {
   id: string;
   steps: number;
   day_time: string;
+  step_frequency: number;
+  pace: string;
 };
 export interface StepData {
   id: string;

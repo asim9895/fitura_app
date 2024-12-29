@@ -14,19 +14,38 @@ import { useAppSelector } from "@/hooks/redux_hooks";
 import { globalStylesWrapper } from "@/styles/global.style";
 import DatesList from "@/components/DatesList";
 import DateHeader from "@/components/DateHeader";
-import { steps } from "@/data/test";
 import { isSameDay } from "date-fns";
 import { font_family } from "@/theme/font_family";
 import { icons } from "@/data/icons";
 import * as Progress from "react-native-progress";
-import { format_number } from "@/utils/variables";
+import {
+  average_pace,
+  avergae_step_frequency,
+  format_number,
+} from "@/utils/variables";
 import { SingleStepEntry, StepData } from "@/types";
-import { count_step_calories } from "@/utils/count_step_calories";
+import {
+  calculateCaloriesBurned,
+  count_step_calories,
+} from "@/utils/count_step_calories";
 import Modal from "react-native-modal";
+import {
+  read_selected_date_steps_data_api,
+  read_steps_data_api,
+  remove_all_step_data,
+  remove_selected_date_step_data,
+  update_steps_data_api,
+} from "@/api/steps_apis";
+import { generate_uuid } from "@/utils/generate_uuid";
+import {
+  total_calories_burned_by_steps,
+  total_steps_for_day,
+} from "@/helpers/steps_helper";
 
 const StepsTrackerPage = () => {
   const [steps_data, setsteps_data] = useState<SingleStepEntry[]>([]);
   const [add_step_modal, setadd_step_modal] = useState(false);
+  const [all_steps_data, setall_steps_data] = useState<StepData[]>([]);
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
@@ -34,48 +53,87 @@ const StepsTrackerPage = () => {
     (state: AppRootState) => state.user
   );
 
+  const [add_step, setadd_step] = useState<{
+    day_time: string;
+    steps: number;
+    step_frequency: number;
+    pace: string;
+  }>({
+    day_time: "",
+    steps: 0,
+    step_frequency: avergae_step_frequency,
+    pace: average_pace,
+  });
+
   const globalStyles = globalStylesWrapper(colors);
 
-  const set_steps_data = (selected_date: Date) => {
-    const steps_of_selected_date: StepData[] = steps.filter((step) => {
-      return isSameDay(new Date(step.date), selected_date);
-    });
+  const fetch_selected_date_step_data = async (selected_date: Date) => {
+    const selected_day_steps_data = await read_selected_date_steps_data_api(
+      selected_date
+    );
+    console.log("selected", selected_day_steps_data);
+    setsteps_data(selected_day_steps_data);
+  };
 
-    if (steps_of_selected_date?.length > 0) {
-      setsteps_data(steps_of_selected_date[0]?.data);
-    } else {
-      setsteps_data([]);
-    }
+  const fetch_all_steps_data = async () => {
+    const all_steps_data = await read_steps_data_api();
+
+    console.log(all_steps_data);
+    setall_steps_data(all_steps_data?.records);
   };
   useEffect(() => {
-    set_steps_data(selected_date);
+    fetch_selected_date_step_data(selected_date);
   }, [selected_date]);
 
-  const total_steps_for_day = steps
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total, step) =>
-        total + step.data.reduce((total, step) => total + step.steps, 0),
-      0
-    );
+  useEffect(() => {
+    fetch_all_steps_data();
+  }, []);
 
-  const all_steps_of_achieved_goal = steps?.map((steps: any) => {
+  const all_steps_of_achieved_goal = all_steps_data?.map((steps: any) => {
     const date = new Date(steps.date);
-    const steps_of_day = steps.data.reduce((total: any, step: any) => {
+
+    const steps_of_day = steps?.data?.reduce((total: any, step: any) => {
       return total + step.steps;
     }, 0);
+
     return {
       date: date,
       count: steps_of_day,
     };
   });
 
-  const total_calories_burned_by_steps = count_step_calories(
-    total_steps_for_day,
-    weight
+  const add_steps_data = async () => {
+    console.log(add_step);
+    const steps_data_to_push: SingleStepEntry = {
+      id: generate_uuid(),
+      day_time: add_step.day_time,
+      steps: add_step.steps,
+      step_frequency: add_step.step_frequency,
+      pace: add_step.pace,
+    };
+
+    console.log(steps_data_to_push);
+
+    const request = await update_steps_data_api(
+      steps_data_to_push,
+      selected_date
+    );
+    if (request?.status === 200) {
+      setadd_step_modal(false);
+      await fetch_selected_date_step_data(selected_date);
+      await fetch_all_steps_data();
+    } else {
+      console.log("error");
+    }
+  };
+
+  const total_steps = total_steps_for_day(all_steps_data, selected_date);
+  const calories_burned = total_calories_burned_by_steps(
+    weight,
+    all_steps_data,
+    steps_data,
+    selected_date,
+    total_steps
   );
 
   return (
@@ -114,8 +172,18 @@ const StepsTrackerPage = () => {
               >
                 Add Steps
               </Text>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 12,
+                  fontFamily: font_family.font_semibold,
+                  paddingHorizontal: 15,
+                }}
+              >
+                Activity
+              </Text>
               <TextInput
-                placeholder="Activity, Event or Part of day"
+                placeholder="Morning, Wedding, Hiking"
                 placeholderTextColor={colors.light_gray}
                 style={{
                   color: colors.text,
@@ -124,11 +192,30 @@ const StepsTrackerPage = () => {
                   backgroundColor: colors.foreground,
                   padding: 10,
                   margin: 10,
+                  marginTop: 4,
                   borderRadius: 10,
                 }}
+                onChangeText={(value) => {
+                  setadd_step((prev) => ({
+                    ...prev,
+                    day_time: value,
+                  }));
+                }}
               />
+
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 12,
+                  fontFamily: font_family.font_semibold,
+                  paddingHorizontal: 15,
+                }}
+              >
+                Steps
+              </Text>
               <TextInput
-                placeholder="Steps"
+                placeholder="Eg: Steps: 4242"
+                keyboardType="numeric"
                 placeholderTextColor={colors.light_gray}
                 style={{
                   color: colors.text,
@@ -137,7 +224,75 @@ const StepsTrackerPage = () => {
                   backgroundColor: colors.foreground,
                   padding: 10,
                   margin: 10,
+                  marginTop: 4,
                   borderRadius: 10,
+                }}
+                onChangeText={(value) => {
+                  setadd_step((prev) => ({
+                    ...prev,
+                    steps: Number(value),
+                  }));
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 12,
+                  fontFamily: font_family.font_semibold,
+                  paddingHorizontal: 15,
+                }}
+              >
+                Step Frequency (/ minute) (default: 100)
+              </Text>
+              <TextInput
+                keyboardType="numeric"
+                placeholder="Eg: 100 "
+                placeholderTextColor={colors.light_gray}
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  fontSize: 15,
+                  backgroundColor: colors.foreground,
+                  padding: 10,
+                  margin: 10,
+                  marginTop: 4,
+                  borderRadius: 10,
+                }}
+                onChangeText={(value) => {
+                  setadd_step((prev) => ({
+                    ...prev,
+                    step_frequency: Number(value),
+                  }));
+                }}
+              />
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 12,
+                  fontFamily: font_family.font_semibold,
+                  paddingHorizontal: 15,
+                }}
+              >
+                Pace (default: 13'11)
+              </Text>
+              <TextInput
+                placeholder="Eg: 13'11"
+                placeholderTextColor={colors.light_gray}
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  fontSize: 15,
+                  backgroundColor: colors.foreground,
+                  padding: 10,
+                  margin: 10,
+                  marginTop: 4,
+                  borderRadius: 10,
+                }}
+                onChangeText={(value) => {
+                  setadd_step((prev) => ({
+                    ...prev,
+                    pace: value,
+                  }));
                 }}
               />
 
@@ -149,7 +304,8 @@ const StepsTrackerPage = () => {
                   justifyContent: "space-around",
                 }}
               >
-                <View
+                <TouchableOpacity
+                  onPress={add_steps_data}
                   style={{
                     width: "45%",
                     backgroundColor: colors.button,
@@ -169,9 +325,12 @@ const StepsTrackerPage = () => {
                   >
                     Add
                   </Text>
-                </View>
+                </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setadd_step_modal(false)}
+                  onPress={() => {
+                    // remove_all_step_data();
+                    setadd_step_modal(false);
+                  }}
                   style={{
                     width: "45%",
                     backgroundColor: colors.foreground,
@@ -254,7 +413,7 @@ const StepsTrackerPage = () => {
 
           <View style={{ alignItems: "center", marginVertical: 15 }}>
             <Progress.Circle
-              progress={total_steps_for_day / target_steps}
+              progress={total_steps / target_steps}
               color={colors.button}
               thickness={10}
               size={230}
@@ -280,7 +439,7 @@ const StepsTrackerPage = () => {
                   marginTop: 10,
                 }}
               >
-                {format_number(total_steps_for_day)}
+                {format_number(total_steps)}
               </Text>
               <Text
                 style={{
@@ -337,7 +496,7 @@ const StepsTrackerPage = () => {
                 }}
               >
                 {" "}
-                {format_number(Number(total_calories_burned_by_steps))} kcal
+                {format_number(Number(calories_burned.totalCalories))} kcal
               </Text>
             </Text>
           </View>
@@ -369,7 +528,8 @@ const StepsTrackerPage = () => {
                 alignItems: "center",
               }}
             >
-              <View
+              <TouchableOpacity
+                onPress={() => setadd_step_modal(true)}
                 style={{
                   backgroundColor: colors.foreground,
                   flexDirection: "row",
@@ -399,7 +559,7 @@ const StepsTrackerPage = () => {
                 >
                   Add
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -417,16 +577,19 @@ const StepsTrackerPage = () => {
                     paddingHorizontal: 20,
                     borderRadius: 10,
                     display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
                   <View
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
-                      width: "100%",
+                      width: "80%",
                     }}
                   >
-                    <View style={{ width: "15%" }}>
+                    <View style={{ width: "20%" }}>
                       <Image
                         source={icons.shoe}
                         style={{ width: 30, height: 30 }}
@@ -436,7 +599,7 @@ const StepsTrackerPage = () => {
                       style={{
                         flexDirection: "column",
                         alignItems: "flex-start",
-                        width: "85%",
+                        width: "70%",
                       }}
                     >
                       <Text
@@ -457,10 +620,23 @@ const StepsTrackerPage = () => {
                           fontFamily: font_family.font_semibold,
                         }}
                       >
-                        {format_number(step.steps)}
+                        {step.steps}
                       </Text>
                     </View>
                   </View>
+                  <Text
+                    style={{ color: colors.text }}
+                    onPress={async () => {
+                      await remove_selected_date_step_data(
+                        selected_date,
+                        step.id
+                      );
+                      await fetch_selected_date_step_data(selected_date);
+                      await fetch_all_steps_data();
+                    }}
+                  >
+                    Remove
+                  </Text>
                 </View>
               );
             })
