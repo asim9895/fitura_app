@@ -24,7 +24,7 @@ const TabsLayout = () => {
           fontFamily: font_family.font_medium,
           fontSize: 11,
         },
-        lazy: true,
+        lazy: false,
         tabBarStyle: {
           position: "absolute",
           backgroundColor: colors.background,

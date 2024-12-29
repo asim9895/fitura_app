@@ -57,13 +57,6 @@ export const total_calories_burned_by_steps = (
   selected_date: Date,
   total_steps_for_day: number
 ) => {
-  console.log(
-    weight,
-    total_steps_for_day,
-    all_steps_data,
-    steps_data,
-    selected_date
-  );
   return calculateCaloriesBurned({
     weightKg: weight,
     steps: total_steps_for_day,

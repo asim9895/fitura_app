@@ -68,10 +68,20 @@ const user_slice = createSlice({
     ) => {
       state.selected_date = action.payload.selected_date;
     },
+    update_steps_target: (
+      state,
+      action: PayloadAction<{ target_steps: number }>
+    ) => {
+      state.target_steps = action.payload.target_steps;
+    },
   },
 });
 
-export const { set_user_profile, clear_user_profile, set_selected_date } =
-  user_slice.actions;
+export const {
+  set_user_profile,
+  clear_user_profile,
+  set_selected_date,
+  update_steps_target,
+} = user_slice.actions;
 
 export default user_slice.reducer;

@@ -40,7 +40,7 @@ export const calorieTrackerStylesWrapper = (colors: Colors) =>
       fontFamily: font_family.font_semibold,
       color: colors.text,
       marginBottom: Platform.OS === "ios" ? 5 : 0,
-      fontSize: 17,
+      fontSize: 14,
       textAlign: "center",
     },
     calorie_distribution_title_2: {
