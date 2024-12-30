@@ -149,6 +149,28 @@ export const calorie_eaten: CalorieEatenData[] = [
       },
     ],
   },
+  {
+    id: "3",
+    date: new Date("2024-12-31T13:42:30.685Z"),
+    data: [
+      {
+        id: "1",
+        eaten: 1100,
+        day_time: "morning",
+        protein: 50,
+        carbs: 100,
+        fat: 15,
+      },
+      {
+        id: "2",
+        eaten: 1100,
+        day_time: "morning",
+        protein: 80,
+        carbs: 60,
+        fat: 15,
+      },
+    ],
+  },
 ];
 
 export const calorie_burned: CalorieBurnedData[] = [
@@ -174,4 +196,26 @@ export const calorie_burned: CalorieBurnedData[] = [
       },
     ],
   },
+  // {
+  //   id: "2",
+  //   date: new Date("2024-12-31T13:42:30.685Z"),
+  //   data: [
+  //     {
+  //       id: "1",
+  //       burned: 150,
+  //       day_time: "morning",
+  //       activity: "abs workout",
+  //       hour: 1,
+  //       minutes: 30,
+  //     },
+  //     {
+  //       id: "2",
+  //       burned: 325,
+  //       day_time: "evening",
+  //       activity: "gym",
+  //       hour: 1,
+  //       minutes: 30,
+  //     },
+  //   ],
+  // },
 ];

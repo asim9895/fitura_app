@@ -9,29 +9,34 @@ const average_step_frequency_for_day = (
   selected_date: Date
 ) => {
   const average_step_frequency =
-    all_steps_data
-      ?.filter((data: StepData) => {
-        const date = new Date(data.date);
-        return isSameDay(date, selected_date);
-      })
-      ?.reduce(
-        (total, step) =>
-          total +
-          step.data.reduce((total, step) => total + step.step_frequency, 0),
-        0
-      ) / steps_data.length;
-  return Number(average_step_frequency);
+    all_steps_data?.length === 0
+      ? 0
+      : all_steps_data
+          ?.filter((data: StepData) => {
+            const date = new Date(data.date);
+            return isSameDay(date, selected_date);
+          })
+          ?.reduce(
+            (total, step) =>
+              total +
+              step.data.reduce((total, step) => total + step.step_frequency, 0),
+            0
+          ) / steps_data.length;
+  return Number.isNaN(average_step_frequency) ? 0 : average_step_frequency;
 };
 
 const average_pace_for_day = (
   all_steps_data: StepData[],
   selected_date: Date
 ) => {
-  let average_pace = all_steps_data?.filter((data: StepData) => {
-    const date = new Date(data.date);
-    return isSameDay(date, selected_date);
-  })[0]?.data[0]?.pace;
-  return average_pace;
+  let average_pace_calculate =
+    all_steps_data.length === 0
+      ? average_pace
+      : all_steps_data?.filter((data: StepData) => {
+          const date = new Date(data.date);
+          return isSameDay(date, selected_date);
+        })[0]?.data[0]?.pace;
+  return average_pace_calculate;
 };
 
 export const total_steps_for_day = (
@@ -59,24 +64,19 @@ export const total_calories_burned_by_steps = (
   selected_date: Date,
   total_steps_for_day: number
 ) => {
-  return calculateCaloriesBurned({
+  const data = calculateCaloriesBurned({
     weightKg: weight,
     steps: total_steps_for_day,
-    stepFrequency:
-      average_step_frequency_for_day(
-        all_steps_data,
-        steps_data,
-        selected_date
-      ) === undefined
-        ? avergae_step_frequency
-        : average_step_frequency_for_day(
-            all_steps_data,
-            steps_data,
-            selected_date
-          ),
+    stepFrequency: average_step_frequency_for_day(
+      all_steps_data,
+      steps_data,
+      selected_date
+    ),
     paceMinSec:
       average_pace_for_day(all_steps_data, selected_date) === undefined
         ? average_pace
         : average_pace_for_day(all_steps_data, selected_date),
   });
+
+  return data;
 };

@@ -30,6 +30,7 @@ export const calculateCaloriesBurned = ({
   const speedKmh = 60 / totalMinutes;
 
   // Calculate time spent walking
+
   const timeMinutes = steps / stepFrequency;
 
   // Calculate distance
@@ -51,22 +52,16 @@ export const calculateCaloriesBurned = ({
   const timeHours = timeMinutes / 60;
   const totalCalories = met * weightKg * timeHours;
 
+  const cal = Number(round(totalCalories).toFixed(0));
+
   return {
-    totalCalories: Number(round(totalCalories).toFixed(0)),
-    distanceKm: round(distanceKm),
-    speedKmh: round(speedKmh),
-    timeMinutes: round(timeMinutes),
+    totalCalories: Number.isNaN(cal) ? 0 : cal,
+    distanceKm: Number.isNaN(distanceKm) ? 0 : round(distanceKm),
+    speedKmh: Number.isNaN(speedKmh) ? 0 : round(speedKmh),
+    timeMinutes: Number.isNaN(timeMinutes) ? 0 : round(timeMinutes),
   };
 };
 
 const round = (num: number): number => {
   return Number(num.toFixed(2));
 };
-
-// Test calculation
-const result = calculateCaloriesBurned({
-  weightKg: 90.55,
-  steps: 1883,
-  stepFrequency: 88,
-  paceMinSec: "13'03",
-});
