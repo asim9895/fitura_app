@@ -33,6 +33,14 @@ const WaterTrackerPage = () => {
     return {
       date: date,
       count: intake_of_day,
+      condition:
+        target_water === undefined ||
+        target_water === null ||
+        target_water === 0
+          ? false
+          : intake_of_day < Number(target_water)
+          ? false
+          : true,
     };
   });
 
@@ -72,11 +80,10 @@ const WaterTrackerPage = () => {
       <DateHeader days={all_water_of_achieved_goal?.length} />
       <DatesList
         onDateSelect={(date: any) => {
-          console.log("Selected date:", date);
           // Do something with the selected date
         }}
         achievement_dates={all_water_of_achieved_goal}
-        budget_data={target_water}
+        route="water"
       />
       <ScrollView
         style={{ marginHorizontal: 15 }}

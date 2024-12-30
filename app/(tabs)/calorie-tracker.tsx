@@ -15,7 +15,7 @@ import DatesList from "@/components/DatesList";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
-import { calorie_burned, calorie_eaten, steps } from "@/data/test";
+import { calorie_burned, calorie_eaten } from "@/data/test";
 import { icons } from "@/data/icons";
 import { format_number } from "@/utils/variables";
 import { isSameDay } from "date-fns";
@@ -33,12 +33,19 @@ import {
   read_weight_data_api,
 } from "@/api/weight_apis";
 import { update_weight } from "@/redux/slices/user_slice";
+import {
+  calories_count_data,
+  CaloriesCount,
+} from "@/utils/weight_loss_formulas";
+import { font_family } from "@/theme/font_family";
+import { bmi_space } from "@/utils/bmi_space";
 
 const CalorieTrackerPage = () => {
   const dispatch = useAppDispatch();
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
+  const user = useAppSelector((state: AppRootState) => state.user);
   const { totalCalories } = useAppSelector((state: AppRootState) => state.step);
   const globalStyles = globalStylesWrapper(colors);
   const calorieTrackerStyles = calorieTrackerStylesWrapper(colors);
@@ -48,14 +55,40 @@ const CalorieTrackerPage = () => {
   const [calorie_burned_data, setcalorie_burned_data] = useState<
     SingleCalorieBurnedEntry[]
   >([]);
+  const [all_calorie_of_achieved_goal, setAllCalorieOfAchievedGoal] = useState<
+    any[]
+  >([]);
 
   const [current_selection, setcurrent_selection] = useState("Calories");
-  const { selected_date, target_calorie, weight } = useAppSelector(
+  const { selected_date, weight } = useAppSelector(
     (state: AppRootState) => state.user
   );
+  const [calorie_count, setcalorie_count] = useState<CaloriesCount>({
+    calories_to_loose_weight: "",
+    maintainance_calories: "",
+    bmi: "",
+    daily_deficiet: "",
+  });
+  const [dated_weight, setdated_weight] = useState(weight);
 
-  const all_calorie_of_achieved_goal = calorie_eaten?.map(
-    (calories: CalorieEatenData) => {
+  // const all_calorie_of_achieved_goal = calorie_eaten?.map(
+  //   (calories: CalorieEatenData) => {
+  //     const date = new Date(calories.date);
+  //     const calories_of_day = calories.data.reduce(
+  //       (total: any, item: SingleCalorieEatenEntry) => {
+  //         return total + item.eaten;
+  //       },
+  //       0
+  //     );
+  //     return {
+  //       date: date,
+  //       count: calories_of_day,
+  //     };
+  //   }
+  // );
+
+  const calculateCalorieGoals = async () => {
+    const promises = calorie_eaten.map(async (calories: CalorieEatenData) => {
       const date = new Date(calories.date);
       const calories_of_day = calories.data.reduce(
         (total: any, item: SingleCalorieEatenEntry) => {
@@ -63,12 +96,56 @@ const CalorieTrackerPage = () => {
         },
         0
       );
+
+      const all_weights = await read_weight_data_api();
+      const dated_weight = all_weights.records?.filter((item: any) => {
+        const itemDate = new Date(item?.date).getDate();
+        const compareDate = new Date(date).getDate();
+        return itemDate <= compareDate;
+      });
+
+      const weight_for_date =
+        dated_weight?.length === 0 ? user.weight : dated_weight[0].weight;
+      const calorie_summary = calories_count_data(
+        weight_for_date,
+        user.weight_loss_intensity,
+        user.height,
+        "moderate",
+        user.age,
+        user.gender
+      );
+      const maintainance_calories = calorie_summary.maintainance_calories;
+      const target_calories = calorie_summary.calories_to_loose_weight;
+      const current_deficiet = Number(calorie_summary.daily_deficiet);
+      const maintainance_calories_deficiet =
+        Number(maintainance_calories) - calories_of_day;
+
+      const deficit = Number(target_calories) - calories_of_day;
+
+      const count =
+        maintainance_calories_deficiet < 0 ? 0 : current_deficiet + deficit;
+      const condition = deficit < 0 ? false : true;
+
       return {
         date: date,
-        count: calories_of_day,
+        count: count,
+        condition: condition,
       };
-    }
-  );
+    });
+    // Filter out entries with 0 deficit before setting state
+
+    const resolved_data = await Promise.all(promises);
+
+    const non_zero_deficit_entries = resolved_data.filter(
+      (entry) => entry.count > 0
+    );
+    setAllCalorieOfAchievedGoal(non_zero_deficit_entries);
+  };
+
+  // Add useEffect to trigger the calculation
+  useEffect(() => {
+    calculateCalorieGoals();
+  }, [calorie_eaten, user]);
 
   const total_calorie_eaten_for_day = calorie_eaten
     .filter((data: any) => {
@@ -110,6 +187,7 @@ const CalorieTrackerPage = () => {
       setcalorie_eaten_data([]);
     }
   };
+
   useEffect(() => {
     set_calorie_eaten_data(selected_date);
   }, [selected_date]);
@@ -118,10 +196,55 @@ const CalorieTrackerPage = () => {
     total_calorie_burned_for_day + Number(totalCalories);
 
   const total_calories_left_to_eat =
-    target_calorie - total_calorie_eaten_for_day + complete_calories_burned;
+    Number(calorie_count.calories_to_loose_weight) -
+    total_calorie_eaten_for_day +
+    complete_calories_burned;
 
   const progress_percent_calculator =
-    total_calorie_eaten_for_day / (target_calorie + complete_calories_burned);
+    total_calorie_eaten_for_day /
+    (Number(calorie_count.calories_to_loose_weight) + complete_calories_burned);
+
+  const update_calorie_data = async (dated_weight: number) => {
+    const calorie_summary = calories_count_data(
+      dated_weight,
+      user.weight_loss_intensity,
+      user.height,
+      "moderate",
+      user.age,
+      user.gender
+    );
+
+    setcalorie_count({
+      maintainance_calories: calorie_summary.maintainance_calories,
+      calories_to_loose_weight: calorie_summary.calories_to_loose_weight,
+      bmi: calorie_summary.bmi,
+      daily_deficiet: calorie_summary.daily_deficiet,
+    });
+  };
+
+  useEffect(() => {
+    update_calorie_data(dated_weight);
+  }, [dated_weight, user]);
+
+  const update_dated_weight = async (selected_date: Date) => {
+    const all_weights = await read_weight_data_api();
+
+    const dated_weight = all_weights.records?.filter((item: any) => {
+      const itemDate = new Date(item?.date).getDate();
+      const compareDate = new Date(selected_date).getDate();
+
+      return itemDate <= compareDate;
+    });
+
+    const latest_weight =
+      dated_weight?.length === 0 ? user.weight : dated_weight[0].weight;
+
+    setdated_weight(latest_weight);
+  };
+
+  useEffect(() => {
+    update_dated_weight(selected_date);
+  }, [selected_date, dated_weight]);
 
   return (
     <View style={[globalStyles.background]}>
@@ -132,11 +255,10 @@ const CalorieTrackerPage = () => {
       <DateHeader days={all_calorie_of_achieved_goal?.length} />
       <DatesList
         onDateSelect={(date: any) => {
-          console.log("Selected date:", date);
           // Do something with the selected date
         }}
         achievement_dates={all_calorie_of_achieved_goal}
-        budget_data={target_calorie}
+        route="calorie"
       />
 
       <ScrollView
@@ -156,7 +278,8 @@ const CalorieTrackerPage = () => {
             <Text style={calorieTrackerStyles.main_calorie}>
               <Text style={calorieTrackerStyles.highlighted_main_calorie}>
                 {total_calorie_eaten_for_day >
-                target_calorie + complete_calories_burned
+                Number(calorie_count.calories_to_loose_weight) +
+                  complete_calories_burned
                   ? 0
                   : format_number(total_calories_left_to_eat)}
               </Text>{" "}
@@ -184,7 +307,7 @@ const CalorieTrackerPage = () => {
           >
             <View style={[{ width: "20%" }, globalStyles.column_start_center]}>
               <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
-                {format_number(target_calorie)}
+                {format_number(Number(calorie_count.calories_to_loose_weight))}
               </Text>
               <Text
                 style={[
@@ -241,7 +364,8 @@ const CalorieTrackerPage = () => {
             >
               <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
                 {total_calorie_eaten_for_day >
-                target_calorie + complete_calories_burned
+                Number(calorie_count.calories_to_loose_weight) +
+                  complete_calories_burned
                   ? 0
                   : format_number(total_calories_left_to_eat)}
               </Text>
@@ -255,22 +379,163 @@ const CalorieTrackerPage = () => {
               </Text>
             </View>
           </View>
+          <View
+            style={{
+              padding: 5,
 
-          <View style={calorieTrackerStyles.total_budget_container}>
-            <Text style={calorieTrackerStyles.total_budget_title}>
-              Today Budget
+              margin: 5,
+              flexDirection: "row",
+              alignItems: "center",
+              marginHorizontal: 0,
+              marginVertical: 2,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text
+              style={{
+                color: colors.light_gray,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              Weight on this day:{" "}
             </Text>
-            <View style={globalStyles.row_center}>
-              <Text style={calorieTrackerStyles.total_budget_value}>
-                {format_number(target_calorie)}
-                <Text style={{ fontSize: 12 }}> kcal</Text>
-              </Text>
-              <Image
-                source={icons.right_arrow}
-                style={calorieTrackerStyles.total_budget_icon}
-                tintColor={colors.button}
-              />
-            </View>
+            <Text
+              style={{
+                color: colors.button,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              {dated_weight} kg
+            </Text>
+          </View>
+          <View
+            style={{
+              padding: 5,
+              margin: 5,
+              marginTop: 0,
+              paddingTop: 0,
+              flexDirection: "row",
+              alignItems: "center",
+              marginHorizontal: 0,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text
+              style={{
+                color: colors.light_gray,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              Calorie To Maintain Current Weight:{" "}
+            </Text>
+            <Text
+              style={{
+                color: colors.button,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              {format_number(Number(calorie_count.maintainance_calories))} kcal
+            </Text>
+          </View>
+          <View
+            style={{
+              padding: 5,
+              margin: 5,
+              marginTop: 0,
+              paddingTop: 0,
+              flexDirection: "row",
+              alignItems: "center",
+              marginHorizontal: 0,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text
+              style={{
+                color: colors.light_gray,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              Calorie To Achieve {user.target_weight}kg with pace of{" "}
+              {user.weight_loss_intensity}kg per week:{" "}
+            </Text>
+            <Text
+              style={{
+                color: colors.button,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              {format_number(Number(calorie_count.calories_to_loose_weight))}{" "}
+              kcal
+            </Text>
+          </View>
+          <View
+            style={{
+              padding: 5,
+              margin: 5,
+              marginTop: 0,
+              paddingTop: 0,
+              flexDirection: "row",
+              alignItems: "center",
+              marginHorizontal: 0,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text
+              style={{
+                color: colors.light_gray,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              Calorie Deficiet:{" "}
+            </Text>
+            <Text
+              style={{
+                color: colors.button,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              {format_number(Number(calorie_count.daily_deficiet))} kcal
+            </Text>
+          </View>
+          <View
+            style={{
+              padding: 5,
+              margin: 5,
+              marginTop: 0,
+              paddingTop: 0,
+              flexDirection: "row",
+              alignItems: "center",
+              marginHorizontal: 0,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text
+              style={{
+                color: colors.light_gray,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              BMI:{" "}
+            </Text>
+            <Text
+              style={{
+                color: colors.button,
+                fontFamily: font_family.font_medium,
+                fontSize: 12,
+              }}
+            >
+              {format_number(Number(calorie_count.bmi))} (
+              {bmi_space(Number(calorie_count.bmi))})
+            </Text>
           </View>
         </View>
 
@@ -337,5 +602,4 @@ const CalorieTrackerPage = () => {
     </View>
   );
 };
-
 export default CalorieTrackerPage;

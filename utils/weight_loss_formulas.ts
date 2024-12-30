@@ -23,8 +23,9 @@ export const goal_achievement_date = (
 
 export interface CaloriesCount {
   bmi: string;
-  maintainance_calories: number;
-  calories_to_loose_weight: number;
+  maintainance_calories: string;
+  calories_to_loose_weight: string;
+  daily_deficiet: string;
 }
 
 export const calories_count_data = (
@@ -35,31 +36,32 @@ export const calories_count_data = (
   age: number,
   gender: Gender
 ): CaloriesCount => {
-  console.log(current_weight, intensity, height, activity_factor, age, gender);
   const bmi = (current_weight / (height / 100) ** 2).toFixed(2);
   const bmr =
     gender === "Male"
       ? 10 * current_weight + 6.25 * height - 5 * age + 5
       : 10 * current_weight + 6.25 * height - 5 * age - 161;
-  console.log("bmr", bmr);
 
-  const maintainance_calories =
+  const activity =
     activity_factor === "sedentary"
-      ? bmr * 1.2
+      ? 1.2
       : activity_factor === "light"
-      ? bmr * 1.375
+      ? 1.375
       : activity_factor === "moderate"
-      ? bmr * 1.55
+      ? 1.55
       : activity_factor === "very_active"
-      ? bmr * 1.725
-      : bmr * 1.9;
+      ? 1.725
+      : 1.9;
+
+  const maintainance_calories = bmr * activity;
 
   const weekly_deficiet = intensity * 7700;
   const daily_deficiet = weekly_deficiet / 7;
   const calories_to_loose_weight = maintainance_calories - daily_deficiet;
   return {
     bmi,
-    maintainance_calories,
-    calories_to_loose_weight,
+    maintainance_calories: maintainance_calories.toFixed(0),
+    calories_to_loose_weight: calories_to_loose_weight.toFixed(0),
+    daily_deficiet: daily_deficiet.toFixed(0),
   };
 };

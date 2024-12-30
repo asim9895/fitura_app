@@ -1,4 +1,4 @@
-import { Gender, WeightLossIntensity } from "@/types";
+import { ActivityFactor, Gender, WeightLossIntensity } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
@@ -11,6 +11,7 @@ interface UserState {
   profile_completed: boolean;
   selected_date: Date;
   creation_date: Date | null;
+  activity_factor: ActivityFactor;
   recommended_target_calorie: number;
   target_calorie: number;
   target_steps: number;
@@ -28,6 +29,7 @@ interface UserCreation {
   profile_completed?: boolean;
   creation_date: Date;
   weight_loss_intensity: WeightLossIntensity;
+  activity_factor: ActivityFactor;
 }
 
 const initial_state: UserState = {
@@ -45,6 +47,7 @@ const initial_state: UserState = {
   target_calorie: 5000,
   target_steps: 12000,
   target_water: 10000,
+  activity_factor: "active",
 };
 
 const user_slice = createSlice({
@@ -61,6 +64,7 @@ const user_slice = createSlice({
       state.creation_date = action.payload.creation_date;
       state.weight_loss_intensity = action.payload.weight_loss_intensity;
       state.target_weight = action.payload.target_weight;
+      state.activity_factor = action.payload.activity_factor;
     },
     clear_user_profile: (state) => {
       state.name = "";

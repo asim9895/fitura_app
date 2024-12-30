@@ -28,14 +28,16 @@ import { font_family } from "@/theme/font_family";
 import { set_selected_date } from "@/redux/slices/user_slice";
 import { icons } from "@/data/icons";
 import { format_number } from "@/utils/variables";
+import { Route } from "@/types";
 
 interface DatesListProps {
   onDateSelect: (date: Date) => void;
   achievement_dates: {
     date: Date;
     count: number;
+    condition: boolean;
   }[];
-  budget_data: number;
+  route: Route;
 }
 
 type Week = Date[];
@@ -43,7 +45,8 @@ type Week = Date[];
 const DatesList: React.FC<DatesListProps> = ({
   onDateSelect,
   achievement_dates,
-  budget_data,
+
+  route,
 }) => {
   const { selected_date, creation_date } = useAppSelector(
     (state) => state.user
@@ -63,7 +66,6 @@ const DatesList: React.FC<DatesListProps> = ({
     const startDate = startOfWeek(installDateTime, { weekStartsOn: 0 });
 
     const totalWeeks = differenceInWeeks(today, startDate) + 1; // Add 1 future weeks
-    console.log("totalWeeks", totalWeeks);
 
     for (let i = 0; i < totalWeeks; i++) {
       const weekStart = addWeeks(startDate, i);
@@ -140,6 +142,10 @@ const DatesList: React.FC<DatesListProps> = ({
       isSameDay(achievementDate?.date, date)
     )?.count;
 
+    const condition = achievement_dates.find((achievementDate) =>
+      isSameDay(achievementDate?.date, date)
+    )?.condition;
+
     const condition_to_disable =
       isBefore(startOfDay(date), startOfDay(installDateTime)) || date > today;
 
@@ -214,11 +220,13 @@ const DatesList: React.FC<DatesListProps> = ({
             {format(date, "yyyy")}
           </Text>
         </TouchableOpacity>
-        <View style={{ alignItems: "center", marginTop: 3 }}>
-          {isAchievementDate && count !== undefined && count >= budget_data && (
-            <Image source={icons.crown} style={{ width: 10, height: 10 }} />
-          )}
-        </View>
+        {
+          <View style={{ alignItems: "center", marginTop: 3 }}>
+            {isAchievementDate && condition && (
+              <Image source={icons.crown} style={{ width: 10, height: 10 }} />
+            )}
+          </View>
+        }
         <Text
           style={{
             fontSize: 9,

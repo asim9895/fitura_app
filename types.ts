@@ -1,5 +1,5 @@
 export type WeightLossIntensity = 0.25 | 0.5 | 0.75 | 1;
-
+export type Route = "calorie" | "water" | "steps";
 export type ActivityFactor =
   | "sedentary"
   | "light"

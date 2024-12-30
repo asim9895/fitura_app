@@ -5,12 +5,30 @@ import { isSameDay } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import * as uuid from "uuid";
 
+const CHUNK_SIZE = 1024 * 1024;
+
 export const read_steps_data_api = async () => {
   try {
     const fileExists = await FileSystem.getInfoAsync(steps_file_path);
     if (fileExists.exists) {
-      const fileData = await FileSystem.readAsStringAsync(steps_file_path);
-      return JSON.parse(fileData);
+      let completeData = "";
+      let offset = 0;
+
+      while (true) {
+        const chunk = await FileSystem.readAsStringAsync(steps_file_path, {
+          encoding: FileSystem.EncodingType.UTF8,
+          position: offset,
+          length: CHUNK_SIZE,
+        });
+
+        if (!chunk) break;
+
+        completeData += chunk;
+        offset += chunk.length;
+
+        if (chunk.length < CHUNK_SIZE) break;
+      }
+      return JSON.parse(completeData);
     } else {
       return { records: [] }; // Default structure
     }
@@ -62,7 +80,6 @@ export const update_steps_data_api = async (
       steps_file_path,
       JSON.stringify(data, null, 2)
     );
-    console.log("Steps updated successfully");
 
     return { status: 200 };
   } catch (error) {
@@ -78,7 +95,6 @@ export const remove_all_step_data = async () => {
       steps_file_path,
       JSON.stringify(data, null, 2)
     );
-    console.log("All steps data removed successfully");
   } catch (error) {
     console.error("Error removing all steps data:", error);
   }

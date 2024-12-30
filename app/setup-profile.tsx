@@ -22,6 +22,7 @@ const SetupProfilePage = () => {
         creation_date: new Date("2024-12-23T13:42:30.685Z"),
         weight_loss_intensity: 0.75,
         target_weight: 72,
+        activity_factor: "sedentary",
       })
     );
   };

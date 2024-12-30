@@ -110,6 +110,14 @@ const StepsTrackerPage = () => {
     return {
       date: date,
       count: steps_of_day,
+      condition:
+        target_steps === undefined ||
+        target_steps === null ||
+        target_steps === 0
+          ? false
+          : steps_of_day < Number(target_steps)
+          ? false
+          : true,
     };
   });
 
@@ -518,7 +526,7 @@ const StepsTrackerPage = () => {
           // Do something with the selected date
         }}
         achievement_dates={all_steps_of_achieved_goal}
-        budget_data={target_steps}
+        route="steps"
       />
 
       <ScrollView
