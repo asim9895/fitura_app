@@ -38,16 +38,18 @@ export const total_steps_for_day = (
   all_steps_data: StepData[],
   selected_date: Date
 ) => {
-  return all_steps_data
-    ?.filter((data: StepData) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    ?.reduce(
-      (total, step) =>
-        total + step.data.reduce((total, step) => total + step.steps, 0),
-      0
-    );
+  return all_steps_data?.length === 0
+    ? 0
+    : all_steps_data
+        ?.filter((data: StepData) => {
+          const date = new Date(data.date);
+          return isSameDay(date, selected_date);
+        })
+        ?.reduce(
+          (total, step) =>
+            total + step.data.reduce((total, step) => total + step.steps, 0),
+          0
+        );
 };
 
 export const total_calories_burned_by_steps = (

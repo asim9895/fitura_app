@@ -81,7 +81,7 @@ export const calorie_eaten: CalorieEatenData[] = [
       },
       {
         id: "4",
-        eaten: 300,
+        eaten: 200,
         day_time: "snack",
         protein: 100,
         carbs: 200,
@@ -95,7 +95,7 @@ export const calorie_eaten: CalorieEatenData[] = [
     data: [
       {
         id: "1",
-        eaten: 4000,
+        eaten: 400,
         day_time: "morning",
         protein: 100,
         carbs: 200,
@@ -103,7 +103,7 @@ export const calorie_eaten: CalorieEatenData[] = [
       },
       {
         id: "2",
-        eaten: 4000,
+        eaten: 400,
         day_time: "evening",
         protein: 100,
         carbs: 200,
@@ -111,7 +111,7 @@ export const calorie_eaten: CalorieEatenData[] = [
       },
       {
         id: "3",
-        eaten: 3000,
+        eaten: 300,
         day_time: "afternoon",
         protein: 100,
         carbs: 200,
@@ -125,7 +125,7 @@ export const calorie_eaten: CalorieEatenData[] = [
     data: [
       {
         id: "1",
-        eaten: 4000,
+        eaten: 400,
         day_time: "morning",
         protein: 100,
         carbs: 200,
@@ -133,7 +133,7 @@ export const calorie_eaten: CalorieEatenData[] = [
       },
       {
         id: "2",
-        eaten: 4000,
+        eaten: 400,
         day_time: "evening",
         protein: 100,
         carbs: 200,
@@ -141,7 +141,7 @@ export const calorie_eaten: CalorieEatenData[] = [
       },
       {
         id: "3",
-        eaten: 3000,
+        eaten: 300,
         day_time: "afternoon",
         protein: 100,
         carbs: 200,
@@ -154,7 +154,7 @@ export const calorie_eaten: CalorieEatenData[] = [
 export const calorie_burned: CalorieBurnedData[] = [
   {
     id: "1",
-    date: new Date("2024-12-28T13:42:30.685Z"),
+    date: new Date("2024-12-30T13:42:30.685Z"),
     data: [
       {
         id: "1",

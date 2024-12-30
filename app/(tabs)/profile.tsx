@@ -36,13 +36,13 @@ const ProfilePage = () => {
         name: "Jane Doe",
         age: 28,
         height: 170,
-        weight: 92,
+        weight: 90.55,
         gender: "Male",
         profile_completed: true,
         creation_date: new Date("2024-12-23T13:42:30.685Z"),
         weight_loss_intensity: 1,
         target_weight: 72,
-        activity_factor: "very_active",
+        activity_factor: "light",
       })
     );
   };

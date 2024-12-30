@@ -24,6 +24,7 @@ import {
   CalorieEatenData,
   SingleCalorieBurnedEntry,
   SingleCalorieEatenEntry,
+  StepData,
 } from "@/types";
 import EatenCaloriesListing from "@/components/EatenCaloriesListing";
 import BurnedCaloriesListing from "@/components/BurnedCaloriesListing";
@@ -39,6 +40,14 @@ import {
 } from "@/utils/weight_loss_formulas";
 import { font_family } from "@/theme/font_family";
 import { bmi_space } from "@/utils/bmi_space";
+import {
+  total_calories_burned_by_steps,
+  total_steps_for_day,
+} from "@/helpers/steps_helper";
+import {
+  read_selected_date_steps_data_api,
+  read_steps_data_api,
+} from "@/api/steps_apis";
 
 const CalorieTrackerPage = () => {
   const dispatch = useAppDispatch();
@@ -71,22 +80,6 @@ const CalorieTrackerPage = () => {
   });
   const [dated_weight, setdated_weight] = useState(weight);
 
-  // const all_calorie_of_achieved_goal = calorie_eaten?.map(
-  //   (calories: CalorieEatenData) => {
-  //     const date = new Date(calories.date);
-  //     const calories_of_day = calories.data.reduce(
-  //       (total: any, item: SingleCalorieEatenEntry) => {
-  //         return total + item.eaten;
-  //       },
-  //       0
-  //     );
-  //     return {
-  //       date: date,
-  //       count: calories_of_day,
-  //     };
-  //   }
-  // );
-
   const calculateCalorieGoals = async () => {
     const promises = calorie_eaten.map(async (calories: CalorieEatenData) => {
       const date = new Date(calories.date);
@@ -95,6 +88,25 @@ const CalorieTrackerPage = () => {
           return total + item.eaten;
         },
         0
+      );
+      const total_calorie_burned_for_day = calorie_burned
+        .filter((data: CalorieBurnedData) => {
+          const day_date = new Date(data.date);
+          return isSameDay(day_date, date);
+        })
+        .reduce(
+          (total, calorie_burned) =>
+            total +
+            calorie_burned.data.reduce(
+              (total, calorie) => total + calorie.burned,
+              0
+            ),
+          0
+        );
+
+      const all_steps_data = await read_steps_data_api();
+      const selected_day_steps_data = await read_selected_date_steps_data_api(
+        date
       );
 
       const all_weights = await read_weight_data_api();
@@ -110,17 +122,35 @@ const CalorieTrackerPage = () => {
         weight_for_date,
         user.weight_loss_intensity,
         user.height,
-        "moderate",
+        user.activity_factor,
         user.age,
         user.gender
       );
       const maintainance_calories = calorie_summary.maintainance_calories;
       const target_calories = calorie_summary.calories_to_loose_weight;
       const current_deficiet = Number(calorie_summary.daily_deficiet);
-      const maintainance_calories_deficiet =
-        Number(maintainance_calories) - calories_of_day;
 
-      const deficit = Number(target_calories) - calories_of_day;
+      const total_steps = total_steps_for_day(all_steps_data.records, date);
+
+      const calories_burned_by_steps = total_calories_burned_by_steps(
+        weight_for_date,
+        all_steps_data?.records,
+        selected_day_steps_data,
+        date,
+        total_steps
+      );
+
+      const maintainance_calories_deficiet =
+        Number(maintainance_calories) -
+        calories_of_day +
+        calories_burned_by_steps.totalCalories +
+        total_calorie_burned_for_day;
+
+      const deficit =
+        Number(target_calories) -
+        calories_of_day +
+        calories_burned_by_steps.totalCalories +
+        total_calorie_burned_for_day;
 
       const count =
         maintainance_calories_deficiet < 0 ? 0 : current_deficiet + deficit;
@@ -209,7 +239,7 @@ const CalorieTrackerPage = () => {
       dated_weight,
       user.weight_loss_intensity,
       user.height,
-      "moderate",
+      user.activity_factor,
       user.age,
       user.gender
     );
@@ -439,6 +469,7 @@ const CalorieTrackerPage = () => {
               }}
             >
               {format_number(Number(calorie_count.maintainance_calories))} kcal
+              / day
             </Text>
           </View>
           <View
@@ -502,7 +533,7 @@ const CalorieTrackerPage = () => {
                 fontSize: 12,
               }}
             >
-              {format_number(Number(calorie_count.daily_deficiet))} kcal
+              {format_number(Number(calorie_count.daily_deficiet))} kcal / day
             </Text>
           </View>
           <View

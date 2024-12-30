@@ -5,30 +5,13 @@ import { isSameDay } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import * as uuid from "uuid";
 
-const CHUNK_SIZE = 1024 * 1024;
-
 export const read_steps_data_api = async () => {
   try {
     const fileExists = await FileSystem.getInfoAsync(steps_file_path);
     if (fileExists.exists) {
-      let completeData = "";
-      let offset = 0;
+      const chunk = await FileSystem.readAsStringAsync(steps_file_path);
 
-      while (true) {
-        const chunk = await FileSystem.readAsStringAsync(steps_file_path, {
-          encoding: FileSystem.EncodingType.UTF8,
-          position: offset,
-          length: CHUNK_SIZE,
-        });
-
-        if (!chunk) break;
-
-        completeData += chunk;
-        offset += chunk.length;
-
-        if (chunk.length < CHUNK_SIZE) break;
-      }
-      return JSON.parse(completeData);
+      return JSON.parse(chunk);
     } else {
       return { records: [] }; // Default structure
     }
