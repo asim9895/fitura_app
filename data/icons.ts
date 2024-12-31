@@ -20,4 +20,12 @@ export const icons = {
   fire: require("../assets/icons/fire.png"),
   workout: require("../assets/icons/workout.png"),
   remove: require("../assets/icons/remove.png"),
+  activity_factor: require("../assets/icons/activity_factor.png"),
+  age: require("../assets/icons/age.png"),
+  gender: require("../assets/icons/gender.png"),
+  height: require("../assets/icons/height.png"),
+  intensity: require("../assets/icons/intensity.png"),
+  weight: require("../assets/icons/weight.png"),
+  target_weight: require("../assets/icons/target_weight.png"),
+  name: require("../assets/icons/name.png"),
 };

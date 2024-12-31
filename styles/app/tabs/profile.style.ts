@@ -32,7 +32,8 @@ export const profileStylesWrapper = (colors: Colors) =>
 
       alignItems: "center",
     },
-    show_icon: { width: 20, height: 20 },
+    show_icon: { width: 30, height: 30 },
+    edit_icon: { width: 20, height: 20 },
     info_container: {
       width: "70%",
       paddingLeft: 10,

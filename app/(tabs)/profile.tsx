@@ -82,59 +82,59 @@ const ProfilePage = () => {
       </View>
 
       <ScrollView style={{ marginTop: 15, marginBottom: 100 }}>
-        <ProfileCard show_icon={icons.crown} title="Name" value={user.name} />
+        <ProfileCard show_icon={icons.name} title="Name" value={user.name} />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.gender}
           title="Gender"
           value={user.gender}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.height}
           title="Height"
           value={`${
             height_options?.find((item) => item.cm === user.height)?.cm
-          }cm or ${
+          } cm or ${
             height_options?.find((item) => item.cm === user.height)?.display
           }`}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.weight}
           title="Weight"
-          value={`${user.weight} Kg`}
+          value={`${user.weight} kg`}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.target_weight}
           title="Target Weight"
-          value={`${user.target_weight} Kg`}
+          value={`${user.target_weight} kg`}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.age}
           title="Age"
           value={`${user.age} years`}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.water}
           title="Target Water Intake"
           value={`${format_number(user?.target_water)} ml`}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.shoe}
           title="Target Steps"
           value={user.target_steps?.toString()}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.intensity}
           title="Weight Loss Intensity"
           value={`${user.weight_loss_intensity?.toString()} kg / week`}
         />
         <ProfileCard
-          show_icon={icons.crown}
+          show_icon={icons.activity_factor}
           title="Activity Factor"
           value={`${user.activity_factor?.toString()}`}
         />
       </ScrollView>
 
-      <Button onPress={add_or_update_weight_data} title="Update Weight" />
+      {/* <Button onPress={add_or_update_weight_data} title="Update Weight" />
 
       <Button title="Update Profile" onPress={updateProfile} />
       <Button title="Clear Profile" onPress={clearProfile} />
@@ -143,7 +143,7 @@ const ProfilePage = () => {
         onPress={() => {
           navigation.navigate("setup-profile" as never);
         }}
-      />
+      /> */}
     </SafeAreaView>
   );
 };
