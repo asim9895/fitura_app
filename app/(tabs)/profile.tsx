@@ -1,5 +1,5 @@
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import { Colors } from "@/theme/colors";
 import { globalStylesWrapper } from "@/styles/global.style";
@@ -12,15 +12,21 @@ import {
   update_weight,
 } from "@/redux/slices/user_slice";
 import { format_number } from "@/utils/variables";
-import { goal_achievement_date } from "@/utils/weight_loss_formulas";
 import {
   add_or_update_weight_of_selected_data_api,
   read_weight_data_api,
 } from "@/api/weight_apis";
 import { icons } from "@/data/icons";
 import { profileStylesWrapper } from "@/styles/app/tabs/profile.style";
-import ProfileCard from "@/components/ProfileCard";
+import ProfileCard from "@/components/profile_components/ProfileCard";
 import { height_options } from "@/data/options";
+import { generate_uuid } from "@/utils/generate_uuid";
+import { CalorieEatenData, SingleCalorieEatenEntry } from "@/types";
+import {
+  add_food_data_api,
+  read_foods_data_api,
+  remove_all_food_data,
+} from "@/api/food_apis";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -74,6 +80,33 @@ const ProfilePage = () => {
       })
     );
   };
+
+  const add_or_update_food = async () => {
+    // await remove_all_food_data();
+    const data: SingleCalorieEatenEntry = {
+      id: generate_uuid(),
+      name: "100g white rice",
+      calorie: 130,
+      protein: 3,
+      carbs: 30,
+      fat: 1,
+      note: "Boiled rice with extra salt",
+      serving_size: 100,
+      serving_unit: "g",
+    };
+    const request = await add_food_data_api(data);
+
+    console.log(request);
+  };
+
+  const fetch_food_items = async () => {
+    const request = await read_foods_data_api();
+    console.log(request);
+  };
+
+  useEffect(() => {
+    fetch_food_items();
+  }, []);
 
   return (
     <SafeAreaView style={globalStyles.background}>
@@ -132,6 +165,9 @@ const ProfilePage = () => {
           title="Activity Factor"
           value={`${user.activity_factor?.toString()}`}
         />
+        <Button onPress={add_or_update_weight_data} title="Add Calorie" />
+        <Button onPress={add_or_update_weight_data} title="Add Activity" />
+        <Button onPress={add_or_update_food} title="Add Food" />
       </ScrollView>
 
       {/* <Button onPress={add_or_update_weight_data} title="Update Weight" />

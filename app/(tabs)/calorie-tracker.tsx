@@ -1,20 +1,17 @@
 import {
-  Animated,
-  Button,
   Dimensions,
   Image,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import DatesList from "@/components/DatesList";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
+import { useAppSelector } from "@/hooks/redux_hooks";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
 import { calorie_burned, calorie_eaten } from "@/data/test";
@@ -27,21 +24,17 @@ import {
   SingleCalorieBurnedEntry,
   SingleCalorieEatenEntry,
 } from "@/types";
-import EatenCaloriesListing from "@/components/EatenCaloriesListing";
-import BurnedCaloriesListing from "@/components/BurnedCaloriesListing";
+import EatenCaloriesListing from "@/components/calorie_tracker_components/EatenCaloriesListing";
+import BurnedCaloriesListing from "@/components/calorie_tracker_components/BurnedCaloriesListing";
 import { calorieTrackerStylesWrapper } from "@/styles/app/tabs/calorie-tracker.style";
-import {
-  add_or_update_weight_of_selected_data_api,
-  read_weight_data_api,
-} from "@/api/weight_apis";
-import { update_weight } from "@/redux/slices/user_slice";
+import { read_weight_data_api } from "@/api/weight_apis";
+
 import {
   calories_count_data,
   CaloriesCount,
   goal_achievement_date,
 } from "@/utils/weight_loss_formulas";
-import { font_family } from "@/theme/font_family";
-import { bmi_space } from "@/utils/bmi_space";
+
 import {
   total_calories_burned_by_steps,
   total_steps_for_day,
@@ -50,14 +43,16 @@ import {
   read_selected_date_steps_data_api,
   read_steps_data_api,
 } from "@/api/steps_apis";
-import CollapsibleView from "@/components/CollapsableView";
+
+import CalorieTrackerHealthSummary from "@/components/calorie_tracker_components/CalorieTrackerHealthSummary";
+import CalorieTrackerGoalSummary from "@/components/calorie_tracker_components/CalorieTrackerGoalSummary";
+import CalorieTrackerMacros from "@/components/calorie_tracker_components/CalorieTrackerMacros";
+import CalorieTrackerBudgetCalculator from "@/components/calorie_tracker_components/CalorieTrackerBudgetCalculator";
 
 const CalorieTrackerPage = () => {
-  const dispatch = useAppDispatch();
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
   );
-
   const user = useAppSelector((state: AppRootState) => state.user);
   const { totalCalories } = useAppSelector((state: AppRootState) => state.step);
   const globalStyles = globalStylesWrapper(colors);
@@ -97,46 +92,10 @@ const CalorieTrackerPage = () => {
     .reduce(
       (total, calorie_eaten) =>
         total +
-        calorie_eaten.data.reduce((total, calorie) => total + calorie.eaten, 0),
-      0
-    );
-
-  const total_protein_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total, calorie_eaten) =>
-        total +
         calorie_eaten.data.reduce(
-          (total, calorie) => total + calorie.protein,
+          (total, calorie) => total + calorie.calorie,
           0
         ),
-      0
-    );
-
-  const total_carbs_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total, calorie_eaten) =>
-        total +
-        calorie_eaten.data.reduce((total, calorie) => total + calorie.carbs, 0),
-      0
-    );
-
-  const total_fat_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total, calorie_eaten) =>
-        total +
-        calorie_eaten.data.reduce((total, calorie) => total + calorie.fat, 0),
       0
     );
 
@@ -185,7 +144,7 @@ const CalorieTrackerPage = () => {
     total_calorie_eaten_for_day /
     (Number(calorie_count.calories_to_loose_weight) + complete_calories_burned);
 
-  const update_calorie_data = async (dated_weight: number) => {
+  const update_health_goal_data = async (dated_weight: number) => {
     const calorie_summary = calories_count_data(
       dated_weight,
       user.weight_loss_intensity,
@@ -221,7 +180,7 @@ const CalorieTrackerPage = () => {
   };
 
   useEffect(() => {
-    update_calorie_data(dated_weight);
+    update_health_goal_data(dated_weight);
   }, [dated_weight, user]);
 
   const update_dated_weight = async (selected_date: Date) => {
@@ -255,7 +214,7 @@ const CalorieTrackerPage = () => {
       const date = new Date(calories.date);
       const calories_of_day = calories.data.reduce(
         (total: any, item: SingleCalorieEatenEntry) => {
-          return total + item.eaten;
+          return total + item.calorie;
         },
         0
       );
@@ -407,487 +366,25 @@ const CalorieTrackerPage = () => {
             />
           </View>
 
-          <View
-            style={[
-              calorieTrackerStyles.calorie_distribution_container,
-              globalStyles.row_center_center,
-            ]}
-          >
-            <View style={[{ width: "20%" }, globalStyles.column_start_center]}>
-              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
-                {format_number(Number(calorie_count.calories_to_loose_weight))}
-              </Text>
-              <Text
-                style={[
-                  { color: colors.button },
-                  calorieTrackerStyles.calorie_distribution_title_2,
-                ]}
-              >
-                Budget
-              </Text>
-            </View>
-            <Text style={calorieTrackerStyles.calorie_distribution_symbol}>
-              -
-            </Text>
-            <View
-              style={[{ width: "18.5%" }, globalStyles.column_start_center]}
-            >
-              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
-                {format_number(total_calorie_eaten_for_day)}
-              </Text>
-              <Text
-                style={[
-                  { color: colors.green },
-                  calorieTrackerStyles.calorie_distribution_title_2,
-                ]}
-              >
-                Eaten
-              </Text>
-            </View>
-
-            <Text style={calorieTrackerStyles.calorie_distribution_symbol}>
-              +
-            </Text>
-            <View
-              style={[{ width: "18.5%" }, globalStyles.column_start_center]}
-            >
-              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
-                {format_number(complete_calories_burned)}
-              </Text>
-              <Text
-                style={[
-                  { color: colors.error },
-                  calorieTrackerStyles.calorie_distribution_title_2,
-                ]}
-              >
-                Burned
-              </Text>
-            </View>
-
-            <Text style={calorieTrackerStyles.calorie_distribution_symbol}>
-              =
-            </Text>
-            <View
-              style={[{ width: "18.5%" }, globalStyles.column_start_center]}
-            >
-              <Text style={calorieTrackerStyles.calorie_distribution_title_1}>
-                {total_calorie_eaten_for_day >
-                Number(calorie_count.calories_to_loose_weight) +
-                  complete_calories_burned
-                  ? 0
-                  : format_number(total_calories_left_to_eat)}
-              </Text>
-              <Text
-                style={[
-                  { color: colors.button },
-                  calorieTrackerStyles.calorie_distribution_title_2,
-                ]}
-              >
-                Left
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 10,
-              width: "100%",
-              marginTop: 10,
-              marginBottom: 10,
-            }}
-          >
-            <View style={[globalStyles.column_start]}>
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontSize: 13,
-                  fontFamily: font_family.font_medium,
-                }}
-              >
-                Protein
-              </Text>
-
-              <View style={{ marginTop: 5 }}>
-                <Progress.Bar
-                  progress={
-                    total_protein_eaten_for_day / Number(macros.protein)
-                  }
-                  width={60}
-                  height={6}
-                  borderRadius={25}
-                  color={colors.button}
-                  unfilledColor={colors.background}
-                  borderColor={colors.background}
-                />
-              </View>
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 15,
-                }}
-              >
-                {" "}
-                {total_protein_eaten_for_day}{" "}
-                <Text
-                  style={{
-                    color: colors.light_gray,
-                    fontSize: 12,
-                    fontFamily: font_family.font_medium,
-                  }}
-                >
-                  / {macros.protein} g
-                </Text>
-              </Text>
-            </View>
-            <View style={[globalStyles.column_start]}>
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontSize: 13,
-                  fontFamily: font_family.font_medium,
-                }}
-              >
-                Carbs
-              </Text>
-
-              <View style={{ marginTop: 5 }}>
-                <Progress.Bar
-                  progress={total_carbs_eaten_for_day / Number(macros.carbs)}
-                  width={60}
-                  height={6}
-                  borderRadius={25}
-                  color={colors.button}
-                  unfilledColor={colors.background}
-                  borderColor={colors.background}
-                />
-              </View>
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 15,
-                }}
-              >
-                {" "}
-                {total_carbs_eaten_for_day}{" "}
-                <Text
-                  style={{
-                    color: colors.light_gray,
-                    fontSize: 12,
-                    fontFamily: font_family.font_medium,
-                  }}
-                >
-                  / {macros.carbs} g
-                </Text>
-              </Text>
-            </View>
-            <View style={[globalStyles.column_start]}>
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontSize: 13,
-                  fontFamily: font_family.font_medium,
-                }}
-              >
-                Fat
-              </Text>
-
-              <View style={{ marginTop: 5 }}>
-                <Progress.Bar
-                  progress={total_fat_eaten_for_day / Number(macros.fat)}
-                  width={60}
-                  height={6}
-                  borderRadius={25}
-                  color={colors.button}
-                  unfilledColor={colors.background}
-                  borderColor={colors.background}
-                />
-              </View>
-              <Text
-                style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 15,
-                }}
-              >
-                {" "}
-                {total_fat_eaten_for_day}{" "}
-                <Text
-                  style={{
-                    color: colors.light_gray,
-                    fontSize: 12,
-                    fontFamily: font_family.font_medium,
-                  }}
-                >
-                  / {macros.fat} g
-                </Text>
-              </Text>
-            </View>
-          </View>
+          <CalorieTrackerBudgetCalculator
+            calorie_count={calorie_count}
+            complete_calories_burned={complete_calories_burned}
+            total_calorie_eaten_for_day={total_calorie_eaten_for_day}
+            total_calories_left_to_eat={total_calories_left_to_eat}
+          />
+          <CalorieTrackerMacros
+            macros={macros}
+            calorie_eaten={calorie_eaten}
+            selected_date={selected_date}
+          />
         </View>
-        <View>
-          <CollapsibleView title="Health Summary">
-            <View
-              style={{
-                padding: 5,
 
-                margin: 5,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                marginVertical: 2,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Weight on this day:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {dated_weight} kg
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                marginTop: 0,
-                paddingTop: 0,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Calorie To Maintain Current Weight:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {format_number(Number(calorie_count.maintainance_calories))}{" "}
-                kcal / day
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                marginTop: 0,
-                paddingTop: 0,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Calorie To Achieve {user.target_weight}kg with pace of{" "}
-                {user.weight_loss_intensity}kg per week:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {format_number(Number(calorie_count.calories_to_loose_weight))}{" "}
-                kcal
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                marginTop: 0,
-                paddingTop: 0,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Calorie Deficiet:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {format_number(Number(calorie_count.daily_deficiet))} kcal / day
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                marginTop: 0,
-                paddingTop: 0,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                BMI:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {format_number(Number(calorie_count.bmi))} (
-                {bmi_space(Number(calorie_count.bmi))})
-              </Text>
-            </View>
-          </CollapsibleView>
-          <CollapsibleView title="Goal Summary">
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                marginVertical: 2,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Goal Achievement Date:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {weight_goal_data.goal_achievement_date.toDateString()}
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                marginTop: 0,
-                paddingTop: 0,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Week to achieve goal:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {weight_goal_data.weeks_to_goal_value.toFixed(0)} Weeks
-              </Text>
-            </View>
-            <View
-              style={{
-                padding: 5,
-                margin: 5,
-                marginTop: 0,
-                paddingTop: 0,
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.light_gray,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                Weight Left to loose:{" "}
-              </Text>
-              <Text
-                style={{
-                  color: colors.button,
-                  fontFamily: font_family.font_medium,
-                  fontSize: 12,
-                }}
-              >
-                {weight_goal_data.weight_to_loose.toFixed(0)} kg
-              </Text>
-            </View>
-          </CollapsibleView>
-        </View>
+        <CalorieTrackerHealthSummary
+          dated_weight={dated_weight}
+          calorie_count={calorie_count}
+          user={user}
+        />
+        <CalorieTrackerGoalSummary weight_goal_data={weight_goal_data} />
 
         <View style={calorieTrackerStyles.tabs_container}>
           <TouchableOpacity

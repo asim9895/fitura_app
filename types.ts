@@ -15,6 +15,9 @@ export type SingleStepEntry = {
   step_frequency: number;
   pace: string;
 };
+export type ServingUnit = "g" | "ml" | "kg" | "l";
+
+export type DayTime = "Breakfast" | "Lunch" | "Dinner" | "Snack";
 export interface StepData {
   id: string;
   date: Date;
@@ -35,11 +38,15 @@ export interface WaterData {
 
 export type SingleCalorieEatenEntry = {
   id: string;
-  eaten: number;
-  day_time: string;
+  name: string;
+  calorie: number;
+  day_time?: DayTime;
   protein: number;
   carbs: number;
   fat: number;
+  note: string;
+  serving_size: number;
+  serving_unit: ServingUnit;
 };
 export interface CalorieEatenData {
   id: string;
@@ -50,7 +57,6 @@ export interface CalorieEatenData {
 export type SingleCalorieBurnedEntry = {
   id: string;
   burned: number;
-  day_time: string;
   activity: string;
   hour: number;
   minutes: number;

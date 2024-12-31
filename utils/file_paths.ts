@@ -4,3 +4,6 @@ export const steps_file_path = `${FileSystem.documentDirectory}steps_records.jso
 export const water_file_path = `${FileSystem.documentDirectory}water_records.json`;
 export const calorie_file_path = `${FileSystem.documentDirectory}calorie_records.json`;
 export const weight_file_path = `${FileSystem.documentDirectory}weight_records.json`;
+
+export const food_file_path = `${FileSystem.documentDirectory}food_records.json`;
+export const activity_file_path = `${FileSystem.documentDirectory}activity_records.json`;
