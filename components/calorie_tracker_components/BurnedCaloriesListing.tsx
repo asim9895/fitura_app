@@ -28,9 +28,6 @@ const BurnedCaloriesListing: React.FC<BurnedCaloriesListingProps> = ({
     <View style={calorieTrackerStyles.tabs_container}>
       <View
         style={[
-          {
-            backgroundColor: colors.foreground,
-          },
           globalStyles.row_center_center,
           calorieTrackerStyles.single_tab,
         ]}
@@ -56,9 +53,6 @@ const BurnedCaloriesListing: React.FC<BurnedCaloriesListingProps> = ({
       </View>
       <View
         style={[
-          {
-            backgroundColor: colors.foreground,
-          },
           globalStyles.row_center_center,
           calorieTrackerStyles.single_tab,
         ]}

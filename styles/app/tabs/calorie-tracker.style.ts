@@ -29,11 +29,12 @@ export const calorieTrackerStylesWrapper = (colors: Colors) =>
       fontSize: 25,
     },
     calorie_distribution_container: {
-      marginTop: 15,
+      marginTop: 10,
       width: "100%",
       padding: 10,
       backgroundColor: colors.background,
       borderRadius: 10,
+      paddingVertical: 14,
     },
 
     calorie_distribution_title_1: {
@@ -77,17 +78,13 @@ export const calorieTrackerStylesWrapper = (colors: Colors) =>
     },
     total_budget_icon: { width: 15, height: 15, marginLeft: 15 },
     tabs_container: {
-      backgroundColor: colors.foreground,
-      padding: 7,
-      marginTop: 10,
+      // backgroundColor: colors.foreground,
       flexDirection: "row",
-      borderRadius: 10,
       width: "100%",
     },
     single_tab: {
+      padding: 10,
       width: "50%",
-      padding: 7,
-      borderRadius: 7,
     },
     tab_icon: { width: 15, height: 15, marginRight: 5 },
     tab_text: {

@@ -4,7 +4,6 @@ import {
   ScrollView,
   StatusBar,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -24,8 +23,7 @@ import {
   SingleCalorieBurnedEntry,
   SingleCalorieEatenEntry,
 } from "@/types";
-import EatenCaloriesListing from "@/components/calorie_tracker_components/EatenCaloriesListing";
-import BurnedCaloriesListing from "@/components/calorie_tracker_components/BurnedCaloriesListing";
+
 import { calorieTrackerStylesWrapper } from "@/styles/app/tabs/calorie-tracker.style";
 import { read_weight_data_api } from "@/api/weight_apis";
 
@@ -46,8 +44,10 @@ import {
 
 import CalorieTrackerHealthSummary from "@/components/calorie_tracker_components/CalorieTrackerHealthSummary";
 import CalorieTrackerGoalSummary from "@/components/calorie_tracker_components/CalorieTrackerGoalSummary";
-import CalorieTrackerMacros from "@/components/calorie_tracker_components/CalorieTrackerMacros";
+
 import CalorieTrackerBudgetCalculator from "@/components/calorie_tracker_components/CalorieTrackerBudgetCalculator";
+
+import CaloriesAndBurnedListing from "@/components/calorie_tracker_components/CaloriesAndBurnedListing";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -354,7 +354,7 @@ const CalorieTrackerPage = () => {
             </Text>
           </View>
 
-          <View style={{ marginTop: 5 }}>
+          {/* <View style={{ marginTop: 10, marginBottom: 0 }}>
             <Progress.Bar
               progress={progress_percent_calculator}
               width={Dimensions.get("window").width / 1.2}
@@ -364,7 +364,7 @@ const CalorieTrackerPage = () => {
               unfilledColor={colors.background}
               borderColor={colors.background}
             />
-          </View>
+          </View> */}
 
           <CalorieTrackerBudgetCalculator
             calorie_count={calorie_count}
@@ -372,79 +372,27 @@ const CalorieTrackerPage = () => {
             total_calorie_eaten_for_day={total_calorie_eaten_for_day}
             total_calories_left_to_eat={total_calories_left_to_eat}
           />
-          <CalorieTrackerMacros
-            macros={macros}
-            calorie_eaten={calorie_eaten}
-            selected_date={selected_date}
+
+          <CalorieTrackerHealthSummary
+            dated_weight={dated_weight}
+            calorie_count={calorie_count}
+            user={user}
           />
+          <CalorieTrackerGoalSummary weight_goal_data={weight_goal_data} />
         </View>
 
-        <CalorieTrackerHealthSummary
-          dated_weight={dated_weight}
-          calorie_count={calorie_count}
-          user={user}
+        <CaloriesAndBurnedListing
+          current_selection={current_selection}
+          setcurrent_selection={setcurrent_selection}
+          selected_date={selected_date}
+          calorie_eaten={calorie_eaten}
+          calorie_burned_data={calorie_burned_data}
+          complete_calories_burned={complete_calories_burned}
+          totalCalories={totalCalories}
+          total_calorie_burned_for_day={total_calorie_burned_for_day}
+          total_calorie_eaten_for_day={total_calorie_eaten_for_day}
+          macros={macros}
         />
-        <CalorieTrackerGoalSummary weight_goal_data={weight_goal_data} />
-
-        <View style={calorieTrackerStyles.tabs_container}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setcurrent_selection("Calories")}
-            style={[
-              {
-                backgroundColor:
-                  current_selection === "Calories"
-                    ? colors.background
-                    : colors.foreground,
-              },
-              globalStyles.row_center_center,
-              calorieTrackerStyles.single_tab,
-            ]}
-          >
-            <Image
-              source={icons.calories}
-              style={calorieTrackerStyles.tab_icon}
-            />
-            <Text style={calorieTrackerStyles.tab_text}>
-              Calories{" "}
-              <Text style={calorieTrackerStyles.tab_sub_text}>
-                ({format_number(total_calorie_eaten_for_day)})
-              </Text>
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setcurrent_selection("Burned")}
-            style={[
-              {
-                backgroundColor:
-                  current_selection === "Burned"
-                    ? colors.background
-                    : colors.foreground,
-              },
-              globalStyles.row_center_center,
-              calorieTrackerStyles.single_tab,
-            ]}
-          >
-            <Image source={icons.fire} style={calorieTrackerStyles.tab_icon} />
-            <Text style={calorieTrackerStyles.tab_text}>
-              Burned{" "}
-              <Text style={calorieTrackerStyles.tab_sub_text}>
-                ({format_number(complete_calories_burned)})
-              </Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {current_selection === "Calories" ? (
-          <EatenCaloriesListing />
-        ) : (
-          <BurnedCaloriesListing
-            calories_burned_by_steps={Number(totalCalories)}
-            calories_burned_data={calorie_burned_data}
-            calories_burned_by_workout={total_calorie_burned_for_day}
-          />
-        )}
       </ScrollView>
     </View>
   );

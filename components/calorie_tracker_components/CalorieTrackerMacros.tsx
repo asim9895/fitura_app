@@ -72,10 +72,9 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         width: "100%",
-        marginTop: 10,
-        marginBottom: 10,
+        marginVertical: 10,
       }}
     >
       <View style={[globalStyles.column_start]}>
@@ -89,7 +88,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
           Protein
         </Text>
 
-        <View style={{ marginTop: 5 }}>
+        {/* <View style={{ marginTop: 5 }}>
           <Progress.Bar
             progress={total_protein_eaten_for_day / Number(macros.protein)}
             width={60}
@@ -99,17 +98,17 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
             unfilledColor={colors.background}
             borderColor={colors.background}
           />
-        </View>
+        </View> */}
         <Text
           style={{
             fontFamily: font_family.font_semibold,
             color: colors.text,
             marginTop: 5,
-            fontSize: 15,
+            fontSize: 13,
           }}
         >
           {" "}
-          {total_protein_eaten_for_day}{" "}
+          {total_protein_eaten_for_day}g{" "}
           <Text
             style={{
               color: colors.light_gray,
@@ -132,7 +131,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
           Carbs
         </Text>
 
-        <View style={{ marginTop: 5 }}>
+        {/* <View style={{ marginTop: 5 }}>
           <Progress.Bar
             progress={total_carbs_eaten_for_day / Number(macros.carbs)}
             width={60}
@@ -142,17 +141,17 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
             unfilledColor={colors.background}
             borderColor={colors.background}
           />
-        </View>
+        </View> */}
         <Text
           style={{
             fontFamily: font_family.font_semibold,
             color: colors.text,
             marginTop: 5,
-            fontSize: 15,
+            fontSize: 13,
           }}
         >
           {" "}
-          {total_carbs_eaten_for_day}{" "}
+          {total_carbs_eaten_for_day}g{" "}
           <Text
             style={{
               color: colors.light_gray,
@@ -175,7 +174,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
           Fat
         </Text>
 
-        <View style={{ marginTop: 5 }}>
+        {/* <View style={{ marginTop: 5 }}>
           <Progress.Bar
             progress={total_fat_eaten_for_day / Number(macros.fat)}
             width={60}
@@ -185,17 +184,17 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
             unfilledColor={colors.background}
             borderColor={colors.background}
           />
-        </View>
+        </View> */}
         <Text
           style={{
             fontFamily: font_family.font_semibold,
             color: colors.text,
             marginTop: 5,
-            fontSize: 15,
+            fontSize: 13,
           }}
         >
           {" "}
-          {total_fat_eaten_for_day}{" "}
+          {total_fat_eaten_for_day}g{" "}
           <Text
             style={{
               color: colors.light_gray,

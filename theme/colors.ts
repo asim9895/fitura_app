@@ -31,7 +31,7 @@ export interface Colors {
 
 // themes.js
 export const light: Colors = {
-  background: "#ffffff",
+  background: "#f6f6f6",
   text: "#000000",
   error: "crimson",
   foreground: "#f3f7f6",
