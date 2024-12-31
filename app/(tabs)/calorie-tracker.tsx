@@ -38,6 +38,7 @@ import { update_weight } from "@/redux/slices/user_slice";
 import {
   calories_count_data,
   CaloriesCount,
+  goal_achievement_date,
 } from "@/utils/weight_loss_formulas";
 import { font_family } from "@/theme/font_family";
 import { bmi_space } from "@/utils/bmi_space";
@@ -242,6 +243,12 @@ const CalorieTrackerPage = () => {
   useEffect(() => {
     update_dated_weight(selected_date);
   }, [selected_date, dated_weight]);
+
+  const weight_goal_data = goal_achievement_date(
+    dated_weight,
+    user.target_weight,
+    user.weight_loss_intensity
+  );
 
   const calculateCalorieGoals = async () => {
     const promises = calorie_eaten.map(async (calories: CalorieEatenData) => {
@@ -480,6 +487,151 @@ const CalorieTrackerPage = () => {
               </Text>
             </View>
           </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingHorizontal: 10,
+              width: "100%",
+              marginTop: 10,
+              marginBottom: 10,
+            }}
+          >
+            <View style={[globalStyles.column_start]}>
+              <Text
+                style={{
+                  color: colors.light_gray,
+                  fontSize: 13,
+                  fontFamily: font_family.font_medium,
+                }}
+              >
+                Protein
+              </Text>
+
+              <View style={{ marginTop: 5 }}>
+                <Progress.Bar
+                  progress={
+                    total_protein_eaten_for_day / Number(macros.protein)
+                  }
+                  width={60}
+                  height={6}
+                  borderRadius={25}
+                  color={colors.button}
+                  unfilledColor={colors.background}
+                  borderColor={colors.background}
+                />
+              </View>
+              <Text
+                style={{
+                  fontFamily: font_family.font_semibold,
+                  color: colors.text,
+                  marginTop: 5,
+                  fontSize: 15,
+                }}
+              >
+                {" "}
+                {total_protein_eaten_for_day}{" "}
+                <Text
+                  style={{
+                    color: colors.light_gray,
+                    fontSize: 12,
+                    fontFamily: font_family.font_medium,
+                  }}
+                >
+                  / {macros.protein} g
+                </Text>
+              </Text>
+            </View>
+            <View style={[globalStyles.column_start]}>
+              <Text
+                style={{
+                  color: colors.light_gray,
+                  fontSize: 13,
+                  fontFamily: font_family.font_medium,
+                }}
+              >
+                Carbs
+              </Text>
+
+              <View style={{ marginTop: 5 }}>
+                <Progress.Bar
+                  progress={total_carbs_eaten_for_day / Number(macros.carbs)}
+                  width={60}
+                  height={6}
+                  borderRadius={25}
+                  color={colors.button}
+                  unfilledColor={colors.background}
+                  borderColor={colors.background}
+                />
+              </View>
+              <Text
+                style={{
+                  fontFamily: font_family.font_semibold,
+                  color: colors.text,
+                  marginTop: 5,
+                  fontSize: 15,
+                }}
+              >
+                {" "}
+                {total_carbs_eaten_for_day}{" "}
+                <Text
+                  style={{
+                    color: colors.light_gray,
+                    fontSize: 12,
+                    fontFamily: font_family.font_medium,
+                  }}
+                >
+                  / {macros.carbs} g
+                </Text>
+              </Text>
+            </View>
+            <View style={[globalStyles.column_start]}>
+              <Text
+                style={{
+                  color: colors.light_gray,
+                  fontSize: 13,
+                  fontFamily: font_family.font_medium,
+                }}
+              >
+                Fat
+              </Text>
+
+              <View style={{ marginTop: 5 }}>
+                <Progress.Bar
+                  progress={total_fat_eaten_for_day / Number(macros.fat)}
+                  width={60}
+                  height={6}
+                  borderRadius={25}
+                  color={colors.button}
+                  unfilledColor={colors.background}
+                  borderColor={colors.background}
+                />
+              </View>
+              <Text
+                style={{
+                  fontFamily: font_family.font_semibold,
+                  color: colors.text,
+                  marginTop: 5,
+                  fontSize: 15,
+                }}
+              >
+                {" "}
+                {total_fat_eaten_for_day}{" "}
+                <Text
+                  style={{
+                    color: colors.light_gray,
+                    fontSize: 12,
+                    fontFamily: font_family.font_medium,
+                  }}
+                >
+                  / {macros.fat} g
+                </Text>
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View>
           <CollapsibleView title="Health Summary">
             <View
               style={{
@@ -641,149 +793,100 @@ const CalorieTrackerPage = () => {
               </Text>
             </View>
           </CollapsibleView>
-
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 10,
-              width: "100%",
-              marginTop: 10,
-            }}
-          >
-            <View style={[globalStyles.column_start]}>
+          <CollapsibleView title="Goal Summary">
+            <View
+              style={{
+                padding: 5,
+                margin: 5,
+                flexDirection: "row",
+                alignItems: "center",
+                marginHorizontal: 0,
+                marginVertical: 2,
+                flexWrap: "wrap",
+              }}
+            >
               <Text
                 style={{
                   color: colors.light_gray,
-                  fontSize: 13,
                   fontFamily: font_family.font_medium,
+                  fontSize: 12,
                 }}
               >
-                Protein
+                Goal Achievement Date:{" "}
               </Text>
-
-              <View style={{ marginTop: 5 }}>
-                <Progress.Bar
-                  progress={
-                    total_protein_eaten_for_day / Number(macros.protein)
-                  }
-                  width={60}
-                  height={6}
-                  borderRadius={25}
-                  color={colors.button}
-                  unfilledColor={colors.background}
-                  borderColor={colors.background}
-                />
-              </View>
               <Text
                 style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 15,
+                  color: colors.button,
+                  fontFamily: font_family.font_medium,
+                  fontSize: 12,
                 }}
               >
-                {" "}
-                {total_protein_eaten_for_day}{" "}
-                <Text
-                  style={{
-                    color: colors.light_gray,
-                    fontSize: 12,
-                    fontFamily: font_family.font_medium,
-                  }}
-                >
-                  / {macros.protein} g
-                </Text>
+                {weight_goal_data.goal_achievement_date.toDateString()}
               </Text>
             </View>
-            <View style={[globalStyles.column_start]}>
+            <View
+              style={{
+                padding: 5,
+                margin: 5,
+                marginTop: 0,
+                paddingTop: 0,
+                flexDirection: "row",
+                alignItems: "center",
+                marginHorizontal: 0,
+                flexWrap: "wrap",
+              }}
+            >
               <Text
                 style={{
                   color: colors.light_gray,
-                  fontSize: 13,
                   fontFamily: font_family.font_medium,
+                  fontSize: 12,
                 }}
               >
-                Carbs
+                Week to achieve goal:{" "}
               </Text>
-
-              <View style={{ marginTop: 5 }}>
-                <Progress.Bar
-                  progress={total_carbs_eaten_for_day / Number(macros.carbs)}
-                  width={60}
-                  height={6}
-                  borderRadius={25}
-                  color={colors.button}
-                  unfilledColor={colors.background}
-                  borderColor={colors.background}
-                />
-              </View>
               <Text
                 style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 15,
+                  color: colors.button,
+                  fontFamily: font_family.font_medium,
+                  fontSize: 12,
                 }}
               >
-                {" "}
-                {total_carbs_eaten_for_day}{" "}
-                <Text
-                  style={{
-                    color: colors.light_gray,
-                    fontSize: 12,
-                    fontFamily: font_family.font_medium,
-                  }}
-                >
-                  / {macros.carbs} g
-                </Text>
+                {weight_goal_data.weeks_to_goal_value.toFixed(0)} Weeks
               </Text>
             </View>
-            <View style={[globalStyles.column_start]}>
+            <View
+              style={{
+                padding: 5,
+                margin: 5,
+                marginTop: 0,
+                paddingTop: 0,
+                flexDirection: "row",
+                alignItems: "center",
+                marginHorizontal: 0,
+                flexWrap: "wrap",
+              }}
+            >
               <Text
                 style={{
                   color: colors.light_gray,
-                  fontSize: 13,
                   fontFamily: font_family.font_medium,
+                  fontSize: 12,
                 }}
               >
-                Fat
+                Weight Left to loose:{" "}
               </Text>
-
-              <View style={{ marginTop: 5 }}>
-                <Progress.Bar
-                  progress={total_fat_eaten_for_day / Number(macros.fat)}
-                  width={60}
-                  height={6}
-                  borderRadius={25}
-                  color={colors.button}
-                  unfilledColor={colors.background}
-                  borderColor={colors.background}
-                />
-              </View>
               <Text
                 style={{
-                  fontFamily: font_family.font_semibold,
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 15,
+                  color: colors.button,
+                  fontFamily: font_family.font_medium,
+                  fontSize: 12,
                 }}
               >
-                {" "}
-                {total_fat_eaten_for_day}{" "}
-                <Text
-                  style={{
-                    color: colors.light_gray,
-                    fontSize: 12,
-                    fontFamily: font_family.font_medium,
-                  }}
-                >
-                  / {macros.fat} g
-                </Text>
+                {weight_goal_data.weight_to_loose.toFixed(0)} kg
               </Text>
             </View>
-          </View>
+          </CollapsibleView>
         </View>
 
         <View style={calorieTrackerStyles.tabs_container}>

@@ -5,7 +5,7 @@ export type ActivityFactor =
   | "light"
   | "moderate"
   | "active"
-  | "very_active";
+  | "very active";
 
 export type Gender = "Male" | "Female";
 export type SingleStepEntry = {

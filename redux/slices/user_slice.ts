@@ -12,8 +12,6 @@ interface UserState {
   selected_date: Date;
   creation_date: Date | null;
   activity_factor: ActivityFactor;
-  recommended_target_calorie: number;
-  target_calorie: number;
   target_steps: number;
   target_water: number;
   weight_loss_intensity: WeightLossIntensity;
@@ -43,8 +41,6 @@ const initial_state: UserState = {
   profile_completed: false,
   selected_date: new Date(),
   creation_date: null,
-  recommended_target_calorie: 0,
-  target_calorie: 5000,
   target_steps: 12000,
   target_water: 10000,
   activity_factor: "active",

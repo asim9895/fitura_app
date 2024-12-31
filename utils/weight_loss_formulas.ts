@@ -49,7 +49,7 @@ export const calories_count_data = (
       ? 1.375
       : activity_factor === "moderate"
       ? 1.55
-      : activity_factor === "very_active"
+      : activity_factor === "very active"
       ? 1.725
       : 1.9;
 
