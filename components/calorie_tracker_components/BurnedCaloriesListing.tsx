@@ -47,7 +47,7 @@ const BurnedCaloriesListing: React.FC<BurnedCaloriesListingProps> = ({
               { fontFamily: font_family.font_semibold, fontSize: 17 },
             ]}
           >
-            {format_number(calories_burned_by_steps)}
+            {format_number(calories_burned_by_steps)} kcal
           </Text>
         </View>
       </View>
@@ -72,7 +72,7 @@ const BurnedCaloriesListing: React.FC<BurnedCaloriesListingProps> = ({
               { fontFamily: font_family.font_semibold, fontSize: 17 },
             ]}
           >
-            {format_number(calories_burned_by_workout)}
+            {format_number(calories_burned_by_workout)} kcal
           </Text>
         </View>
       </View>

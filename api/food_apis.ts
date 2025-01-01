@@ -41,24 +41,16 @@ export const add_food_data_api = async (
   try {
     const data = await read_foods_data_api();
 
-    const recordIndex = data.records.findIndex(
-      (record: any) => record.name === new_food_data.name
+    // Add new record for today
+    data.records.push(new_food_data);
+
+    // Write updated data back to the file
+    await FileSystem.writeAsStringAsync(
+      food_file_path,
+      JSON.stringify(data, null, 2)
     );
 
-    if (recordIndex >= 0) {
-      return { status: 500 };
-    } else {
-      // Add new record for today
-      data.records.push(new_food_data);
-
-      // Write updated data back to the file
-      await FileSystem.writeAsStringAsync(
-        food_file_path,
-        JSON.stringify(data, null, 2)
-      );
-
-      return { status: 200 };
-    }
+    return { status: 200 };
   } catch (error) {
     console.error("Error updating steps:", error);
     return { status: 500 };

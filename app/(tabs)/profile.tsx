@@ -99,15 +99,6 @@ const ProfilePage = () => {
     console.log(request);
   };
 
-  const fetch_food_items = async () => {
-    const request = await read_foods_data_api();
-    console.log(request);
-  };
-
-  useEffect(() => {
-    fetch_food_items();
-  }, []);
-
   return (
     <SafeAreaView style={globalStyles.background}>
       <View style={[profileStyles.header_container]}>
@@ -168,11 +159,12 @@ const ProfilePage = () => {
         <Button onPress={add_or_update_weight_data} title="Add Calorie" />
         <Button onPress={add_or_update_weight_data} title="Add Activity" />
         <Button onPress={add_or_update_food} title="Add Food" />
+        <Button title="Update Profile" onPress={updateProfile} />
       </ScrollView>
 
       {/* <Button onPress={add_or_update_weight_data} title="Update Weight" />
 
-      <Button title="Update Profile" onPress={updateProfile} />
+     
       <Button title="Clear Profile" onPress={clearProfile} />
       <Button
         title="Go to Setup Profile"

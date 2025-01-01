@@ -26,7 +26,7 @@ const CalorieTrackerHealthSummary: React.FC<
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 0,
-          marginVertical: 2,
+          marginVertical: 0,
           flexWrap: "wrap",
         }}
       >

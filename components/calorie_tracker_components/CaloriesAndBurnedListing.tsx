@@ -17,8 +17,8 @@ interface CaloriesAndBurnedListingProps {
   complete_calories_burned: number;
   totalCalories: number;
   macros: any;
-  selected_date: Date;
-  calorie_eaten: any;
+
+  calorie_eaten_data: any;
   calorie_burned_data: any;
   total_calorie_burned_for_day: number;
 }
@@ -31,8 +31,7 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
   totalCalories,
   total_calorie_burned_for_day,
   macros,
-  selected_date,
-  calorie_eaten,
+  calorie_eaten_data,
   calorie_burned_data,
 }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
@@ -113,10 +112,9 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
         >
           <CalorieTrackerMacros
             macros={macros}
-            calorie_eaten={calorie_eaten}
-            selected_date={selected_date}
+            calorie_eaten_data={calorie_eaten_data}
           />
-          <EatenCaloriesListing />
+          <EatenCaloriesListing calorie_eaten_data={calorie_eaten_data} />
         </View>
       ) : (
         <View

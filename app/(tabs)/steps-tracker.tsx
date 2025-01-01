@@ -24,15 +24,10 @@ import {
   format_number,
 } from "@/utils/variables";
 import { SingleStepEntry, StepData } from "@/types";
-import {
-  calculateCaloriesBurned,
-  count_step_calories,
-} from "@/utils/count_step_calories";
 import Modal from "react-native-modal";
 import {
   read_selected_date_steps_data_api,
   read_steps_data_api,
-  remove_all_step_data,
   remove_selected_date_step_data,
   update_steps_data_api,
 } from "@/api/steps_apis";
@@ -662,7 +657,7 @@ const StepsTrackerPage = () => {
                     fontSize: 11,
                   }}
                 >
-                  {format_number(speedKmh)} km / h
+                  {total_steps === 0 ? 0 : format_number(speedKmh)} km / h
                 </Text>
               </Text>
             </View>

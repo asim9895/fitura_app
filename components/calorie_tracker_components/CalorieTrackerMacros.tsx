@@ -9,62 +9,39 @@ import { isSameDay } from "date-fns";
 
 interface CalorieTackerMacrosProps {
   macros: any;
-  calorie_eaten: any;
-  selected_date: any;
+  calorie_eaten_data: any;
 }
 
 const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
   macros,
-  calorie_eaten,
-  selected_date,
+  calorie_eaten_data,
 }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
   const globalStyles = globalStylesWrapper(colors);
 
-  const total_protein_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total: any, calorie_eaten: any) =>
-        total +
-        calorie_eaten.data.reduce(
-          (total: any, calorie: any) => total + calorie.protein,
+  const total_protein_eaten_for_day =
+    calorie_eaten_data?.length === undefined || calorie_eaten_data?.length === 0
+      ? 0
+      : calorie_eaten_data.reduce(
+          (total: any, food: any) => total + food.protein,
           0
-        ),
-      0
-    );
+        );
 
-  const total_carbs_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total: any, calorie_eaten: any) =>
-        total +
-        calorie_eaten.data.reduce(
-          (total: any, calorie: any) => total + calorie.carbs,
+  const total_carbs_eaten_for_day =
+    calorie_eaten_data?.length === undefined || calorie_eaten_data?.length === 0
+      ? 0
+      : calorie_eaten_data.reduce(
+          (total: any, food: any) => total + food.carbs,
           0
-        ),
-      0
-    );
+        );
 
-  const total_fat_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total: any, calorie_eaten: any) =>
-        total +
-        calorie_eaten.data.reduce(
-          (total: any, calorie: any) => total + calorie.fat,
+  const total_fat_eaten_for_day =
+    calorie_eaten_data?.length === undefined || calorie_eaten_data?.length === 0
+      ? 0
+      : calorie_eaten_data.reduce(
+          (total: any, food: any) => total + food.fat,
           0
-        ),
-      0
-    );
+        );
 
   return (
     <View
@@ -88,7 +65,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
           Protein
         </Text>
 
-        {/* <View style={{ marginTop: 5 }}>
+        <View style={{ marginTop: 5 }}>
           <Progress.Bar
             progress={total_protein_eaten_for_day / Number(macros.protein)}
             width={60}
@@ -98,7 +75,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
             unfilledColor={colors.background}
             borderColor={colors.background}
           />
-        </View> */}
+        </View>
         <Text
           style={{
             fontFamily: font_family.font_semibold,
@@ -131,7 +108,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
           Carbs
         </Text>
 
-        {/* <View style={{ marginTop: 5 }}>
+        <View style={{ marginTop: 5 }}>
           <Progress.Bar
             progress={total_carbs_eaten_for_day / Number(macros.carbs)}
             width={60}
@@ -141,7 +118,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
             unfilledColor={colors.background}
             borderColor={colors.background}
           />
-        </View> */}
+        </View>
         <Text
           style={{
             fontFamily: font_family.font_semibold,
@@ -174,7 +151,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
           Fat
         </Text>
 
-        {/* <View style={{ marginTop: 5 }}>
+        <View style={{ marginTop: 5 }}>
           <Progress.Bar
             progress={total_fat_eaten_for_day / Number(macros.fat)}
             width={60}
@@ -184,7 +161,7 @@ const CalorieTrackerMacros: React.FC<CalorieTackerMacrosProps> = ({
             unfilledColor={colors.background}
             borderColor={colors.background}
           />
-        </View> */}
+        </View>
         <Text
           style={{
             fontFamily: font_family.font_semibold,

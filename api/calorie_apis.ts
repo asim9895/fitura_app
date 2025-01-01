@@ -1,15 +1,15 @@
-import { SingleStepEntry } from "@/types";
-import { steps_file_path } from "@/utils/file_paths";
+import { SingleCalorieEatenEntry, SingleStepEntry } from "@/types";
+import { calorie_file_path } from "@/utils/file_paths";
 import { todays_date } from "@/utils/variables";
 import { isSameDay } from "date-fns";
 import * as FileSystem from "expo-file-system";
 import * as uuid from "uuid";
 
-export const read_steps_data_api = async () => {
+export const read_calories_data_api = async () => {
   try {
-    const fileExists = await FileSystem.getInfoAsync(steps_file_path);
+    const fileExists = await FileSystem.getInfoAsync(calorie_file_path);
     if (fileExists.exists) {
-      const chunk = await FileSystem.readAsStringAsync(steps_file_path);
+      const chunk = await FileSystem.readAsStringAsync(calorie_file_path);
 
       return JSON.parse(chunk);
     } else {
@@ -21,45 +21,47 @@ export const read_steps_data_api = async () => {
   }
 };
 
-export const read_selected_date_steps_data_api = async (
+export const read_selected_date_calories_data_api = async (
   selected_date: Date
 ) => {
-  const data = await read_steps_data_api();
-  const steps_of_selected_date = data.records.filter((record: any) => {
+  const data = await read_calories_data_api();
+  const calories_of_selected_date = data.records.filter((record: any) => {
     return isSameDay(new Date(record.date), selected_date);
   });
-  return steps_of_selected_date[0]?.data === undefined ||
-    steps_of_selected_date[0]?.data === null
+  return calories_of_selected_date[0]?.data === undefined ||
+    calories_of_selected_date[0]?.data === null
     ? []
-    : steps_of_selected_date[0]?.data;
+    : calories_of_selected_date[0]?.data;
 };
 
-export const update_steps_data_api = async (
-  new_steps_data: SingleStepEntry,
+export const add_calories_data_api = async (
+  new_calorie_data: SingleCalorieEatenEntry[],
   selected_date: Date
 ) => {
   try {
-    const data = await read_steps_data_api();
-
+    const data = await read_calories_data_api();
     const recordIndex = data.records.findIndex((record: any) =>
       isSameDay(new Date(record.date), selected_date)
     );
 
     if (recordIndex >= 0) {
-      // Update existing record
-      data.records[recordIndex].data.push(new_steps_data);
+      // Update existing record with the whole array
+      data.records[recordIndex].data = [
+        ...data.records[recordIndex].data,
+        ...new_calorie_data,
+      ];
     } else {
-      // Add new record for today
+      // Add new record with the whole array
       data.records.push({
         id: uuid.v4(),
         date: selected_date,
-        data: [new_steps_data],
+        data: [...new_calorie_data],
       });
     }
 
     // Write updated data back to the file
     await FileSystem.writeAsStringAsync(
-      steps_file_path,
+      calorie_file_path,
       JSON.stringify(data, null, 2)
     );
 
@@ -70,11 +72,11 @@ export const update_steps_data_api = async (
   }
 };
 
-export const remove_all_step_data = async () => {
+export const remove_all_calorie_data = async () => {
   try {
     const data = { records: [] };
     await FileSystem.writeAsStringAsync(
-      steps_file_path,
+      calorie_file_path,
       JSON.stringify(data, null, 2)
     );
   } catch (error) {
@@ -84,26 +86,26 @@ export const remove_all_step_data = async () => {
 
 export const remove_selected_date_step_data = async (
   selected_date: Date,
-  step_entry_id: string
+  calorie_entry_id: string
 ) => {
   try {
-    const data = await read_steps_data_api();
+    const data = await read_calories_data_api();
     const recordIndex = data.records.findIndex((record: any) =>
       isSameDay(new Date(record.date), selected_date)
     );
 
     if (recordIndex >= 0) {
       // Find the specific step entry in the data array
-      const stepEntryIndex = data.records[recordIndex].data.findIndex(
-        (entry: SingleStepEntry) => entry.id === step_entry_id
+      const calorieEntryIndex = data.records[recordIndex].data.findIndex(
+        (entry: SingleStepEntry) => entry.id === calorie_entry_id
       );
 
-      if (stepEntryIndex >= 0) {
+      if (calorieEntryIndex >= 0) {
         // Remove the specific step entry
-        data.records[recordIndex].data.splice(stepEntryIndex, 1);
+        data.records[recordIndex].data.splice(calorieEntryIndex, 1);
 
         await FileSystem.writeAsStringAsync(
-          steps_file_path,
+          calorie_file_path,
           JSON.stringify(data, null, 2)
         );
 

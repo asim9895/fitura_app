@@ -29,6 +29,25 @@ export const formatDate = (dateString: any) => {
   return [day, weekDay, month, year];
 };
 
-export const format_number = (num: number): string => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// export const format_number = (num: number): string => {
+//   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// };
+
+export const format_number = (num: number | string | undefined): string => {
+  // Handle undefined/null cases
+  if (num === undefined || num === null) return "0";
+
+  // Convert to number and handle NaN
+  const numberValue = Number(num);
+  if (isNaN(numberValue)) return "0";
+
+  // Handle negative numbers
+  const absoluteValue = Math.abs(numberValue);
+  const sign = numberValue < 0 ? "-" : "";
+
+  // Format with commas
+  const formatted = absoluteValue
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return sign + formatted;
 };

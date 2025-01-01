@@ -4,6 +4,7 @@ import * as Progress from "react-native-progress";
 import { useNavigation } from "expo-router";
 import { set_user_profile } from "@/redux/slices/user_slice";
 import { useAppDispatch } from "@/hooks/redux_hooks";
+import { remove_all_step_data } from "@/api/steps_apis";
 
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
@@ -26,6 +27,10 @@ const SetupProfilePage = () => {
       })
     );
   };
+
+  const add_or_update_food = async () => {
+    await remove_all_step_data();
+  };
   return (
     <View
       style={{
@@ -35,6 +40,7 @@ const SetupProfilePage = () => {
         backgroundColor: "#ffffff",
       }}
     >
+      <Button onPress={add_or_update_food} title="Remove All Step Data" />
       <Text>SetupProfilePage</Text>
       <Progress.Bar
         progress={progress}

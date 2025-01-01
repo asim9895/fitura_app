@@ -13,7 +13,6 @@ import { set_selected_date } from "@/redux/slices/user_slice";
 import { todays_date } from "@/utils/variables";
 import { useAppDispatch } from "@/hooks/redux_hooks";
 import { fonts } from "@/data/fonts";
-import { read_weight_data_api } from "@/api/weight_apis";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -51,6 +50,22 @@ function MainApp({ loaded }: { loaded: boolean }) {
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="setup-profile" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="add-activity-log"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="add-calorie-log"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="add-calorie"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="add-activity"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

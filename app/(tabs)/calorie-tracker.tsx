@@ -13,7 +13,7 @@ import DatesList from "@/components/DatesList";
 import { useAppSelector } from "@/hooks/redux_hooks";
 import * as Progress from "react-native-progress";
 import DateHeader from "@/components/DateHeader";
-import { calorie_burned, calorie_eaten } from "@/data/test";
+import { calorie_burned } from "@/data/test";
 import { icons } from "@/data/icons";
 import { format_number } from "@/utils/variables";
 import { isSameDay } from "date-fns";
@@ -48,6 +48,11 @@ import CalorieTrackerGoalSummary from "@/components/calorie_tracker_components/C
 import CalorieTrackerBudgetCalculator from "@/components/calorie_tracker_components/CalorieTrackerBudgetCalculator";
 
 import CaloriesAndBurnedListing from "@/components/calorie_tracker_components/CaloriesAndBurnedListing";
+import FloatingActionButton from "@/components/FloatingActionButton";
+import {
+  read_calories_data_api,
+  read_selected_date_calories_data_api,
+} from "@/api/calorie_apis";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -60,6 +65,10 @@ const CalorieTrackerPage = () => {
   const [calorie_eaten_data, setcalorie_eaten_data] = useState<
     SingleCalorieEatenEntry[]
   >([]);
+  const [all_calorie_data, setall_calorie_data] = useState<CalorieEatenData[]>(
+    []
+  );
+
   const [calorie_burned_data, setcalorie_burned_data] = useState<
     SingleCalorieBurnedEntry[]
   >([]);
@@ -84,20 +93,31 @@ const CalorieTrackerPage = () => {
   });
   const [dated_weight, setdated_weight] = useState(weight);
 
-  const total_calorie_eaten_for_day = calorie_eaten
-    .filter((data: any) => {
-      const date = new Date(data.date);
-      return isSameDay(date, selected_date);
-    })
-    .reduce(
-      (total, calorie_eaten) =>
-        total +
-        calorie_eaten.data.reduce(
-          (total, calorie) => total + calorie.calorie,
-          0
-        ),
-      0
+  const fetch_selected_date_calorie_data = async (selected_date: Date) => {
+    const selected_day_steps_data = await read_selected_date_calories_data_api(
+      selected_date
     );
+
+    setcalorie_eaten_data(selected_day_steps_data);
+  };
+
+  const fetch_all_steps_data = async () => {
+    const all_steps_data = await read_calories_data_api();
+
+    setall_calorie_data(all_steps_data?.records);
+  };
+  useEffect(() => {
+    fetch_selected_date_calorie_data(selected_date);
+  }, [selected_date]);
+
+  useEffect(() => {
+    fetch_all_steps_data();
+  }, []);
+
+  const total_calorie_eaten_for_day = calorie_eaten_data.reduce(
+    (total: any, food: any) => total + food.calorie,
+    0
+  );
 
   const total_calorie_burned_for_day = calorie_burned
     .filter((data: CalorieBurnedData) => {
@@ -113,24 +133,6 @@ const CalorieTrackerPage = () => {
         ),
       0
     );
-
-  const set_calorie_eaten_data = (selected_date: Date) => {
-    const intake_of_selected_date: CalorieEatenData[] = calorie_eaten.filter(
-      (step) => {
-        return isSameDay(new Date(step.date), selected_date);
-      }
-    );
-
-    if (intake_of_selected_date?.length > 0) {
-      setcalorie_eaten_data(intake_of_selected_date[0]?.data);
-    } else {
-      setcalorie_eaten_data([]);
-    }
-  };
-
-  useEffect(() => {
-    set_calorie_eaten_data(selected_date);
-  }, [selected_date]);
 
   const complete_calories_burned =
     total_calorie_burned_for_day + Number(totalCalories);
@@ -210,88 +212,90 @@ const CalorieTrackerPage = () => {
   );
 
   const calculateCalorieGoals = async () => {
-    const promises = calorie_eaten.map(async (calories: CalorieEatenData) => {
-      const date = new Date(calories.date);
-      const calories_of_day = calories.data.reduce(
-        (total: any, item: SingleCalorieEatenEntry) => {
-          return total + item.calorie;
-        },
-        0
-      );
-      const total_calorie_burned_for_day = calorie_burned
-        .filter((data: CalorieBurnedData) => {
-          const day_date = new Date(data.date);
-          return isSameDay(day_date, date);
-        })
-        .reduce(
-          (total, calorie_burned) =>
-            total +
-            calorie_burned.data.reduce(
-              (total, calorie) => total + calorie.burned,
-              0
-            ),
+    const promises = all_calorie_data.map(
+      async (calories: CalorieEatenData) => {
+        const date = new Date(calories.date);
+        const calories_of_day = calories.data.reduce(
+          (total: any, item: SingleCalorieEatenEntry) => {
+            return total + item.calorie;
+          },
           0
         );
+        const total_calorie_burned_for_day = calorie_burned
+          .filter((data: CalorieBurnedData) => {
+            const day_date = new Date(data.date);
+            return isSameDay(day_date, date);
+          })
+          .reduce(
+            (total, calorie_burned) =>
+              total +
+              calorie_burned.data.reduce(
+                (total, calorie) => total + calorie.burned,
+                0
+              ),
+            0
+          );
 
-      const all_steps_data = await read_steps_data_api();
-      const selected_day_steps_data = await read_selected_date_steps_data_api(
-        date
-      );
+        const all_steps_data = await read_steps_data_api();
+        const selected_day_steps_data = await read_selected_date_steps_data_api(
+          date
+        );
 
-      const all_weights = await read_weight_data_api();
-      const dated_weight = all_weights.records?.filter((item: any) => {
-        const itemDate = new Date(item?.date).getDate();
-        const compareDate = new Date(date).getDate();
-        return itemDate <= compareDate;
-      });
+        const all_weights = await read_weight_data_api();
+        const dated_weight = all_weights.records?.filter((item: any) => {
+          const itemDate = new Date(item?.date).getDate();
+          const compareDate = new Date(date).getDate();
+          return itemDate <= compareDate;
+        });
 
-      const weight_for_date =
-        dated_weight?.length === 0 ? user.weight : dated_weight[0].weight;
-      const calorie_summary = calories_count_data(
-        weight_for_date,
-        user.weight_loss_intensity,
-        user.height,
-        user.activity_factor,
-        user.age,
-        user.gender
-      );
-      const maintainance_calories = calorie_summary.maintainance_calories;
-      const target_calories = calorie_summary.calories_to_loose_weight;
-      const current_deficiet = Number(calorie_summary.daily_deficiet);
+        const weight_for_date =
+          dated_weight?.length === 0 ? user.weight : dated_weight[0].weight;
+        const calorie_summary = calories_count_data(
+          weight_for_date,
+          user.weight_loss_intensity,
+          user.height,
+          user.activity_factor,
+          user.age,
+          user.gender
+        );
+        const maintainance_calories = calorie_summary.maintainance_calories;
+        const target_calories = calorie_summary.calories_to_loose_weight;
+        const current_deficiet = Number(calorie_summary.daily_deficiet);
 
-      const total_steps = total_steps_for_day(all_steps_data.records, date);
+        const total_steps = total_steps_for_day(all_steps_data.records, date);
 
-      const calories_burned_by_steps = total_calories_burned_by_steps(
-        weight_for_date,
-        all_steps_data?.records,
-        selected_day_steps_data,
-        date,
-        total_steps
-      );
+        const calories_burned_by_steps = total_calories_burned_by_steps(
+          weight_for_date,
+          all_steps_data?.records,
+          selected_day_steps_data,
+          date,
+          total_steps
+        );
 
-      const maintainance_calories_deficiet =
-        Number(maintainance_calories) -
-        calories_of_day +
-        calories_burned_by_steps.totalCalories +
-        total_calorie_burned_for_day;
+        const maintainance_calories_deficiet =
+          Number(maintainance_calories) -
+          calories_of_day +
+          calories_burned_by_steps.totalCalories +
+          total_calorie_burned_for_day;
 
-      const deficit =
-        Number(target_calories) -
-        calories_of_day +
-        calories_burned_by_steps.totalCalories +
-        total_calorie_burned_for_day;
+        const deficit =
+          Number(target_calories) -
+          calories_of_day +
+          calories_burned_by_steps.totalCalories +
+          total_calorie_burned_for_day;
 
-      const count =
-        maintainance_calories_deficiet < 0 ? 0 : current_deficiet + deficit;
+        const count =
+          maintainance_calories_deficiet < 0 ? 0 : current_deficiet + deficit;
 
-      const condition = deficit < 0 ? false : true;
+        const condition = deficit < 0 ? false : true;
 
-      return {
-        date: date,
-        count: count,
-        condition: condition,
-      };
-    });
+        return {
+          date: date,
+          count: count,
+          condition: condition,
+        };
+      }
+    );
     // Filter out entries with 0 deficit before setting state
 
     const resolved_data = await Promise.all(promises);
@@ -305,7 +309,7 @@ const CalorieTrackerPage = () => {
   // Add useEffect to trigger the calculation
   useEffect(() => {
     calculateCalorieGoals();
-  }, [calorie_eaten, user, complete_calories_burned]);
+  }, [all_calorie_data, user, complete_calories_burned]);
 
   return (
     <View style={[globalStyles.background]}>
@@ -327,6 +331,8 @@ const CalorieTrackerPage = () => {
         achievement_dates={all_calorie_of_achieved_goal}
         route="calorie"
       />
+
+      <FloatingActionButton />
 
       <ScrollView
         style={globalStyles.screen_spacing}
@@ -354,7 +360,7 @@ const CalorieTrackerPage = () => {
             </Text>
           </View>
 
-          {/* <View style={{ marginTop: 10, marginBottom: 0 }}>
+          <View style={{ marginTop: 10, marginBottom: 0 }}>
             <Progress.Bar
               progress={progress_percent_calculator}
               width={Dimensions.get("window").width / 1.2}
@@ -364,7 +370,7 @@ const CalorieTrackerPage = () => {
               unfilledColor={colors.background}
               borderColor={colors.background}
             />
-          </View> */}
+          </View>
 
           <CalorieTrackerBudgetCalculator
             calorie_count={calorie_count}
@@ -381,18 +387,19 @@ const CalorieTrackerPage = () => {
           <CalorieTrackerGoalSummary weight_goal_data={weight_goal_data} />
         </View>
 
-        <CaloriesAndBurnedListing
-          current_selection={current_selection}
-          setcurrent_selection={setcurrent_selection}
-          selected_date={selected_date}
-          calorie_eaten={calorie_eaten}
-          calorie_burned_data={calorie_burned_data}
-          complete_calories_burned={complete_calories_burned}
-          totalCalories={totalCalories}
-          total_calorie_burned_for_day={total_calorie_burned_for_day}
-          total_calorie_eaten_for_day={total_calorie_eaten_for_day}
-          macros={macros}
-        />
+        <View style={{ paddingBottom: 150 }}>
+          <CaloriesAndBurnedListing
+            current_selection={current_selection}
+            setcurrent_selection={setcurrent_selection}
+            calorie_eaten_data={calorie_eaten_data}
+            calorie_burned_data={calorie_burned_data}
+            complete_calories_burned={complete_calories_burned}
+            totalCalories={totalCalories}
+            total_calorie_burned_for_day={total_calorie_burned_for_day}
+            total_calorie_eaten_for_day={total_calorie_eaten_for_day}
+            macros={macros}
+          />
+        </View>
       </ScrollView>
     </View>
   );

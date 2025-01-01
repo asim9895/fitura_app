@@ -39,21 +39,6 @@ const TabsLayout = () => {
         name="calorie-tracker"
         options={{
           tabBarLabel: "Calories",
-          // transitionSpec: {
-          //   animation: "timing",
-          //   config: {
-          //     duration: 150,
-          //     easing: Easing.inOut(Easing.ease),
-          //   },
-          // },
-          // sceneStyleInterpolator: ({ current }) => ({
-          //   sceneStyle: {
-          //     opacity: current.progress.interpolate({
-          //       inputRange: [-1, 0, 1],
-          //       outputRange: [0, 1, 0],
-          //     }),
-          //   },
-          // }),
           tabBarIcon: ({ color, focused }) => (
             <Image
               source={focused ? icons.calorie_filled : icons.calorie_outlined}
@@ -67,21 +52,6 @@ const TabsLayout = () => {
         name="steps-tracker"
         options={{
           tabBarLabel: "Steps",
-          // transitionSpec: {
-          //   animation: "timing",
-          //   config: {
-          //     duration: 150,
-          //     easing: Easing.inOut(Easing.ease),
-          //   },
-          // },
-          // sceneStyleInterpolator: ({ current }) => ({
-          //   sceneStyle: {
-          //     opacity: current.progress.interpolate({
-          //       inputRange: [-1, 0, 1],
-          //       outputRange: [0, 1, 0],
-          //     }),
-          //   },
-          // }),
           tabBarIcon: ({ focused }) => (
             <Image
               source={focused ? icons.steps_filled : icons.steps_outlined}
@@ -95,21 +65,6 @@ const TabsLayout = () => {
         name="water-tracker"
         options={{
           tabBarLabel: "Water",
-          // transitionSpec: {
-          //   animation: "timing",
-          //   config: {
-          //     duration: 150,
-          //     easing: Easing.inOut(Easing.ease),
-          //   },
-          // },
-          // sceneStyleInterpolator: ({ current }) => ({
-          //   sceneStyle: {
-          //     opacity: current.progress.interpolate({
-          //       inputRange: [-1, 0, 1],
-          //       outputRange: [0, 1, 0],
-          //     }),
-          //   },
-          // }),
           tabBarIcon: ({ focused }) => (
             <Image
               source={focused ? icons.water_filled : icons.water_outlined}
@@ -123,22 +78,6 @@ const TabsLayout = () => {
         name="profile"
         options={{
           tabBarLabel: "Profile",
-          // transitionSpec: {
-          //   animation: "timing",
-          //   config: {
-          //     duration: 150,
-          //     easing: Easing.inOut(Easing.ease),
-          //   },
-          // },
-          // sceneStyleInterpolator: ({ current }) => ({
-          //   sceneStyle: {
-          //     opacity: current.progress.interpolate({
-          //       inputRange: [-1, 0, 1],
-          //       outputRange: [0, 1, 0],
-          //     }),
-          //   },
-          // }),
-
           tabBarIcon: ({ focused }) => (
             <Image
               source={focused ? icons.profile_filled : icons.profile_outlined}
