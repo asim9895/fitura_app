@@ -15,6 +15,7 @@ import { format_number } from "@/utils/variables";
 import {
   add_or_update_weight_of_selected_data_api,
   read_weight_data_api,
+  remove_all_weight_data,
 } from "@/api/weight_apis";
 import { icons } from "@/data/icons";
 import { profileStylesWrapper } from "@/styles/app/tabs/profile.style";
@@ -27,6 +28,8 @@ import {
   read_foods_data_api,
   remove_all_food_data,
 } from "@/api/food_apis";
+import { remove_all_calorie_data } from "@/api/calorie_apis";
+import { remove_all_step_data } from "@/api/steps_apis";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -56,7 +59,11 @@ const ProfilePage = () => {
     );
   };
 
-  const clearProfile = () => {
+  const clearProfile = async () => {
+    await remove_all_food_data();
+    await remove_all_calorie_data();
+    await remove_all_step_data();
+    await remove_all_weight_data();
     dispatch(clear_user_profile());
     navigation.navigate("setup-profile" as never);
   };
@@ -160,12 +167,13 @@ const ProfilePage = () => {
         <Button onPress={add_or_update_weight_data} title="Add Activity" />
         <Button onPress={add_or_update_food} title="Add Food" />
         <Button title="Update Profile" onPress={updateProfile} />
+        <Button title="Clear Profile" onPress={clearProfile} />
       </ScrollView>
 
       {/* <Button onPress={add_or_update_weight_data} title="Update Weight" />
 
      
-      <Button title="Clear Profile" onPress={clearProfile} />
+      
       <Button
         title="Go to Setup Profile"
         onPress={() => {

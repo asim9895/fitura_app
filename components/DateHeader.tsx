@@ -31,7 +31,7 @@ const DateHeader: React.FC<{ days: number }> = ({ days }) => {
         justifyContent: "space-between",
         marginHorizontal: 20,
         alignItems: "center",
-        marginTop: 15,
+        marginTop: 0,
       }}
     >
       <Text

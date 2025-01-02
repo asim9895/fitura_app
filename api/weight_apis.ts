@@ -1,5 +1,9 @@
 import { SingleStepEntry } from "@/types";
-import { steps_file_path, water_file_path } from "@/utils/file_paths";
+import {
+  steps_file_path,
+  water_file_path,
+  weight_file_path,
+} from "@/utils/file_paths";
 import { todays_date } from "@/utils/variables";
 import { isSameDay } from "date-fns";
 import * as FileSystem from "expo-file-system";
@@ -80,4 +84,16 @@ export const add_or_update_weight_of_selected_data_api = async (
   );
 
   return { status: 200 };
+};
+
+export const remove_all_weight_data = async () => {
+  try {
+    const data = { records: [] };
+    await FileSystem.writeAsStringAsync(
+      weight_file_path,
+      JSON.stringify(data, null, 2)
+    );
+  } catch (error) {
+    console.error("Error removing all steps data:", error);
+  }
 };

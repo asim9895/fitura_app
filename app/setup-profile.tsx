@@ -2,9 +2,16 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import * as Progress from "react-native-progress";
 import { useNavigation } from "expo-router";
-import { set_user_profile } from "@/redux/slices/user_slice";
+import {
+  clear_user_profile,
+  set_user_profile,
+} from "@/redux/slices/user_slice";
 import { useAppDispatch } from "@/hooks/redux_hooks";
 import { remove_all_step_data } from "@/api/steps_apis";
+import { todays_date } from "@/utils/variables";
+import { remove_all_food_data } from "@/api/food_apis";
+import { remove_all_calorie_data } from "@/api/calorie_apis";
+import { remove_all_weight_data } from "@/api/weight_apis";
 
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
@@ -20,7 +27,7 @@ const SetupProfilePage = () => {
         weight: 90.55,
         gender: "Female",
         profile_completed: true,
-        creation_date: new Date("2024-12-23T13:42:30.685Z"),
+        creation_date: todays_date,
         weight_loss_intensity: 0.75,
         target_weight: 72,
         activity_factor: "sedentary",
@@ -30,6 +37,15 @@ const SetupProfilePage = () => {
 
   const add_or_update_food = async () => {
     await remove_all_step_data();
+  };
+
+  const clearProfile = async () => {
+    await remove_all_food_data();
+    await remove_all_calorie_data();
+    await remove_all_step_data();
+    await remove_all_weight_data();
+    dispatch(clear_user_profile());
+    navigation.navigate("setup-profile" as never);
   };
   return (
     <View
@@ -61,6 +77,7 @@ const SetupProfilePage = () => {
           updateProfile();
         }}
       />
+      <Button title="Clear Profile" onPress={clearProfile} />
       {progress === 1 && (
         <Button
           title="Go to Dashboard"

@@ -9,6 +9,7 @@ import { format_number } from "@/utils/variables";
 import BurnedCaloriesListing from "./BurnedCaloriesListing";
 import EatenCaloriesListing from "./EatenCaloriesListing";
 import CalorieTrackerMacros from "./CalorieTrackerMacros";
+import { font_family } from "@/theme/font_family";
 
 interface CaloriesAndBurnedListingProps {
   current_selection: string;
@@ -128,7 +129,15 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
                 },
               ]}
             >
-              <Text style={{ color: colors.text }}>Loading...</Text>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  padding: 30,
+                }}
+              >
+                Loading...
+              </Text>
             </View>
           ) : (
             <EatenCaloriesListing

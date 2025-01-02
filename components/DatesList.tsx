@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     justifyContent: "space-around",
     paddingHorizontal: 10,
-    height: 95,
+    height: 110,
   },
   dayWrapper: {
     flex: 1,
