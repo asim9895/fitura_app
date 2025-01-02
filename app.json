@@ -3,7 +3,6 @@
     "name": "fitura_app",
     "slug": "fitura_app",
     "platforms": ["ios", "android", "web"],
-
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -41,7 +40,6 @@
       "typedRoutes": true
     },
     "extra": {
-      "googleClientId": "559994151423-r6ara5ouu8jtb4pgfmgbtfvb1nrv0595.apps.googleusercontent.com",
       "router": {
         "origin": false
       },

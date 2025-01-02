@@ -84,15 +84,18 @@ export const remove_all_calorie_data = async () => {
   }
 };
 
-export const remove_selected_date_step_data = async (
+export const remove_selected_date_calorie_data = async (
   selected_date: Date,
   calorie_entry_id: string
 ) => {
   try {
     const data = await read_calories_data_api();
+    console.log(data);
     const recordIndex = data.records.findIndex((record: any) =>
       isSameDay(new Date(record.date), selected_date)
     );
+
+    console.log(recordIndex);
 
     if (recordIndex >= 0) {
       // Find the specific step entry in the data array
@@ -110,12 +113,21 @@ export const remove_selected_date_step_data = async (
         );
 
         // Return the updated steps for the selected date
-        return data.records[recordIndex]?.data || [];
+        return {
+          data: data.records[recordIndex]?.data || [],
+          status: 200,
+        };
       }
     }
-    return [];
+    return {
+      data: [],
+      status: 500,
+    };
   } catch (error) {
     console.error("Error removing selected step entry:", error);
-    return [];
+    return {
+      data: [],
+      status: 500,
+    };
   }
 };

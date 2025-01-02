@@ -17,10 +17,11 @@ interface CaloriesAndBurnedListingProps {
   complete_calories_burned: number;
   totalCalories: number;
   macros: any;
-
   calorie_eaten_data: any;
   calorie_burned_data: any;
   total_calorie_burned_for_day: number;
+  fetch_selected_date_calorie_data: any;
+  calorie_eaten_data_loading: boolean;
 }
 
 const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
@@ -33,6 +34,8 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
   macros,
   calorie_eaten_data,
   calorie_burned_data,
+  fetch_selected_date_calorie_data,
+  calorie_eaten_data_loading,
 }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
   const globalStyles = globalStylesWrapper(colors);
@@ -114,7 +117,27 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
             macros={macros}
             calorie_eaten_data={calorie_eaten_data}
           />
-          <EatenCaloriesListing calorie_eaten_data={calorie_eaten_data} />
+          {calorie_eaten_data_loading ? (
+            <View
+              style={[
+                globalStyles.row_center_center,
+                {
+                  padding: 10,
+                  flex: 1,
+                  backgroundColor: colors.foreground,
+                },
+              ]}
+            >
+              <Text style={{ color: colors.text }}>Loading...</Text>
+            </View>
+          ) : (
+            <EatenCaloriesListing
+              calorie_eaten_data={calorie_eaten_data}
+              fetch_selected_date_calorie_data={
+                fetch_selected_date_calorie_data
+              }
+            />
+          )}
         </View>
       ) : (
         <View

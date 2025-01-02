@@ -65,6 +65,8 @@ const CalorieTrackerPage = () => {
   const [calorie_eaten_data, setcalorie_eaten_data] = useState<
     SingleCalorieEatenEntry[]
   >([]);
+  const [calorie_eaten_data_loading, setcalorie_eaten_data_loading] =
+    useState(false);
   const [all_calorie_data, setall_calorie_data] = useState<CalorieEatenData[]>(
     []
   );
@@ -94,11 +96,13 @@ const CalorieTrackerPage = () => {
   const [dated_weight, setdated_weight] = useState(weight);
 
   const fetch_selected_date_calorie_data = async (selected_date: Date) => {
+    setcalorie_eaten_data_loading(true);
     const selected_day_steps_data = await read_selected_date_calories_data_api(
       selected_date
     );
 
     setcalorie_eaten_data(selected_day_steps_data);
+    setcalorie_eaten_data_loading(false);
   };
 
   const fetch_all_steps_data = async () => {
@@ -309,7 +313,7 @@ const CalorieTrackerPage = () => {
   // Add useEffect to trigger the calculation
   useEffect(() => {
     calculateCalorieGoals();
-  }, [all_calorie_data, user, complete_calories_burned]);
+  }, [all_calorie_data, user, complete_calories_burned, calorie_eaten_data]);
 
   return (
     <View style={[globalStyles.background]}>
@@ -398,6 +402,8 @@ const CalorieTrackerPage = () => {
             total_calorie_burned_for_day={total_calorie_burned_for_day}
             total_calorie_eaten_for_day={total_calorie_eaten_for_day}
             macros={macros}
+            fetch_selected_date_calorie_data={fetch_selected_date_calorie_data}
+            calorie_eaten_data_loading={calorie_eaten_data_loading}
           />
         </View>
       </ScrollView>

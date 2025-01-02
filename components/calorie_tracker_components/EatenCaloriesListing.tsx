@@ -11,18 +11,18 @@ import { AppRootState } from "@/redux/store";
 import { useAppSelector } from "@/hooks/redux_hooks";
 import { font_family } from "@/theme/font_family";
 import CalorieEatenCollapsable from "./CalorieEatenCollapsable";
-import { Image } from "react-native";
-import { icons } from "@/data/icons";
 import CalorieOptionModal from "../modals/CalorieOptionModal";
+import SingleCalorieItem from "./SingleCalorieItem";
+import { remove_selected_date_calorie_data } from "@/api/calorie_apis";
 
 const EatenCaloriesListing: React.FC<{
   calorie_eaten_data: SingleCalorieEatenEntry[];
-}> = ({ calorie_eaten_data }) => {
+  fetch_selected_date_calorie_data: any;
+}> = ({ calorie_eaten_data, fetch_selected_date_calorie_data }) => {
   const [show_options, setshow_options] = useState(false);
-  const [current_selection, setcurrent_selection] = useState<string | null>(
-    null
-  );
+  const [current_calorie_id, setcurrent_calorie_id] = useState("");
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
+  const { selected_date } = useAppSelector((state: AppRootState) => state.user);
   const snack_data = calorie_eaten_data.filter(
     (item) => item.day_time === "Snack"
   );
@@ -35,13 +35,28 @@ const EatenCaloriesListing: React.FC<{
   const dinner_data = calorie_eaten_data.filter(
     (item) => item.day_time === "Dinner"
   );
+
+  const remove_calorie = async () => {
+    console.log(selected_date, current_calorie_id);
+    const request = await remove_selected_date_calorie_data(
+      selected_date,
+      current_calorie_id
+    );
+
+    console.log(request);
+    if (request.status === 200) {
+      await fetch_selected_date_calorie_data(selected_date);
+    } else {
+      console.log("error");
+    }
+  };
   return (
     <View>
       <CalorieOptionModal
-        setcurrent_selection={setcurrent_selection}
-        current_selection={current_selection}
         setshow_options={setshow_options}
         show_options={show_options}
+        setcurrent_calorie_id={setcurrent_calorie_id}
+        remove_calorie={remove_calorie}
       />
       {calorie_eaten_data?.length > 0 ? (
         <View style={{ marginTop: 20 }}>
@@ -55,69 +70,12 @@ const EatenCaloriesListing: React.FC<{
             >
               {snack_data?.map((food: SingleCalorieEatenEntry, index) => {
                 return (
-                  <TouchableOpacity
+                  <SingleCalorieItem
                     key={food.id}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingVertical: 12,
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.foreground,
-                    }}
-                    onPress={() => setshow_options(true)}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <View>
-                        <Image
-                          source={icons.platter}
-                          style={{ width: 30, height: 30, marginRight: 15 }}
-                          tintColor={colors.light_gray}
-                        />
-                      </View>
-                      <View>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_semibold,
-                            color: colors.text,
-                            fontSize: 16,
-                            width: 300,
-                          }}
-                        >
-                          {food.name}
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.serving_size}
-                          {food.serving_unit} serving | {food.calorie} kcal
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.protein}g protein | {food.carbs}g carbs |{" "}
-                          {food.fat}g fat
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
+                    food={food}
+                    setshow_options={setshow_options}
+                    setcurrent_calorie_id={setcurrent_calorie_id}
+                  />
                 );
               })}
             </CalorieEatenCollapsable>
@@ -132,68 +90,12 @@ const EatenCaloriesListing: React.FC<{
             >
               {breakfast_data?.map((food: SingleCalorieEatenEntry, index) => {
                 return (
-                  <View
+                  <SingleCalorieItem
                     key={food.id}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingVertical: 12,
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.foreground,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableOpacity>
-                        <Image
-                          source={icons.platter}
-                          style={{ width: 30, height: 30, marginRight: 15 }}
-                          tintColor={colors.light_gray}
-                        />
-                      </TouchableOpacity>
-                      <View>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_semibold,
-                            color: colors.text,
-                            fontSize: 16,
-                            width: 300,
-                          }}
-                        >
-                          {food.name}
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.serving_size}
-                          {food.serving_unit} serving | {food.calorie} kcal
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.protein}g protein | {food.carbs}g carbs |{" "}
-                          {food.fat}g fat
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
+                    food={food}
+                    setcurrent_calorie_id={setcurrent_calorie_id}
+                    setshow_options={setshow_options}
+                  />
                 );
               })}
             </CalorieEatenCollapsable>
@@ -208,68 +110,12 @@ const EatenCaloriesListing: React.FC<{
             >
               {lunch_data?.map((food: SingleCalorieEatenEntry, index) => {
                 return (
-                  <View
+                  <SingleCalorieItem
                     key={food.id}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingVertical: 12,
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.foreground,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableOpacity>
-                        <Image
-                          source={icons.platter}
-                          style={{ width: 30, height: 30, marginRight: 15 }}
-                          tintColor={colors.light_gray}
-                        />
-                      </TouchableOpacity>
-                      <View>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_semibold,
-                            color: colors.text,
-                            fontSize: 16,
-                            width: 300,
-                          }}
-                        >
-                          {food.name}
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.serving_size}
-                          {food.serving_unit} serving | {food.calorie} kcal
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.protein}g protein | {food.carbs}g carbs |{" "}
-                          {food.fat}g fat
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
+                    food={food}
+                    setcurrent_calorie_id={setcurrent_calorie_id}
+                    setshow_options={setshow_options}
+                  />
                 );
               })}
             </CalorieEatenCollapsable>
@@ -284,68 +130,12 @@ const EatenCaloriesListing: React.FC<{
             >
               {dinner_data?.map((food: SingleCalorieEatenEntry, index) => {
                 return (
-                  <View
-                    key={index}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingVertical: 12,
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.foreground,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TouchableOpacity>
-                        <Image
-                          source={icons.platter}
-                          style={{ width: 30, height: 30, marginRight: 15 }}
-                          tintColor={colors.light_gray}
-                        />
-                      </TouchableOpacity>
-                      <View>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_semibold,
-                            color: colors.text,
-                            fontSize: 16,
-                            width: 300,
-                          }}
-                        >
-                          {food.name}
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.serving_size}
-                          {food.serving_unit} serving | {food.calorie} kcal
-                        </Text>
-                        <Text
-                          numberOfLines={2}
-                          style={{
-                            fontFamily: font_family.font_medium,
-                            color: colors.light_gray,
-                            fontSize: 13,
-                            marginTop: 3,
-                          }}
-                        >
-                          {food.protein}g protein | {food.carbs}g carbs |{" "}
-                          {food.fat}g fat
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
+                  <SingleCalorieItem
+                    key={food.id}
+                    food={food}
+                    setcurrent_calorie_id={setcurrent_calorie_id}
+                    setshow_options={setshow_options}
+                  />
                 );
               })}
             </CalorieEatenCollapsable>

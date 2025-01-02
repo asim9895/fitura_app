@@ -8,15 +8,15 @@ import { font_family } from "@/theme/font_family";
 interface CalorieOptionModalProps {
   show_options: boolean;
   setshow_options: (show_options: boolean) => void;
-  setcurrent_selection: (selection: string | null) => void;
-  current_selection: string | null;
+  setcurrent_calorie_id: (id: string) => void;
+  remove_calorie: () => void;
 }
 
 const CalorieOptionModal: React.FC<CalorieOptionModalProps> = ({
   show_options,
   setshow_options,
-  current_selection,
-  setcurrent_selection,
+  setcurrent_calorie_id,
+  remove_calorie,
 }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
 
@@ -80,9 +80,9 @@ const CalorieOptionModal: React.FC<CalorieOptionModalProps> = ({
                 }}
               ></View>
               <TouchableOpacity
-                onPress={() => {
-                  // remove_all_step_data();
-                  setcurrent_selection(null);
+                onPress={async () => {
+                  await remove_calorie();
+                  setcurrent_calorie_id("");
                   setshow_options(false);
                 }}
                 style={{
@@ -120,7 +120,7 @@ const CalorieOptionModal: React.FC<CalorieOptionModalProps> = ({
             <View>
               <TouchableOpacity
                 onPress={() => {
-                  setcurrent_selection(null);
+                  setcurrent_calorie_id("");
                   setshow_options(false);
                 }}
                 style={{
