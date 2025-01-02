@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { SingleCalorieEatenEntry } from "@/types";
 import { AppRootState } from "@/redux/store";
 import { useAppSelector } from "@/hooks/redux_hooks";
@@ -13,10 +13,15 @@ import { font_family } from "@/theme/font_family";
 import CalorieEatenCollapsable from "./CalorieEatenCollapsable";
 import { Image } from "react-native";
 import { icons } from "@/data/icons";
+import CalorieOptionModal from "../modals/CalorieOptionModal";
 
 const EatenCaloriesListing: React.FC<{
   calorie_eaten_data: SingleCalorieEatenEntry[];
 }> = ({ calorie_eaten_data }) => {
+  const [show_options, setshow_options] = useState(false);
+  const [current_selection, setcurrent_selection] = useState<string | null>(
+    null
+  );
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
   const snack_data = calorie_eaten_data.filter(
     (item) => item.day_time === "Snack"
@@ -32,6 +37,12 @@ const EatenCaloriesListing: React.FC<{
   );
   return (
     <View>
+      <CalorieOptionModal
+        setcurrent_selection={setcurrent_selection}
+        current_selection={current_selection}
+        setshow_options={setshow_options}
+        show_options={show_options}
+      />
       {calorie_eaten_data?.length > 0 ? (
         <View style={{ marginTop: 20 }}>
           {snack_data?.length > 0 && (
@@ -44,7 +55,7 @@ const EatenCaloriesListing: React.FC<{
             >
               {snack_data?.map((food: SingleCalorieEatenEntry, index) => {
                 return (
-                  <View
+                  <TouchableOpacity
                     key={food.id}
                     style={{
                       flexDirection: "row",
@@ -53,6 +64,7 @@ const EatenCaloriesListing: React.FC<{
                       borderBottomWidth: 1,
                       borderBottomColor: colors.foreground,
                     }}
+                    onPress={() => setshow_options(true)}
                   >
                     <View
                       style={{
@@ -60,13 +72,13 @@ const EatenCaloriesListing: React.FC<{
                         alignItems: "center",
                       }}
                     >
-                      <TouchableOpacity>
+                      <View>
                         <Image
                           source={icons.platter}
                           style={{ width: 30, height: 30, marginRight: 15 }}
                           tintColor={colors.light_gray}
                         />
-                      </TouchableOpacity>
+                      </View>
                       <View>
                         <Text
                           numberOfLines={2}
@@ -105,7 +117,7 @@ const EatenCaloriesListing: React.FC<{
                         </Text>
                       </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 );
               })}
             </CalorieEatenCollapsable>

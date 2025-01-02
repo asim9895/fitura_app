@@ -60,7 +60,7 @@ const FloatingActionButton = () => {
     {
       icon: <MaterialCommunityIcons name="food" size={24} color="white" />,
       label: "Add Calories",
-      onPress: () => navigation.navigate("add-calorie" as never),
+      onPress: () => navigation.navigate("calorie-info/add-calorie" as never),
       backgroundColor: "#45B7D1",
     },
     {

@@ -59,7 +59,7 @@ function MainApp({ loaded }: { loaded: boolean }) {
         options={{ headerShown: false, animation: "simple_push" }}
       />
       <Stack.Screen
-        name="add-calorie"
+        name="calorie-info/add-calorie"
         options={{ headerShown: false, animation: "simple_push" }}
       />
       <Stack.Screen

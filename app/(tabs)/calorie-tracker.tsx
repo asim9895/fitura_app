@@ -48,7 +48,7 @@ import CalorieTrackerGoalSummary from "@/components/calorie_tracker_components/C
 import CalorieTrackerBudgetCalculator from "@/components/calorie_tracker_components/CalorieTrackerBudgetCalculator";
 
 import CaloriesAndBurnedListing from "@/components/calorie_tracker_components/CaloriesAndBurnedListing";
-import FloatingActionButton from "@/components/FloatingActionButton";
+import FloatingActionButton from "@/components/calorie_tracker_components/FloatingActionButton";
 import {
   read_calories_data_api,
   read_selected_date_calories_data_api,

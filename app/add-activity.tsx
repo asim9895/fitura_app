@@ -1,10 +1,11 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, Button } from "react-native";
+import React, { useState } from "react";
 
 const AddActivityPage = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
-    <View>
-      <Text>AddActivity</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Button title="Show Modal" onPress={() => setModalVisible(true)} />
     </View>
   );
 };

@@ -1,13 +1,7 @@
-import {
-  CalorieEatenData,
-  SingleCalorieEatenEntry,
-  SingleStepEntry,
-} from "@/types";
+import { SingleCalorieEatenEntry } from "@/types";
 import { food_file_path } from "@/utils/file_paths";
-import { todays_date } from "@/utils/variables";
 import { isSameDay } from "date-fns";
 import * as FileSystem from "expo-file-system";
-import * as uuid from "uuid";
 
 export const read_foods_data_api = async () => {
   try {

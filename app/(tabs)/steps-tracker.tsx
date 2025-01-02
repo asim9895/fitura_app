@@ -183,8 +183,8 @@ const StepsTrackerPage = () => {
           isVisible={add_step_modal}
           animationIn={"fadeIn"}
           animationOut={"fadeOut"}
-          backdropOpacity={0.5}
-          backdropColor={colors.foreground}
+          backdropOpacity={0.7}
+          backdropColor={colors.text_black}
         >
           <View
             style={{
@@ -195,7 +195,7 @@ const StepsTrackerPage = () => {
           >
             <View
               style={{
-                backgroundColor: colors.background,
+                backgroundColor: colors.foreground,
                 padding: 10,
                 borderRadius: 10,
                 width: "90%",
@@ -229,11 +229,13 @@ const StepsTrackerPage = () => {
                   color: colors.text,
                   fontFamily: font_family.font_semibold,
                   fontSize: 15,
-                  backgroundColor: colors.foreground,
+                  backgroundColor: colors.background,
                   padding: 10,
                   margin: 10,
                   marginTop: 4,
                   borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: colors.background,
                 }}
                 onChangeText={(value) => {
                   setadd_step((prev) => ({
@@ -261,11 +263,13 @@ const StepsTrackerPage = () => {
                   color: colors.text,
                   fontFamily: font_family.font_semibold,
                   fontSize: 15,
-                  backgroundColor: colors.foreground,
+                  backgroundColor: colors.background,
                   padding: 10,
                   margin: 10,
                   marginTop: 4,
                   borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: colors.background,
                 }}
                 onChangeText={(value) => {
                   setadd_step((prev) => ({
@@ -292,11 +296,13 @@ const StepsTrackerPage = () => {
                   color: colors.text,
                   fontFamily: font_family.font_semibold,
                   fontSize: 15,
-                  backgroundColor: colors.foreground,
+                  backgroundColor: colors.background,
                   padding: 10,
                   margin: 10,
                   marginTop: 4,
                   borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: colors.background,
                 }}
                 onChangeText={(value) => {
                   setadd_step((prev) => ({
@@ -322,11 +328,13 @@ const StepsTrackerPage = () => {
                   color: colors.text,
                   fontFamily: font_family.font_semibold,
                   fontSize: 15,
-                  backgroundColor: colors.foreground,
+                  backgroundColor: colors.background,
                   padding: 10,
                   margin: 10,
                   marginTop: 4,
                   borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: colors.background,
                 }}
                 onChangeText={(value) => {
                   setadd_step((prev) => ({
@@ -373,7 +381,7 @@ const StepsTrackerPage = () => {
                   }}
                   style={{
                     width: "45%",
-                    backgroundColor: colors.foreground,
+                    backgroundColor: colors.background,
                     padding: 10,
                     borderRadius: 10,
                     alignItems: "center",
@@ -401,8 +409,8 @@ const StepsTrackerPage = () => {
           isVisible={update_target_steps}
           animationIn={"fadeIn"}
           animationOut={"fadeOut"}
-          backdropOpacity={0.5}
-          backdropColor={colors.foreground}
+          backdropOpacity={0.7}
+          backdropColor={colors.text_black}
         >
           <View
             style={{
@@ -413,7 +421,7 @@ const StepsTrackerPage = () => {
           >
             <View
               style={{
-                backgroundColor: colors.background,
+                backgroundColor: colors.foreground,
                 padding: 10,
                 borderRadius: 10,
                 width: "90%",
@@ -440,7 +448,7 @@ const StepsTrackerPage = () => {
                   color: colors.text,
                   fontFamily: font_family.font_semibold,
                   fontSize: 15,
-                  backgroundColor: colors.foreground,
+                  backgroundColor: colors.background,
                   padding: 15,
                   margin: 10,
                   marginTop: 15,
@@ -488,7 +496,7 @@ const StepsTrackerPage = () => {
                   }}
                   style={{
                     width: "45%",
-                    backgroundColor: colors.foreground,
+                    backgroundColor: colors.background,
                     padding: 10,
                     borderRadius: 10,
                     alignItems: "center",
