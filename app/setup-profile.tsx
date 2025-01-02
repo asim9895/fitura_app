@@ -1,7 +1,7 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import * as Progress from "react-native-progress";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import {
   clear_user_profile,
   set_user_profile,
@@ -9,13 +9,23 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import { remove_all_step_data } from "@/api/steps_apis";
 import { todays_date } from "@/utils/variables";
-import { remove_all_food_data } from "@/api/food_apis";
+import {
+  add_food_data_api,
+  read_foods_data_api,
+  remove_all_food_data,
+} from "@/api/food_apis";
 import { remove_all_calorie_data } from "@/api/calorie_apis";
-import { remove_all_weight_data } from "@/api/weight_apis";
+import {
+  read_weight_data_api,
+  remove_all_weight_data,
+} from "@/api/weight_apis";
 import { AppRootState } from "@/redux/store";
+import { SingleCalorieEatenEntry } from "@/types";
+import { generate_uuid } from "@/utils/generate_uuid";
 
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
+  const [food_data, setfood_data] = useState([]);
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const { gender, activity_factor } = useAppSelector(
@@ -39,10 +49,6 @@ const SetupProfilePage = () => {
     );
   };
 
-  const add_or_update_food = async () => {
-    await remove_all_step_data();
-  };
-
   const clearProfile = async () => {
     await remove_all_food_data();
     await remove_all_calorie_data();
@@ -51,6 +57,31 @@ const SetupProfilePage = () => {
     dispatch(clear_user_profile());
     navigation.navigate("setup-profile" as never);
   };
+
+  const get_food_data_api = async () => {
+    const request = await read_foods_data_api();
+    console.log(request);
+    setfood_data(request.records);
+  };
+
+  const add_or_update_food = async () => {
+    // await remove_all_food_data();
+    const data: SingleCalorieEatenEntry = {
+      id: generate_uuid(),
+      name: "100g white rice",
+      calorie: 130,
+      protein: 3,
+      carbs: 30,
+      fat: 1,
+      note: "Boiled rice with extra salt",
+      serving_size: 100,
+      serving_unit: "g",
+    };
+    const request = await add_food_data_api(data);
+
+    console.log(request);
+  };
+
   return (
     <View
       style={{
@@ -61,6 +92,7 @@ const SetupProfilePage = () => {
       }}
     >
       <Button onPress={add_or_update_food} title="Remove All Step Data" />
+
       <Text>
         SetupProfilePage {gender} {activity_factor}{" "}
       </Text>
@@ -73,6 +105,7 @@ const SetupProfilePage = () => {
         unfilledColor="#ffeeea"
         borderColor="#ffeeea"
       />
+      <Text> {JSON.stringify(food_data)}</Text>
       <Button title="First Step" onPress={() => setprogress(0.4)} />
       <Button title="Second Step" onPress={() => setprogress(0.6)} />
       <Button title="Third Step" onPress={() => setprogress(0.8)} />
@@ -83,12 +116,15 @@ const SetupProfilePage = () => {
           updateProfile();
         }}
       />
+      <Button onPress={get_food_data_api} title="Get Food" />
+      <Button onPress={add_or_update_food} title="Add Food" />
       <Button title="Clear Profile" onPress={clearProfile} />
       {progress === 1 && (
         <Button
           title="Go to Dashboard"
           onPress={() => {
-            navigation.navigate("(tabs)" as never);
+            router.replace("/(tabs)/calorie-tracker" as never);
+            // navigation.navigate("(tabs)" as never);
           }}
         />
       )}
