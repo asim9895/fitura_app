@@ -6,17 +6,21 @@ import {
   clear_user_profile,
   set_user_profile,
 } from "@/redux/slices/user_slice";
-import { useAppDispatch } from "@/hooks/redux_hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import { remove_all_step_data } from "@/api/steps_apis";
 import { todays_date } from "@/utils/variables";
 import { remove_all_food_data } from "@/api/food_apis";
 import { remove_all_calorie_data } from "@/api/calorie_apis";
 import { remove_all_weight_data } from "@/api/weight_apis";
+import { AppRootState } from "@/redux/store";
 
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const { gender, activity_factor } = useAppSelector(
+    (state: AppRootState) => state.user
+  );
 
   const updateProfile = () => {
     dispatch(
@@ -57,7 +61,9 @@ const SetupProfilePage = () => {
       }}
     >
       <Button onPress={add_or_update_food} title="Remove All Step Data" />
-      <Text>SetupProfilePage</Text>
+      <Text>
+        SetupProfilePage {gender} {activity_factor}{" "}
+      </Text>
       <Progress.Bar
         progress={progress}
         width={200}
