@@ -12,10 +12,11 @@ import {
   MaterialCommunityIcons,
   Ionicons,
 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 const FloatingActionButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigation = useNavigation();
+  const router = useRouter();
   const animation = useRef(new Animated.Value(0)).current;
 
   const toggleMenu = () => {
@@ -60,13 +61,13 @@ const FloatingActionButton = () => {
     {
       icon: <MaterialCommunityIcons name="food" size={24} color="white" />,
       label: "Add Calories",
-      onPress: () => navigation.navigate("calorie-info/add-calorie" as never),
+      onPress: () => router.push("/calorie-info/add-calorie"),
       backgroundColor: "#45B7D1",
     },
     {
       icon: <Ionicons name="add-circle" size={24} color="white" />,
       label: "Add Activities",
-      onPress: () => navigation.navigate("add-activity" as never),
+      onPress: () => router.push("/add-activity"),
       backgroundColor: "#96CEB4",
     },
   ];

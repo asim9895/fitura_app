@@ -21,6 +21,7 @@ import { DayTime, SingleCalorieEatenEntry } from "@/types";
 import { read_foods_data_api } from "@/api/food_apis";
 import { add_calories_data_api } from "@/api/calorie_apis";
 import { generate_uuid } from "@/utils/generate_uuid";
+import { useRouter } from "expo-router";
 
 const meals: { name: DayTime; icon: any }[] = [
   {
@@ -60,7 +61,7 @@ const AddCaloriePage = () => {
     SingleCalorieEatenEntry[]
   >([]);
 
-  const navigation = useNavigation();
+  const router = useRouter();
   const { colors } = useSelector((state: AppRootState) => state.theme);
   const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
@@ -97,7 +98,7 @@ const AddCaloriePage = () => {
     const request = await add_calories_data_api(data, selected_date);
 
     if (request?.status === 200) {
-      navigation.navigate("(tabs)" as never);
+      router.push("/calorie-tracker");
     } else {
       console.log("error", request);
     }
@@ -223,7 +224,7 @@ const AddCaloriePage = () => {
           style={{
             padding: 8,
           }}
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
         >
           <Image
             source={icons.cross}
@@ -256,7 +257,7 @@ const AddCaloriePage = () => {
             alignItems: "center",
           }}
           onPress={() => {
-            navigation.navigate("add-calorie-log" as never);
+            router.push("/add-calorie-log");
           }}
         >
           <MaterialCommunityIcons
@@ -286,7 +287,7 @@ const AddCaloriePage = () => {
             alignItems: "center",
           }}
           onPress={() => {
-            navigation.navigate("(food)/add-food" as never);
+            router.push("/add-activity");
           }}
         >
           <MaterialCommunityIcons

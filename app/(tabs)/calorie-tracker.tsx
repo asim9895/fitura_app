@@ -1,6 +1,7 @@
 import {
   Dimensions,
   Image,
+  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -53,6 +54,7 @@ import {
   read_calories_data_api,
   read_selected_date_calories_data_api,
 } from "@/api/calorie_apis";
+import { Stack } from "expo-router";
 
 const CalorieTrackerPage = () => {
   const { colors, theme } = useAppSelector(
@@ -316,7 +318,8 @@ const CalorieTrackerPage = () => {
   }, [all_calorie_data, user, complete_calories_burned, calorie_eaten_data]);
 
   return (
-    <View style={[globalStyles.background]}>
+    <SafeAreaView style={[globalStyles.background]}>
+      <Stack.Screen name="calorie-tracker" options={{ headerShown: false }} />
       <StatusBar
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
@@ -407,7 +410,7 @@ const CalorieTrackerPage = () => {
           />
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 export default CalorieTrackerPage;

@@ -5,7 +5,7 @@ import { Colors } from "@/theme/colors";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import { useSelector } from "react-redux";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import {
   clear_user_profile,
   set_user_profile,
@@ -38,7 +38,7 @@ const ProfilePage = () => {
     (state: AppRootState) => state.theme
   );
 
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const profileStyles = profileStylesWrapper(colors);
 
@@ -65,7 +65,7 @@ const ProfilePage = () => {
     await remove_all_step_data();
     await remove_all_weight_data();
     dispatch(clear_user_profile());
-    navigation.navigate("setup-profile" as never);
+    router.push("/setup-profile");
   };
 
   const { selected_date } = useSelector((state: AppRootState) => state.user);
@@ -174,12 +174,8 @@ const ProfilePage = () => {
 
      
       
-      <Button
-        title="Go to Setup Profile"
-        onPress={() => {
-          navigation.navigate("setup-profile" as never);
-        }}
-      /> */}
+     
+      */}
     </SafeAreaView>
   );
 };

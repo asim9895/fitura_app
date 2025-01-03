@@ -129,7 +129,7 @@ const WaterTrackerPage = () => {
 
           <View style={{ alignItems: "center", marginVertical: 15 }}>
             <Progress.Circle
-              progress={total_water_intake_for_day / target_water}
+              progress={0.5}
               color={colors.button}
               thickness={10}
               size={230}

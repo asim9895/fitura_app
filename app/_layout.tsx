@@ -1,5 +1,5 @@
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -47,9 +47,14 @@ function MainApp({ loaded }: { loaded: boolean }) {
 
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="setup-profile" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="index"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="(tabs)"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
       <Stack.Screen
         name="add-activity-log"
         options={{ headerShown: false, animation: "simple_push" }}
@@ -66,7 +71,6 @@ function MainApp({ loaded }: { loaded: boolean }) {
         name="add-activity"
         options={{ headerShown: false, animation: "simple_push" }}
       />
-      <Stack.Screen name="+not-found" />
     </Stack>
   );
 }

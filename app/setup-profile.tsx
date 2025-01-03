@@ -1,7 +1,7 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import * as Progress from "react-native-progress";
-import { router, useNavigation } from "expo-router";
+import { Link, router, Stack, useNavigation, useRouter } from "expo-router";
 import {
   clear_user_profile,
   set_user_profile,
@@ -26,7 +26,7 @@ import { generate_uuid } from "@/utils/generate_uuid";
 const SetupProfilePage = () => {
   const [progress, setprogress] = useState(0.2);
   const [food_data, setfood_data] = useState([]);
-  const navigation = useNavigation();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { gender, activity_factor } = useAppSelector(
     (state: AppRootState) => state.user
@@ -55,7 +55,7 @@ const SetupProfilePage = () => {
     await remove_all_step_data();
     await remove_all_weight_data();
     dispatch(clear_user_profile());
-    navigation.navigate("setup-profile" as never);
+    router.push("/setup-profile");
   };
 
   const get_food_data_api = async () => {
@@ -91,6 +91,7 @@ const SetupProfilePage = () => {
         backgroundColor: "#ffffff",
       }}
     >
+      <Stack.Screen name="setup-profile" options={{ headerShown: false }} />
       <Button onPress={add_or_update_food} title="Remove All Step Data" />
 
       <Text>
@@ -119,15 +120,25 @@ const SetupProfilePage = () => {
       <Button onPress={get_food_data_api} title="Get Food" />
       <Button onPress={add_or_update_food} title="Add Food" />
       <Button title="Clear Profile" onPress={clearProfile} />
-      {progress === 1 && (
-        <Button
-          title="Go to Dashboard"
-          onPress={() => {
-            router.replace("/(tabs)/calorie-tracker" as never);
-            // navigation.navigate("(tabs)" as never);
-          }}
-        />
-      )}
+
+      <Button
+        title="Go To Dashboard"
+        onPress={() => {
+          router.push("/(tabs)/profile");
+        }}
+      />
+      <Button
+        title="Add Calorie"
+        onPress={() => {
+          router.push("/calorie-info/add-calorie");
+        }}
+      />
+      <Button
+        title="Remove Calorie"
+        onPress={() => {
+          router.push("/add-calorie-log");
+        }}
+      />
     </View>
   );
 };
