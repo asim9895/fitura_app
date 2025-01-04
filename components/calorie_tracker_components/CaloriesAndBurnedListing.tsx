@@ -10,6 +10,7 @@ import BurnedCaloriesListing from "./BurnedCaloriesListing";
 import EatenCaloriesListing from "./EatenCaloriesListing";
 import CalorieTrackerMacros from "./CalorieTrackerMacros";
 import { font_family } from "@/theme/font_family";
+import ActivityMacros from "./ActivityMacros";
 
 interface CaloriesAndBurnedListingProps {
   current_selection: string;
@@ -19,10 +20,12 @@ interface CaloriesAndBurnedListingProps {
   totalCalories: number;
   macros: any;
   calorie_eaten_data: any;
-  calorie_burned_data: any;
+  activity_data: any;
   total_calorie_burned_for_day: number;
   fetch_selected_date_calorie_data: any;
   calorie_eaten_data_loading: boolean;
+  fetch_selected_date_activity_data: any;
+  activity_data_loading: boolean;
 }
 
 const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
@@ -34,9 +37,11 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
   total_calorie_burned_for_day,
   macros,
   calorie_eaten_data,
-  calorie_burned_data,
+  activity_data,
   fetch_selected_date_calorie_data,
   calorie_eaten_data_loading,
+  fetch_selected_date_activity_data,
+  activity_data_loading,
 }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
   const globalStyles = globalStylesWrapper(colors);
@@ -157,11 +162,39 @@ const CaloriesAndBurnedListing: React.FC<CaloriesAndBurnedListingProps> = ({
             borderTopStartRadius: 10,
           }}
         >
-          <BurnedCaloriesListing
+          <ActivityMacros
             calories_burned_by_steps={Number(totalCalories)}
-            calories_burned_data={calorie_burned_data}
             calories_burned_by_workout={total_calorie_burned_for_day}
           />
+          {activity_data_loading ? (
+            <View
+              style={[
+                globalStyles.row_center_center,
+                {
+                  padding: 10,
+                  flex: 1,
+                  backgroundColor: colors.foreground,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  color: colors.text,
+                  fontFamily: font_family.font_semibold,
+                  padding: 30,
+                }}
+              >
+                Loading...
+              </Text>
+            </View>
+          ) : (
+            <BurnedCaloriesListing
+              activity_data={activity_data}
+              fetch_selected_date_activity_data={
+                fetch_selected_date_activity_data
+              }
+            />
+          )}
         </View>
       )}
     </View>

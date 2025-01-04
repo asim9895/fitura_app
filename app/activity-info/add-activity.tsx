@@ -17,48 +17,17 @@ import { useSelector } from "react-redux";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { font_family } from "@/theme/font_family";
 import { icons } from "@/data/icons";
-import { DayTime, SingleCalorieEatenEntry } from "@/types";
-import { read_foods_data_api } from "@/api/food_apis";
-import { add_calories_data_api } from "@/api/calorie_apis";
+import { DayTime, SingleActivityEntry } from "@/types";
+
 import { generate_uuid } from "@/utils/generate_uuid";
 import { useRouter } from "expo-router";
+import { read_exercises_data_api } from "@/api/exercise_apis";
+import { add_activities_data_api } from "@/api/activity_apis";
 
-const meals: { name: DayTime; icon: any }[] = [
-  {
-    name: "Breakfast",
-    icon: icons.breakfast,
-  },
-  {
-    name: "Lunch",
-    icon: icons.lunch,
-  },
-  {
-    name: "Dinner",
-    icon: icons.dinner,
-  },
-  {
-    name: "Snack",
-    icon: icons.snack,
-  },
-];
-
-const AddCaloriePage = () => {
-  const currentHour = new Date().getHours();
-
-  const initial_value =
-    currentHour >= 5 && currentHour < 11
-      ? meals[0]
-      : currentHour >= 11 && currentHour < 16
-      ? meals[1]
-      : currentHour >= 16 && currentHour < 21
-      ? meals[2]
-      : meals[3];
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedMeal, setSelectedMeal] = useState(initial_value); // State for selected meal
-
-  const [food_data, setfood_data] = useState<SingleCalorieEatenEntry[]>([]);
-  const [selected_foods, setselected_foods] = useState<
-    SingleCalorieEatenEntry[]
+const AddActivityPage = () => {
+  const [exercise_data, setexercise_data] = useState<SingleActivityEntry[]>([]);
+  const [selected_exercises, setselected_exercises] = useState<
+    SingleActivityEntry[]
   >([]);
 
   const router = useRouter();
@@ -66,36 +35,25 @@ const AddCaloriePage = () => {
   const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const fetch_exercise_items = async () => {
+    const request = await read_exercises_data_api();
 
-  const handleMealSelect = (meal: any) => {
-    setSelectedMeal(meal); // Update selected meal
-
-    setIsDropdownOpen(false);
-  };
-
-  const fetch_food_items = async () => {
-    const request = await read_foods_data_api();
-
-    setfood_data(request.records);
+    setexercise_data(request.records);
   };
 
   useEffect(() => {
-    fetch_food_items();
+    fetch_exercise_items();
   }, []);
 
-  const handle_calorie_add = async () => {
-    const data = selected_foods?.map((item: SingleCalorieEatenEntry) => {
+  const handle_acitivity_add = async () => {
+    const data = selected_exercises?.map((item: SingleActivityEntry) => {
       return {
         ...item,
         id: generate_uuid(),
-        day_time: selectedMeal.name,
       };
     });
 
-    const request = await add_calories_data_api(data, selected_date);
+    const request = await add_activities_data_api(data, selected_date);
 
     if (request?.status === 200) {
       router.push("/calorie-tracker");
@@ -120,104 +78,15 @@ const AddCaloriePage = () => {
         }}
       >
         {/* Dropdown Section */}
-        <View
+        <Text
           style={{
-            position: "relative",
-            zIndex: 1001,
+            color: colors.text,
+            fontFamily: font_family.font_semibold,
+            fontSize: 17,
           }}
         >
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: 8,
-            }}
-            onPress={toggleDropdown}
-          >
-            <Image
-              source={selectedMeal.icon}
-              style={{ width: 24, height: 24 }}
-            />
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: font_family.font_semibold,
-                marginRight: 8,
-                marginLeft: 10,
-                color: colors.text,
-              }}
-            >
-              {selectedMeal.name}
-            </Text>
-            <Image
-              source={isDropdownOpen ? icons.arrow_up : icons.arrow_down}
-              style={{ width: 16, height: 16, marginRight: 8 }}
-              tintColor={colors.text}
-            />
-          </TouchableOpacity>
-
-          {/* Dropdown Menu */}
-          {isDropdownOpen && (
-            <View
-              style={{
-                position: "absolute",
-                width: 140,
-                left: 0,
-                right: 0,
-                backgroundColor: colors.foreground,
-                borderRadius: 10,
-                marginTop: 50,
-                elevation: 5,
-              }}
-            >
-              {meals.map((meal) => (
-                <TouchableOpacity
-                  key={meal.name}
-                  style={[
-                    {
-                      paddingVertical: 12,
-                      paddingHorizontal: 16,
-                      borderTopEndRadius: 10,
-                      borderTopStartRadius: 10,
-                      borderBottomEndRadius: 10,
-                      borderBottomStartRadius: 10,
-                      flexDirection: "row",
-                      justifyContent: "flex-start",
-                      alignItems: "center",
-                    },
-                    selectedMeal.name === meal.name && {
-                      backgroundColor: colors.foreground,
-                    },
-                  ]}
-                  onPress={() => handleMealSelect(meal)}
-                >
-                  <Image
-                    source={meal.icon}
-                    style={{ width: 20, height: 20, marginRight: 8 }}
-                  />
-                  <Text
-                    style={[
-                      {
-                        fontSize: 16,
-                        color: colors.text,
-                        fontFamily: font_family.font_semibold,
-                      },
-                      selectedMeal === meal && {
-                        color: "#2196F3",
-                        fontWeight: "500",
-                      },
-                    ]}
-                  >
-                    {meal.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
+          Add Activity
+        </Text>
 
         {/* Close Button */}
         <TouchableOpacity
@@ -261,7 +130,7 @@ const AddCaloriePage = () => {
           }}
         >
           <MaterialCommunityIcons
-            name="food-apple"
+            name="dumbbell"
             size={20}
             color={colors.light_gray}
             style={{ marginRight: 10, marginBottom: 2 }}
@@ -270,7 +139,7 @@ const AddCaloriePage = () => {
             style={{
               color: colors.text,
               fontFamily: font_family.font_medium,
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
             Quick Log
@@ -287,11 +156,11 @@ const AddCaloriePage = () => {
             alignItems: "center",
           }}
           onPress={() => {
-            router.push("/food/add-food");
+            router.push("/exercise/add-exercise");
           }}
         >
           <MaterialCommunityIcons
-            name="food-variant"
+            name="run"
             size={20}
             color={colors.light_gray}
             style={{ marginRight: 10, marginBottom: 2 }}
@@ -300,17 +169,17 @@ const AddCaloriePage = () => {
             style={{
               color: colors.text,
               fontFamily: font_family.font_medium,
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
-            Create Food
+            Create Exercise
           </Text>
         </TouchableOpacity>
       </View>
 
       <View>
         <TextInput
-          placeholder="Search Food Item"
+          placeholder="Search Exercise"
           placeholderTextColor={colors.light_gray}
           style={{
             backgroundColor: colors.foreground,
@@ -325,7 +194,7 @@ const AddCaloriePage = () => {
       </View>
 
       <ScrollView
-        style={{ marginHorizontal: 15 }}
+        style={{ marginHorizontal: 20 }}
         showsVerticalScrollIndicator={false}
       >
         <Text
@@ -336,23 +205,23 @@ const AddCaloriePage = () => {
             marginVertical: 10,
           }}
         >
-          Food Items
+          Exercises
         </Text>
 
-        {food_data.map((food, index) => {
-          const existingFoodIndex = selected_foods.findIndex(
-            (item) => item.id === food.id
+        {exercise_data.map((exercise, index) => {
+          const existingFoodIndex = selected_exercises.findIndex(
+            (item) => item.id === exercise.id
           );
           return (
             <View
-              key={food.id}
+              key={exercise.id}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 paddingVertical: 12,
                 borderBottomWidth: 1,
                 borderBottomColor: colors.foreground,
-                marginBottom: index === food_data.length - 1 ? 100 : 0,
+                marginBottom: index === exercise_data.length - 1 ? 100 : 0,
               }}
             >
               <View
@@ -364,11 +233,13 @@ const AddCaloriePage = () => {
                 <TouchableOpacity
                   onPress={() => {
                     if (existingFoodIndex !== -1) {
-                      setselected_foods(
-                        selected_foods.filter((item) => item.id !== food.id)
+                      setselected_exercises(
+                        selected_exercises.filter(
+                          (item) => item.id !== exercise.id
+                        )
                       );
                     } else {
-                      setselected_foods([...selected_foods, food]);
+                      setselected_exercises([...selected_exercises, exercise]);
                     }
                   }}
                 >
@@ -396,7 +267,7 @@ const AddCaloriePage = () => {
                       width: 300,
                     }}
                   >
-                    {food.name}
+                    {exercise.activity}
                   </Text>
                   <Text
                     numberOfLines={2}
@@ -407,8 +278,7 @@ const AddCaloriePage = () => {
                       marginTop: 3,
                     }}
                   >
-                    {food.serving_size}
-                    {food.serving_unit} serving | {food.calorie} kcal
+                    {exercise.burned} calories
                   </Text>
                   <Text
                     numberOfLines={2}
@@ -419,8 +289,7 @@ const AddCaloriePage = () => {
                       marginTop: 3,
                     }}
                   >
-                    {food.protein}g protein | {food.carbs}g carbs | {food.fat}g
-                    fat
+                    {exercise.hour} hours {exercise.minutes} minutes
                   </Text>
                 </View>
               </View>
@@ -433,7 +302,7 @@ const AddCaloriePage = () => {
           );
         })}
       </ScrollView>
-      {selected_foods?.length > 0 && (
+      {selected_exercises?.length > 0 && (
         <View
           style={{
             position: "absolute",
@@ -465,7 +334,7 @@ const AddCaloriePage = () => {
                 paddingTop: 3,
               }}
             >
-              {selected_foods?.length}
+              {selected_exercises?.length}
             </Text>
             <Text
               style={{
@@ -475,7 +344,10 @@ const AddCaloriePage = () => {
                 marginLeft: 15,
               }}
             >
-              {selected_foods.reduce((total, food) => total + food.calorie, 0)}{" "}
+              {selected_exercises.reduce(
+                (total, food) => total + food.burned,
+                0
+              )}{" "}
               kcal
             </Text>
           </View>
@@ -487,7 +359,7 @@ const AddCaloriePage = () => {
               paddingHorizontal: 40,
               borderRadius: 10,
             }}
-            onPress={handle_calorie_add}
+            onPress={handle_acitivity_add}
           >
             <Text
               style={{
@@ -505,4 +377,4 @@ const AddCaloriePage = () => {
   );
 };
 
-export default AddCaloriePage;
+export default AddActivityPage;

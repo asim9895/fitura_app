@@ -1,9 +1,4 @@
-import {
-  CalorieBurnedData,
-  CalorieEatenData,
-  StepData,
-  WaterData,
-} from "@/types";
+import { CalorieEatenData, StepData, WaterData } from "@/types";
 
 export const water: WaterData[] = [
   {
@@ -221,49 +216,48 @@ export const calorie_eaten: CalorieEatenData[] = [
   },
 ];
 
-export const calorie_burned: CalorieBurnedData[] = [
-  {
-    id: "1",
-    date: new Date("2024-12-30T13:42:30.685Z"),
-    data: [
-      {
-        id: "1",
-        burned: 150,
+// export const calorie_burned: CalorieBurnedData[] = [
+//   {
+//     id: "1",
+//     date: new Date("2024-12-30T13:42:30.685Z"),
+//     data: [
+//       {
+//         id: "1",
+//         burned: 150,
+//         activity: "abs workout",
+//         hour: 1,
+//         minutes: 30,
+//       },
+//       {
+//         id: "2",
+//         burned: 325,
 
-        activity: "abs workout",
-        hour: 1,
-        minutes: 30,
-      },
-      {
-        id: "2",
-        burned: 325,
-
-        activity: "gym",
-        hour: 1,
-        minutes: 30,
-      },
-    ],
-  },
-  // {
-  //   id: "2",
-  //   date: new Date("2024-12-31T13:42:30.685Z"),
-  //   data: [
-  //     {
-  //       id: "1",
-  //       burned: 150,
-  //       day_time: "morning",
-  //       activity: "abs workout",
-  //       hour: 1,
-  //       minutes: 30,
-  //     },
-  //     {
-  //       id: "2",
-  //       burned: 325,
-  //       day_time: "evening",
-  //       activity: "gym",
-  //       hour: 1,
-  //       minutes: 30,
-  //     },
-  //   ],
-  // },
-];
+//         activity: "gym",
+//         hour: 1,
+//         minutes: 30,
+//       },
+//     ],
+//   },
+//   // {
+//   //   id: "2",
+//   //   date: new Date("2024-12-31T13:42:30.685Z"),
+//   //   data: [
+//   //     {
+//   //       id: "1",
+//   //       burned: 150,
+//   //       day_time: "morning",
+//   //       activity: "abs workout",
+//   //       hour: 1,
+//   //       minutes: 30,
+//   //     },
+//   //     {
+//   //       id: "2",
+//   //       burned: 325,
+//   //       day_time: "evening",
+//   //       activity: "gym",
+//   //       hour: 1,
+//   //       minutes: 30,
+//   //     },
+//   //   ],
+//   // },
+// ];

@@ -54,17 +54,17 @@ export interface CalorieEatenData {
   data: SingleCalorieEatenEntry[];
 }
 
-export type SingleCalorieBurnedEntry = {
+export type SingleActivityEntry = {
   id: string;
   burned: number;
   activity: string;
   hour: number;
   minutes: number;
 };
-export interface CalorieBurnedData {
+export interface ActivityData {
   id: string;
   date: Date;
-  data: SingleCalorieBurnedEntry[];
+  data: SingleActivityEntry[];
 }
 
 export interface WeightData {

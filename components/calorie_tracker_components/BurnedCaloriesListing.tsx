@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { SingleCalorieBurnedEntry } from "@/types";
+import React, { useState } from "react";
+
 import { useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
 import { icons } from "@/data/icons";
@@ -8,74 +8,81 @@ import { font_family } from "@/theme/font_family";
 import { format_number } from "@/utils/variables";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { calorieTrackerStylesWrapper } from "@/styles/app/tabs/calorie-tracker.style";
+import { SingleActivityEntry } from "@/types";
+import { remove_selected_date_activity_data } from "@/api/activity_apis";
+import ActivityOptionModal from "../modals/ActivityOptionModal";
+import SingleActivityItem from "./SingleActivityItem";
 
 interface BurnedCaloriesListingProps {
-  calories_burned_by_steps: number;
-  calories_burned_data: SingleCalorieBurnedEntry[];
-  calories_burned_by_workout: number;
+  activity_data: SingleActivityEntry[];
+  fetch_selected_date_activity_data: any;
 }
 
 const BurnedCaloriesListing: React.FC<BurnedCaloriesListingProps> = ({
-  calories_burned_by_steps,
-  calories_burned_by_workout,
+  activity_data,
+  fetch_selected_date_activity_data,
 }) => {
-  const { colors, theme } = useAppSelector(
-    (state: AppRootState) => state.theme
-  );
+  const [show_options, setshow_options] = useState(false);
+  const [current_activity_id, setcurrent_activity_id] = useState("");
+  const { selected_date } = useAppSelector((state: AppRootState) => state.user);
+  const { colors } = useAppSelector((state: AppRootState) => state.theme);
   const globalStyles = globalStylesWrapper(colors);
   const calorieTrackerStyles = calorieTrackerStylesWrapper(colors);
+
+  const remove_activity = async () => {
+    const request = await remove_selected_date_activity_data(
+      selected_date,
+      current_activity_id
+    );
+
+    if (request.status === 200) {
+      await fetch_selected_date_activity_data(selected_date);
+    } else {
+      console.log("error");
+    }
+  };
   return (
-    <View style={calorieTrackerStyles.tabs_container}>
-      <View
-        style={[
-          globalStyles.row_center_center,
-          calorieTrackerStyles.single_tab,
-        ]}
-      >
-        <Image
-          source={icons.shoe}
-          style={[
-            calorieTrackerStyles.tab_icon,
-            { width: 30, height: 30, marginRight: 15 },
-          ]}
-        />
-        <View style={globalStyles.column_start}>
-          <Text style={calorieTrackerStyles.tab_text}>Steps </Text>
+    <View style={{ marginHorizontal: 20 }}>
+      <ActivityOptionModal
+        setshow_options={setshow_options}
+        show_options={show_options}
+        setcurrent_activity_id={setcurrent_activity_id}
+        remove_activity={remove_activity}
+      />
+      {activity_data?.length > 0 ? (
+        <View style={{ marginTop: 20 }}>
+          {activity_data?.map((activity: SingleActivityEntry, index) => {
+            return (
+              <SingleActivityItem
+                key={activity.id}
+                activity={activity}
+                setshow_options={setshow_options}
+                setcurrent_activity_id={setcurrent_activity_id}
+              />
+            );
+          })}
+        </View>
+      ) : (
+        <View
+          style={{
+            alignItems: "center",
+            marginTop: 20,
+            marginBottom: 20,
+            padding: 10,
+            justifyContent: "center",
+          }}
+        >
           <Text
-            style={[
-              calorieTrackerStyles.tab_sub_text,
-              { fontFamily: font_family.font_semibold, fontSize: 17 },
-            ]}
+            style={{
+              color: colors.text,
+              fontFamily: font_family.font_semibold,
+              fontSize: 17,
+            }}
           >
-            {format_number(calories_burned_by_steps)} kcal
+            No activities added
           </Text>
         </View>
-      </View>
-      <View
-        style={[
-          globalStyles.row_center_center,
-          calorieTrackerStyles.single_tab,
-        ]}
-      >
-        <Image
-          source={icons.workout}
-          style={[
-            calorieTrackerStyles.tab_icon,
-            { width: 30, height: 30, marginRight: 15 },
-          ]}
-        />
-        <View style={globalStyles.column_start}>
-          <Text style={calorieTrackerStyles.tab_text}>Workout </Text>
-          <Text
-            style={[
-              calorieTrackerStyles.tab_sub_text,
-              { fontFamily: font_family.font_semibold, fontSize: 17 },
-            ]}
-          >
-            {format_number(calories_burned_by_workout)} kcal
-          </Text>
-        </View>
-      </View>
+      )}
     </View>
   );
 };

@@ -67,7 +67,7 @@ const FloatingActionButton = () => {
     {
       icon: <Ionicons name="add-circle" size={24} color="white" />,
       label: "Add Activities",
-      onPress: () => router.push("/add-activity"),
+      onPress: () => router.push("/activity-info/add-activity"),
       backgroundColor: "#96CEB4",
     },
   ];

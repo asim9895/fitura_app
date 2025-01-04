@@ -37,13 +37,11 @@ const EatenCaloriesListing: React.FC<{
   );
 
   const remove_calorie = async () => {
-    console.log(selected_date, current_calorie_id);
     const request = await remove_selected_date_calorie_data(
       selected_date,
       current_calorie_id
     );
 
-    console.log(request);
     if (request.status === 200) {
       await fetch_selected_date_calorie_data(selected_date);
     } else {

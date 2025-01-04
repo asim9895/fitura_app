@@ -68,7 +68,7 @@ function MainApp({ loaded }: { loaded: boolean }) {
         options={{ headerShown: false, animation: "simple_push" }}
       />
       <Stack.Screen
-        name="add-activity"
+        name="activity-info/add-activity"
         options={{ headerShown: false, animation: "simple_push" }}
       />
     </Stack>

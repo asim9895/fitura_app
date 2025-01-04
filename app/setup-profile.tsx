@@ -60,7 +60,7 @@ const SetupProfilePage = () => {
 
   const get_food_data_api = async () => {
     const request = await read_foods_data_api();
-    console.log(request);
+
     setfood_data(request.records);
   };
 
@@ -78,8 +78,6 @@ const SetupProfilePage = () => {
       serving_unit: "g",
     };
     const request = await add_food_data_api(data);
-
-    console.log(request);
   };
 
   return (

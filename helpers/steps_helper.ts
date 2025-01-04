@@ -9,7 +9,7 @@ const average_step_frequency_for_day = (
   selected_date: Date
 ) => {
   const average_step_frequency =
-    all_steps_data?.length === 0
+    all_steps_data?.length === 0 || all_steps_data === undefined
       ? 0
       : all_steps_data
           ?.filter((data: StepData) => {
@@ -30,7 +30,7 @@ const average_pace_for_day = (
   selected_date: Date
 ) => {
   let average_pace_calculate =
-    all_steps_data.length === 0
+    all_steps_data?.length === 0 || all_steps_data === undefined
       ? average_pace
       : all_steps_data?.filter((data: StepData) => {
           const date = new Date(data.date);
@@ -43,7 +43,7 @@ export const total_steps_for_day = (
   all_steps_data: StepData[],
   selected_date: Date
 ) => {
-  return all_steps_data?.length === 0
+  return all_steps_data?.length === 0 || all_steps_data === undefined
     ? 0
     : all_steps_data
         ?.filter((data: StepData) => {

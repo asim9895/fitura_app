@@ -22,7 +22,11 @@ import { profileStylesWrapper } from "@/styles/app/tabs/profile.style";
 import ProfileCard from "@/components/profile_components/ProfileCard";
 import { height_options } from "@/data/options";
 import { generate_uuid } from "@/utils/generate_uuid";
-import { CalorieEatenData, SingleCalorieEatenEntry } from "@/types";
+import {
+  CalorieEatenData,
+  SingleActivityEntry,
+  SingleCalorieEatenEntry,
+} from "@/types";
 import {
   add_food_data_api,
   read_foods_data_api,
@@ -30,6 +34,7 @@ import {
 } from "@/api/food_apis";
 import { remove_all_calorie_data } from "@/api/calorie_apis";
 import { remove_all_step_data } from "@/api/steps_apis";
+import { add_exercise_data_api } from "@/api/exercise_apis";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -102,8 +107,18 @@ const ProfilePage = () => {
       serving_unit: "g",
     };
     const request = await add_food_data_api(data);
+  };
 
-    console.log(request);
+  const add_or_update_exercise = async () => {
+    // await remove_all_food_data();
+    const data: SingleActivityEntry = {
+      id: generate_uuid(),
+      activity: "Abs Workout",
+      hour: 0,
+      minutes: 30,
+      burned: 100,
+    };
+    const request = await add_exercise_data_api(data);
   };
 
   return (
@@ -166,6 +181,7 @@ const ProfilePage = () => {
         <Button onPress={add_or_update_weight_data} title="Add Calorie" />
         <Button onPress={add_or_update_weight_data} title="Add Activity" />
         <Button onPress={add_or_update_food} title="Add Food" />
+        <Button onPress={add_or_update_exercise} title="Add Exercise" />
         <Button title="Update Profile" onPress={updateProfile} />
         <Button title="Clear Profile" onPress={clearProfile} />
       </ScrollView>
