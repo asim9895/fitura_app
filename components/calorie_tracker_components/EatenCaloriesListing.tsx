@@ -55,6 +55,7 @@ const EatenCaloriesListing: React.FC<{
         show_options={show_options}
         setcurrent_calorie_id={setcurrent_calorie_id}
         remove_calorie={remove_calorie}
+        current_calorie_id={current_calorie_id}
       />
       {calorie_eaten_data?.length > 0 ? (
         <View style={{ marginTop: 20 }}>

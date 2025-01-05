@@ -71,7 +71,36 @@ const SingleActivityItem: React.FC<{
               marginTop: 3,
             }}
           >
-            {activity.hour} hour and {activity.minutes} minutes
+            {activity?.hour !== 0 &&
+              `${activity.hour} ${
+                activity.hour === 0 ||
+                activity.hour === 1 ||
+                activity.hour === 2 ||
+                activity.hour === 3 ||
+                activity.hour === 4 ||
+                activity.hour === 5 ||
+                activity.hour === 6 ||
+                activity.hour === 7 ||
+                activity.hour === 8 ||
+                activity.hour === 9
+                  ? "hour"
+                  : "hours"
+              }`}{" "}
+            {activity?.minutes !== 0 &&
+              `${activity.minutes} ${
+                activity.minutes === 0 ||
+                activity.minutes === 1 ||
+                activity.minutes === 2 ||
+                activity.minutes === 3 ||
+                activity.minutes === 4 ||
+                activity.minutes === 5 ||
+                activity.minutes === 6 ||
+                activity.minutes === 7 ||
+                activity.minutes === 8 ||
+                activity.minutes === 9
+                  ? "minute"
+                  : "minutes"
+              }`}
           </Text>
         </View>
       </View>

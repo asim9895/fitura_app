@@ -4,12 +4,14 @@ import ReactNativeModal from "react-native-modal";
 import { useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
 import { font_family } from "@/theme/font_family";
+import { useRouter } from "expo-router";
 
 interface CalorieOptionModalProps {
   show_options: boolean;
   setshow_options: (show_options: boolean) => void;
   setcurrent_activity_id: (id: string) => void;
   remove_activity: () => void;
+  current_activity_id: string;
 }
 
 const ActivityOptionModal: React.FC<CalorieOptionModalProps> = ({
@@ -17,8 +19,10 @@ const ActivityOptionModal: React.FC<CalorieOptionModalProps> = ({
   setshow_options,
   setcurrent_activity_id,
   remove_activity,
+  current_activity_id,
 }) => {
   const { colors } = useAppSelector((state: AppRootState) => state.theme);
+  const router = useRouter();
 
   return (
     <View>
@@ -50,7 +54,12 @@ const ActivityOptionModal: React.FC<CalorieOptionModalProps> = ({
           >
             <View>
               <TouchableOpacity
-                onPress={() => {}}
+                onPress={() => {
+                  router.push({
+                    pathname: "/activity-info/edit-activity",
+                    params: { id: current_activity_id },
+                  });
+                }}
                 style={{
                   width: "100%",
                   padding: 10,

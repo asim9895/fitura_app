@@ -48,6 +48,7 @@ const BurnedCaloriesListing: React.FC<BurnedCaloriesListingProps> = ({
         show_options={show_options}
         setcurrent_activity_id={setcurrent_activity_id}
         remove_activity={remove_activity}
+        current_activity_id={current_activity_id}
       />
       {activity_data?.length > 0 ? (
         <View style={{ marginTop: 20 }}>

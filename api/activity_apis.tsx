@@ -99,8 +99,6 @@ export const remove_selected_date_activity_data = async (
       isSameDay(new Date(record.date), selected_date)
     );
 
-
-
     if (recordIndex >= 0) {
       // Find the specific step entry in the data array
       const activityEntryIndex = data.records[recordIndex].data.findIndex(
@@ -131,6 +129,89 @@ export const remove_selected_date_activity_data = async (
     console.error("Error removing selected step entry:", error);
     return {
       data: [],
+      status: 500,
+    };
+  }
+};
+
+export const read_activity_by_id_and_selected_date_data = async (
+  selected_date: Date,
+  activity_entry_id: string
+) => {
+  try {
+    const data = await read_activities_data_api();
+
+    const recordIndex = data.records.findIndex((record: any) =>
+      isSameDay(new Date(record.date), selected_date)
+    );
+
+    if (recordIndex >= 0) {
+      return {
+        data:
+          data.records[recordIndex]?.data?.find(
+            (item: SingleCalorieEatenEntry) => {
+              return item.id === activity_entry_id;
+            }
+          ) || null,
+        status: 200,
+      };
+    }
+
+    return {
+      data: [],
+      status: 500,
+    };
+  } catch (error) {
+    console.error("Error reading selected calorie entry:", error);
+    return {
+      data: [],
+      status: 500,
+    };
+  }
+};
+
+export const udpate_activity_by_id_and_selected_date_data = async (
+  selected_date: Date,
+  updated_data: SingleActivityEntry
+) => {
+  try {
+    const data = await read_activities_data_api();
+
+    const recordIndex = data.records.findIndex((record: any) =>
+      isSameDay(new Date(record.date), selected_date)
+    );
+
+    if (recordIndex >= 0) {
+      const activityEntryIndex = data.records[recordIndex].data.findIndex(
+        (entry: SingleCalorieEatenEntry) => entry.id === updated_data.id
+      );
+
+      if (activityEntryIndex >= 0) {
+        // Update the specific calorie entry
+        data.records[recordIndex].data[activityEntryIndex] = {
+          ...data.records[recordIndex].data[activityEntryIndex],
+          ...updated_data,
+        };
+
+        await FileSystem.writeAsStringAsync(
+          activity_file_path,
+          JSON.stringify(data, null, 2)
+        );
+
+        return {
+          data: data.records[recordIndex].data[activityEntryIndex],
+          status: 200,
+        };
+      }
+    }
+    return {
+      data: null,
+      status: 500,
+    };
+  } catch (error) {
+    console.error("Error updating calorie entry:", error);
+    return {
+      data: null,
       status: 500,
     };
   }
