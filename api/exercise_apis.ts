@@ -22,12 +22,18 @@ export const read_exercises_data_api = async () => {
 export const read_exercise_by_id_api = async (id: string) => {
   const data = await read_exercises_data_api();
   const exercise_of_selected_id = data.records.filter((record: any) => {
-    return isSameDay(new Date(record.id), id);
+    return record.id === id;
   });
   return exercise_of_selected_id[0] === undefined ||
     exercise_of_selected_id[0] === null
-    ? []
-    : exercise_of_selected_id[0];
+    ? {
+        data: [],
+        status: 500,
+      }
+    : {
+        data: exercise_of_selected_id[0],
+        status: 200,
+      };
 };
 
 export const add_exercise_data_api = async (
@@ -53,19 +59,18 @@ export const add_exercise_data_api = async (
 };
 
 export const update_exercise_data_api = async (
-  new_exercise_data: SingleActivityEntry,
-  id: string
+  new_exercise_data: SingleActivityEntry
 ) => {
   try {
     const data = await read_exercises_data_api();
 
-    const recordIndex = data.records.findIndex((record: any) =>
-      isSameDay(new Date(record.id), id)
+    const recordIndex = data.records.findIndex(
+      (record: any) => record.id === new_exercise_data.id
     );
 
     if (recordIndex >= 0) {
       // Update existing record
-      data.records[recordIndex].push(new_exercise_data);
+      data.records[recordIndex] = new_exercise_data;
 
       // Write updated data back to the file
       await FileSystem.writeAsStringAsync(
@@ -92,7 +97,7 @@ export const remove_exercise_by_id = async (id: string) => {
 
     if (recordIndex >= 0) {
       // Update existing record
-      data.records[recordIndex].splice(recordIndex, 1);
+      data.records.splice(recordIndex, 1);
 
       await FileSystem.writeAsStringAsync(
         exercise_file_path,
@@ -100,14 +105,22 @@ export const remove_exercise_by_id = async (id: string) => {
       );
 
       // Return the updated steps for the selected date
-      return data.records[recordIndex] || [];
+      return {
+        data: data.records,
+        status: 200,
+      };
     } else {
-      // Add new record for today
-      return [];
+      return {
+        data: [],
+        status: 500,
+      };
     }
   } catch (error) {
     console.error("Error removing selected step entry:", error);
-    return [];
+    return {
+      data: [],
+      status: 500,
+    };
   }
 };
 

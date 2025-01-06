@@ -16,23 +16,27 @@ import { globalStylesWrapper } from "@/styles/global.style";
 import { font_family } from "@/theme/font_family";
 import { useRouter } from "expo-router";
 import { icons } from "@/data/icons";
-import { ServingUnit, SingleCalorieEatenEntry } from "@/types";
-import { Colors } from "@/theme/colors";
 import {
-  add_food_data_api,
-  read_food_by_id_api,
-  update_food_data_api,
-} from "@/api/food_apis";
+  add_calories_data_api,
+  read_calorie_by_id_and_selected_date_data,
+  udpate_calorie_by_id_and_selected_date_data,
+} from "@/api/calorie_apis";
+import { DayTime, ServingUnit, SingleCalorieEatenEntry } from "@/types";
+import { Colors } from "@/theme/colors";
 import { generate_uuid } from "@/utils/generate_uuid";
 
 const serving_units: ServingUnit[] = ["g", "kg", "l", "ml"];
 
-const AddFoodPage = () => {
+const AddCalorieLogPage = () => {
   const router = useRouter();
-
+  const params = useLocalSearchParams();
+  const dayTime: DayTime = Array.isArray(params.dayTime)
+    ? (params.dayTime[0] as DayTime)
+    : (params.dayTime as DayTime);
   const { colors } = useSelector((state: AppRootState) => state.theme);
+  const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
-  const addFoodStyles = AddFoodWrapper(colors);
+  const editCalorieStyles = EditCalorieWrapper(colors);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const initial_state = {
     name: "",
@@ -45,27 +49,34 @@ const AddFoodPage = () => {
     serving_unit: "g",
   };
 
-  const [food_form, setfood_form] = useState(initial_state);
+  const [calorie_form, setcalorie_form] = useState(initial_state);
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const update_food = async () => {
-    const data = await add_food_data_api({
-      ...food_form,
-      serving_unit: food_form.serving_unit as ServingUnit,
-      id: generate_uuid(),
-    });
+  const update_calorie = async () => {
+    const data = await add_calories_data_api(
+      [
+        {
+          ...calorie_form,
+          id: generate_uuid(),
+          day_time: dayTime,
+          serving_unit: calorie_form.serving_unit as ServingUnit,
+        },
+      ],
+      selected_date
+    );
 
     if (data?.status === 200) {
-      router.push("/calorie-info/add-calorie");
+      router.push("/calorie-tracker");
     } else {
+      // Handle error case
     }
   };
   return (
     <SafeAreaView style={globalStyles.background}>
-      <View style={addFoodStyles.header}>
-        <Text style={addFoodStyles.header_title}>Add Food</Text>
+      <View style={editCalorieStyles.header}>
+        <Text style={editCalorieStyles.header_title}>Add Calorie Log</Text>
         <TouchableOpacity
           style={{
             padding: 8,
@@ -74,7 +85,7 @@ const AddFoodPage = () => {
         >
           <Image
             source={icons.cross}
-            style={addFoodStyles.close_icon}
+            style={editCalorieStyles.close_icon}
             tintColor={colors.text}
           />
         </TouchableOpacity>
@@ -85,31 +96,33 @@ const AddFoodPage = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Calorie Name</Text>
+          <Text style={editCalorieStyles.input_title}>Calorie Name</Text>
           <TextInput
             keyboardType="default"
-            placeholder="Enter food name"
-            value={food_form.name}
+            placeholder="Enter calorie name"
+            value={calorie_form.name}
             placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
-            onChangeText={(text) => setfood_form({ ...food_form, name: text })}
-          />
-        </View>
-        <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Serving Size</Text>
-          <TextInput
-            keyboardType="number-pad"
-            placeholder="Enter serving size"
-            value={food_form.serving_size.toString()}
-            placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
+            style={editCalorieStyles.input}
             onChangeText={(text) =>
-              setfood_form({ ...food_form, serving_size: Number(text) })
+              setcalorie_form({ ...calorie_form, name: text })
             }
           />
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Serving Unit</Text>
+          <Text style={editCalorieStyles.input_title}>Serving Size</Text>
+          <TextInput
+            keyboardType="number-pad"
+            placeholder="Enter serving size"
+            value={calorie_form.serving_size.toString()}
+            placeholderTextColor={colors.light_gray}
+            style={editCalorieStyles.input}
+            onChangeText={(text) =>
+              setcalorie_form({ ...calorie_form, serving_size: Number(text) })
+            }
+          />
+        </View>
+        <View style={{ marginVertical: 5 }}>
+          <Text style={editCalorieStyles.input_title}>Serving Unit</Text>
           <TouchableOpacity
             activeOpacity={0.8}
             style={{
@@ -134,7 +147,7 @@ const AddFoodPage = () => {
                 color: colors.text,
               }}
             >
-              {food_form.serving_unit}
+              {calorie_form.serving_unit}
             </Text>
             <Image
               source={isDropdownOpen ? icons.arrow_up : icons.arrow_down}
@@ -172,13 +185,13 @@ const AddFoodPage = () => {
                       justifyContent: "flex-start",
                       alignItems: "center",
                     },
-                    food_form.serving_unit === unit && {
+                    calorie_form.serving_unit === unit && {
                       backgroundColor: colors.foreground,
                     },
                   ]}
                   onPress={() => {
-                    setfood_form({
-                      ...food_form,
+                    setcalorie_form({
+                      ...calorie_form,
                       serving_unit: unit,
                     });
                     setIsDropdownOpen(false);
@@ -191,7 +204,7 @@ const AddFoodPage = () => {
                         color: colors.text,
                         fontFamily: font_family.font_semibold,
                       },
-                      food_form.serving_unit === unit && {
+                      calorie_form.serving_unit === unit && {
                         color: "#2196F3",
                         fontWeight: "500",
                       },
@@ -205,68 +218,70 @@ const AddFoodPage = () => {
           )}
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Calorie (kcal)</Text>
+          <Text style={editCalorieStyles.input_title}>Calorie (kcal)</Text>
           <TextInput
             keyboardType="number-pad"
             placeholder="Enter calories"
-            value={food_form.calorie.toString()}
+            value={calorie_form.calorie.toString()}
             placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
+            style={editCalorieStyles.input}
             onChangeText={(text) =>
-              setfood_form({ ...food_form, calorie: Number(text) })
+              setcalorie_form({ ...calorie_form, calorie: Number(text) })
             }
           />
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Protein (g)</Text>
+          <Text style={editCalorieStyles.input_title}>Protein (g)</Text>
           <TextInput
             keyboardType="number-pad"
             placeholder="Enter protein"
-            value={food_form.protein.toString()}
+            value={calorie_form.protein.toString()}
             placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
+            style={editCalorieStyles.input}
             onChangeText={(text) =>
-              setfood_form({ ...food_form, protein: Number(text) })
+              setcalorie_form({ ...calorie_form, protein: Number(text) })
             }
           />
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Carbs (g)</Text>
+          <Text style={editCalorieStyles.input_title}>Carbs (g)</Text>
           <TextInput
             keyboardType="number-pad"
             placeholder="Enter carbs"
-            value={food_form.carbs.toString()}
+            value={calorie_form.carbs.toString()}
             placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
+            style={editCalorieStyles.input}
             onChangeText={(text) =>
-              setfood_form({ ...food_form, carbs: Number(text) })
+              setcalorie_form({ ...calorie_form, carbs: Number(text) })
             }
           />
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Fat (g)</Text>
+          <Text style={editCalorieStyles.input_title}>Fat (g)</Text>
           <TextInput
             keyboardType="number-pad"
             placeholder="Enter fat"
-            value={food_form.fat.toString()}
+            value={calorie_form.fat.toString()}
             placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
+            style={editCalorieStyles.input}
             onChangeText={(text) =>
-              setfood_form({ ...food_form, fat: Number(text) })
+              setcalorie_form({ ...calorie_form, fat: Number(text) })
             }
           />
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={addFoodStyles.input_title}>Note</Text>
+          <Text style={editCalorieStyles.input_title}>Note</Text>
           <TextInput
             keyboardType="default"
             numberOfLines={12}
             multiline={true}
             placeholder="Enter note"
-            value={food_form.note}
+            value={calorie_form.note}
             placeholderTextColor={colors.light_gray}
-            style={addFoodStyles.input}
-            onChangeText={(text) => setfood_form({ ...food_form, note: text })}
+            style={editCalorieStyles.input}
+            onChangeText={(text) =>
+              setcalorie_form({ ...calorie_form, note: text })
+            }
           />
         </View>
 
@@ -281,7 +296,7 @@ const AddFoodPage = () => {
             justifyContent: "center",
           }}
           onPress={() => {
-            update_food();
+            update_calorie();
           }}
         >
           <Text
@@ -298,8 +313,7 @@ const AddFoodPage = () => {
     </SafeAreaView>
   );
 };
-
-export const AddFoodWrapper = (colors: Colors) =>
+export const EditCalorieWrapper = (colors: Colors) =>
   StyleSheet.create({
     header: {
       flexDirection: "row",
@@ -334,4 +348,4 @@ export const AddFoodWrapper = (colors: Colors) =>
     },
   });
 
-export default AddFoodPage;
+export default AddCalorieLogPage;

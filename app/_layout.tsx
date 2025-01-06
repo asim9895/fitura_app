@@ -56,11 +56,11 @@ function MainApp({ loaded }: { loaded: boolean }) {
         options={{ headerShown: false, animation: "simple_push" }}
       />
       <Stack.Screen
-        name="add-activity-log"
+        name="activity-info/add-activity-log"
         options={{ headerShown: false, animation: "simple_push" }}
       />
       <Stack.Screen
-        name="add-calorie-log"
+        name="calorie-info/add-calorie-log"
         options={{ headerShown: false, animation: "simple_push" }}
       />
       <Stack.Screen
@@ -77,6 +77,22 @@ function MainApp({ loaded }: { loaded: boolean }) {
       />
       <Stack.Screen
         name="activity-info/edit-activity"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="food/edit-food"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="food/add-food"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="exercise/add-exercise"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="exercise/edit-exercise"
         options={{ headerShown: false, animation: "simple_push" }}
       />
     </Stack>

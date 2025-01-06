@@ -184,6 +184,12 @@ const ProfilePage = () => {
         <Button onPress={add_or_update_exercise} title="Add Exercise" />
         <Button title="Update Profile" onPress={updateProfile} />
         <Button title="Clear Profile" onPress={clearProfile} />
+        <Button
+          title="Remove All Food"
+          onPress={async () => {
+            await remove_all_food_data();
+          }}
+        />
       </ScrollView>
 
       {/* <Button onPress={add_or_update_weight_data} title="Update Weight" />

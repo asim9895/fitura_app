@@ -22,11 +22,17 @@ export const read_foods_data_api = async () => {
 export const read_food_by_id_api = async (id: string) => {
   const data = await read_foods_data_api();
   const food_of_selected_id = data.records.filter((record: any) => {
-    return isSameDay(new Date(record.id), id);
+    return record.id === id;
   });
   return food_of_selected_id[0] === undefined || food_of_selected_id[0] === null
-    ? []
-    : food_of_selected_id[0];
+    ? {
+        data: [],
+        status: 500,
+      }
+    : {
+        data: food_of_selected_id[0],
+        status: 200,
+      };
 };
 
 export const add_food_data_api = async (
@@ -52,19 +58,18 @@ export const add_food_data_api = async (
 };
 
 export const update_food_data_api = async (
-  new_food_data: SingleCalorieEatenEntry,
-  id: string
+  new_food_data: SingleCalorieEatenEntry
 ) => {
   try {
     const data = await read_foods_data_api();
 
-    const recordIndex = data.records.findIndex((record: any) =>
-      isSameDay(new Date(record.id), id)
+    const recordIndex = data.records.findIndex(
+      (record: any) => record.id === new_food_data.id
     );
 
     if (recordIndex >= 0) {
       // Update existing record
-      data.records[recordIndex].push(new_food_data);
+      data.records[recordIndex] = new_food_data;
 
       // Write updated data back to the file
       await FileSystem.writeAsStringAsync(
@@ -91,7 +96,7 @@ export const remove_food_by_id = async (id: string) => {
 
     if (recordIndex >= 0) {
       // Update existing record
-      data.records[recordIndex].splice(recordIndex, 1);
+      data.records.splice(recordIndex, 1);
 
       await FileSystem.writeAsStringAsync(
         food_file_path,
@@ -99,14 +104,23 @@ export const remove_food_by_id = async (id: string) => {
       );
 
       // Return the updated steps for the selected date
-      return data.records[recordIndex] || [];
+      return {
+        data: data.records,
+        status: 200,
+      };
     } else {
       // Add new record for today
-      return [];
+      return {
+        data: [],
+        status: 500,
+      };
     }
   } catch (error) {
     console.error("Error removing selected step entry:", error);
-    return [];
+    return {
+      data: [],
+      status: 500,
+    };
   }
 };
 

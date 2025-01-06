@@ -21,8 +21,12 @@ import { DayTime, SingleActivityEntry } from "@/types";
 
 import { generate_uuid } from "@/utils/generate_uuid";
 import { useRouter } from "expo-router";
-import { read_exercises_data_api } from "@/api/exercise_apis";
+import {
+  read_exercises_data_api,
+  remove_exercise_by_id,
+} from "@/api/exercise_apis";
 import { add_activities_data_api } from "@/api/activity_apis";
+import ExerciseOptionModal from "@/components/modals/ExerciseOptionModal";
 
 const AddActivityPage = () => {
   const [exercise_data, setexercise_data] = useState<SingleActivityEntry[]>([]);
@@ -34,6 +38,8 @@ const AddActivityPage = () => {
   const { colors } = useSelector((state: AppRootState) => state.theme);
   const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
+  const [current_exercise_id, setcurrent_exercise_id] = useState("");
+  const [show_options, setshow_options] = useState(false);
 
   const fetch_exercise_items = async () => {
     const request = await read_exercises_data_api();
@@ -59,6 +65,17 @@ const AddActivityPage = () => {
       router.push("/calorie-tracker");
     } else {
       console.log("error", request);
+    }
+  };
+
+  const remove_exercise = async () => {
+    const request = await remove_exercise_by_id(current_exercise_id);
+    console.log(request);
+
+    if (request.status === 200) {
+      await fetch_exercise_items();
+    } else {
+      console.log(request);
     }
   };
 
@@ -126,7 +143,7 @@ const AddActivityPage = () => {
             alignItems: "center",
           }}
           onPress={() => {
-            router.push("/add-calorie-log");
+            router.push("/activity-info/add-activity-log");
           }}
         >
           <MaterialCommunityIcons
@@ -192,7 +209,13 @@ const AddActivityPage = () => {
           }}
         />
       </View>
-
+      <ExerciseOptionModal
+        setshow_options={setshow_options}
+        show_options={show_options}
+        setcurrent_exercise_id={setcurrent_exercise_id}
+        remove_exercise={remove_exercise}
+        current_exercise_id={current_exercise_id}
+      />
       <ScrollView
         style={{ marginHorizontal: 20 }}
         showsVerticalScrollIndicator={false}
@@ -257,7 +280,13 @@ const AddActivityPage = () => {
                     }
                   />
                 </TouchableOpacity>
-                <View style={{ width: Dimensions.get("window").width / 1.4 }}>
+                <TouchableOpacity
+                  style={{ width: Dimensions.get("window").width / 1.4 }}
+                  onPress={() => {
+                    setcurrent_exercise_id(exercise.id);
+                    setshow_options(true);
+                  }}
+                >
                   <Text
                     numberOfLines={2}
                     style={{
@@ -291,7 +320,7 @@ const AddActivityPage = () => {
                   >
                     {exercise.hour} hours {exercise.minutes} minutes
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
               <Image
                 source={icons.right_arrow}

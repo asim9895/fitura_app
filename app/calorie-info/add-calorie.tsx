@@ -18,10 +18,11 @@ import { globalStylesWrapper } from "@/styles/global.style";
 import { font_family } from "@/theme/font_family";
 import { icons } from "@/data/icons";
 import { DayTime, SingleCalorieEatenEntry } from "@/types";
-import { read_foods_data_api } from "@/api/food_apis";
+import { read_foods_data_api, remove_food_by_id } from "@/api/food_apis";
 import { add_calories_data_api } from "@/api/calorie_apis";
 import { generate_uuid } from "@/utils/generate_uuid";
 import { useRouter } from "expo-router";
+import FoodOptionModal from "@/components/modals/FoodOptionModal";
 
 const meals: { name: DayTime; icon: any }[] = [
   {
@@ -66,6 +67,9 @@ const AddCaloriePage = () => {
   const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
 
+  const [current_food_id, setcurrent_food_id] = useState("");
+  const [show_options, setshow_options] = useState(false);
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -101,6 +105,16 @@ const AddCaloriePage = () => {
       router.push("/calorie-tracker");
     } else {
       console.log("error", request);
+    }
+  };
+
+  const remove_food = async () => {
+    const request = await remove_food_by_id(current_food_id);
+
+    if (request.status === 200) {
+      await fetch_food_items();
+    } else {
+      console.log(request);
     }
   };
 
@@ -257,7 +271,10 @@ const AddCaloriePage = () => {
             alignItems: "center",
           }}
           onPress={() => {
-            router.push("/add-calorie-log");
+            router.push({
+              pathname: "/calorie-info/add-calorie-log",
+              params: { dayTime: selectedMeal.name },
+            });
           }}
         >
           <MaterialCommunityIcons
@@ -270,7 +287,7 @@ const AddCaloriePage = () => {
             style={{
               color: colors.text,
               fontFamily: font_family.font_medium,
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
             Quick Log
@@ -300,7 +317,7 @@ const AddCaloriePage = () => {
             style={{
               color: colors.text,
               fontFamily: font_family.font_medium,
-              fontSize: 16,
+              fontSize: 14,
             }}
           >
             Create Food
@@ -324,6 +341,13 @@ const AddCaloriePage = () => {
         />
       </View>
 
+      <FoodOptionModal
+        setshow_options={setshow_options}
+        show_options={show_options}
+        setcurrent_food_id={setcurrent_food_id}
+        remove_food={remove_food}
+        current_food_id={current_food_id}
+      />
       <ScrollView
         style={{ marginHorizontal: 15 }}
         showsVerticalScrollIndicator={false}
@@ -386,7 +410,13 @@ const AddCaloriePage = () => {
                     }
                   />
                 </TouchableOpacity>
-                <View style={{ width: Dimensions.get("window").width / 1.4 }}>
+                <TouchableOpacity
+                  style={{ width: Dimensions.get("window").width / 1.4 }}
+                  onPress={() => {
+                    setcurrent_food_id(food.id);
+                    setshow_options(true);
+                  }}
+                >
                   <Text
                     numberOfLines={2}
                     style={{
@@ -422,7 +452,7 @@ const AddCaloriePage = () => {
                     {food.protein}g protein | {food.carbs}g carbs | {food.fat}g
                     fat
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
               <Image
                 source={icons.right_arrow}

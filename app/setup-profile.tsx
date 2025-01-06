@@ -118,6 +118,12 @@ const SetupProfilePage = () => {
       <Button onPress={get_food_data_api} title="Get Food" />
       <Button onPress={add_or_update_food} title="Add Food" />
       <Button title="Clear Profile" onPress={clearProfile} />
+      <Button
+        title="Remove All Food"
+        onPress={async () => {
+          await remove_all_food_data();
+        }}
+      />
 
       <Button
         title="Go To Dashboard"
@@ -129,12 +135,6 @@ const SetupProfilePage = () => {
         title="Add Calorie"
         onPress={() => {
           router.push("/calorie-info/add-calorie");
-        }}
-      />
-      <Button
-        title="Remove Calorie"
-        onPress={() => {
-          router.push("/add-calorie-log");
         }}
       />
     </View>
