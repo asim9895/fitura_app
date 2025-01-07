@@ -24,24 +24,14 @@ import {
 import { SingleActivityEntry } from "@/types";
 import { Colors } from "@/theme/colors";
 import { generate_uuid } from "@/utils/generate_uuid";
-
-const hours: number[] = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-  22, 23, 24,
-];
-
-const minutes: number[] = [
-  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-  22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
-  42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-];
+import { hours, minutes } from "@/data/options";
 
 const AddActivityLogPage = () => {
   const router = useRouter();
   const { colors } = useSelector((state: AppRootState) => state.theme);
   const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
-  const editActivityStyles = EditActivityWrapper(colors);
+  const addActivityLogStyles = AddActivityLogWrapper(colors);
   const [hour_dropdown, sethour_dropdown] = useState(false);
   const [minutes_dropdown, setminutes_dropdown] = useState(false);
 
@@ -50,6 +40,37 @@ const AddActivityLogPage = () => {
     activity: "",
     hour: 0,
     minutes: 0,
+  };
+
+  const show_value = (unit: number, unit_type: string) => {
+    if (unit_type === "minutes") {
+      return unit === 0 ||
+        unit === 1 ||
+        unit === 2 ||
+        unit === 3 ||
+        unit === 4 ||
+        unit === 5 ||
+        unit === 6 ||
+        unit === 7 ||
+        unit === 8 ||
+        unit === 9
+        ? "minute"
+        : "minutes";
+    }
+    if (unit_type === "hours") {
+      return unit === 0 ||
+        unit === 1 ||
+        unit === 2 ||
+        unit === 3 ||
+        unit === 4 ||
+        unit === 5 ||
+        unit === 6 ||
+        unit === 7 ||
+        unit === 8 ||
+        unit === 9
+        ? "hour"
+        : "hours";
+    }
   };
 
   const [activity_form, setactivity_form] = useState(initial_state);
@@ -81,8 +102,8 @@ const AddActivityLogPage = () => {
   };
   return (
     <SafeAreaView style={globalStyles.background}>
-      <View style={editActivityStyles.header}>
-        <Text style={editActivityStyles.header_title}>Add Activity Log</Text>
+      <View style={addActivityLogStyles.header}>
+        <Text style={addActivityLogStyles.header_title}>Add Activity Log</Text>
         <TouchableOpacity
           style={{
             padding: 8,
@@ -91,7 +112,7 @@ const AddActivityLogPage = () => {
         >
           <Image
             source={icons.cross}
-            style={editActivityStyles.close_icon}
+            style={addActivityLogStyles.close_icon}
             tintColor={colors.text}
           />
         </TouchableOpacity>
@@ -102,13 +123,13 @@ const AddActivityLogPage = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ marginVertical: 5 }}>
-          <Text style={editActivityStyles.input_title}>Activity</Text>
+          <Text style={addActivityLogStyles.input_title}>Activity</Text>
           <TextInput
             keyboardType="number-pad"
             placeholder="Enter activity"
             value={activity_form.activity}
             placeholderTextColor={colors.light_gray}
-            style={editActivityStyles.input}
+            style={addActivityLogStyles.input}
             onChangeText={(text) =>
               setactivity_form({ ...activity_form, activity: text })
             }
@@ -116,7 +137,7 @@ const AddActivityLogPage = () => {
         </View>
 
         <View style={{ marginVertical: 5 }}>
-          <Text style={editActivityStyles.input_title}>
+          <Text style={addActivityLogStyles.input_title}>
             Burned Calories (kcal)
           </Text>
           <TextInput
@@ -124,38 +145,20 @@ const AddActivityLogPage = () => {
             placeholder="Enter burned calories"
             value={activity_form.burned.toString()}
             placeholderTextColor={colors.light_gray}
-            style={editActivityStyles.input}
+            style={addActivityLogStyles.input}
             onChangeText={(text) =>
               setactivity_form({ ...activity_form, burned: Number(text) })
             }
           />
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={editActivityStyles.input_title}>Hour</Text>
+          <Text style={addActivityLogStyles.input_title}>Hour</Text>
           <TouchableOpacity
             activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              width: "100%",
-              borderRadius: 8,
-              backgroundColor: colors.foreground,
-              marginTop: 5,
-            }}
+            style={addActivityLogStyles.dropdown_controller}
             onPress={toggle_hour_dropdown}
           >
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: font_family.font_semibold,
-                marginRight: 8,
-                marginLeft: 10,
-                width: "90%",
-                color: colors.text,
-              }}
-            >
+            <Text style={addActivityLogStyles.dropdown_controller_text}>
               {activity_form.hour}
             </Text>
             <Image
@@ -166,28 +169,13 @@ const AddActivityLogPage = () => {
           </TouchableOpacity>
           {/* Dropdown Menu */}
           {hour_dropdown && (
-            <View
-              style={{
-                width: "100%",
-                left: 0,
-                zIndex: 99,
-                right: 0,
-                marginTop: 10,
-              }}
-            >
+            <View style={addActivityLogStyles.dropdown_value_container}>
               <ScrollView style={{ maxHeight: 200 }}>
                 {hours.map((unit) => (
                   <TouchableOpacity
                     key={unit}
                     style={[
-                      {
-                        paddingVertical: 12,
-                        paddingHorizontal: 16,
-                        flexDirection: "row",
-                        width: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      },
+                      addActivityLogStyles.dropdown_options_background,
                       activity_form.hour === unit && {
                         backgroundColor: colors.foreground,
                       },
@@ -202,30 +190,14 @@ const AddActivityLogPage = () => {
                   >
                     <Text
                       style={[
-                        {
-                          fontSize: 16,
-                          color: colors.text,
-                          fontFamily: font_family.font_semibold,
-                        },
+                        addActivityLogStyles.dropdown_option_text,
                         activity_form.hour === unit && {
                           color: "#2196F3",
                           fontWeight: "500",
                         },
                       ]}
                     >
-                      {unit}{" "}
-                      {unit === 0 ||
-                      unit === 1 ||
-                      unit === 2 ||
-                      unit === 3 ||
-                      unit === 4 ||
-                      unit === 5 ||
-                      unit === 6 ||
-                      unit === 7 ||
-                      unit === 8 ||
-                      unit === 9
-                        ? "hour"
-                        : "hours"}
+                      {unit} {show_value(unit, "hours")}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -234,31 +206,13 @@ const AddActivityLogPage = () => {
           )}
         </View>
         <View style={{ marginVertical: 5 }}>
-          <Text style={editActivityStyles.input_title}>Minutes</Text>
+          <Text style={addActivityLogStyles.input_title}>Minutes</Text>
           <TouchableOpacity
             activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              width: "100%",
-              borderRadius: 8,
-              backgroundColor: colors.foreground,
-              marginTop: 5,
-            }}
+            style={addActivityLogStyles.dropdown_controller}
             onPress={toggle_minutes_dropdown}
           >
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: font_family.font_semibold,
-                marginRight: 8,
-                marginLeft: 10,
-                width: "90%",
-                color: colors.text,
-              }}
-            >
+            <Text style={addActivityLogStyles.dropdown_controller_text}>
               {activity_form.minutes}
             </Text>
             <Image
@@ -269,28 +223,13 @@ const AddActivityLogPage = () => {
           </TouchableOpacity>
           {/* Dropdown Menu */}
           {minutes_dropdown && (
-            <View
-              style={{
-                width: "100%",
-                left: 0,
-                zIndex: 99,
-                right: 0,
-                marginTop: 10,
-              }}
-            >
+            <View style={addActivityLogStyles.dropdown_value_container}>
               <ScrollView style={{ maxHeight: 200 }}>
                 {minutes.map((unit) => (
                   <TouchableOpacity
                     key={unit}
                     style={[
-                      {
-                        paddingVertical: 12,
-                        paddingHorizontal: 16,
-                        width: "100%",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      },
+                      addActivityLogStyles.dropdown_options_background,
                       activity_form.minutes === unit && {
                         backgroundColor: colors.foreground,
                       },
@@ -305,30 +244,14 @@ const AddActivityLogPage = () => {
                   >
                     <Text
                       style={[
-                        {
-                          fontSize: 16,
-                          color: colors.text,
-                          fontFamily: font_family.font_semibold,
-                        },
+                        addActivityLogStyles.dropdown_option_text,
                         activity_form.minutes === unit && {
                           color: "#2196F3",
                           fontWeight: "500",
                         },
                       ]}
                     >
-                      {unit}{" "}
-                      {unit === 0 ||
-                      unit === 1 ||
-                      unit === 2 ||
-                      unit === 3 ||
-                      unit === 4 ||
-                      unit === 5 ||
-                      unit === 6 ||
-                      unit === 7 ||
-                      unit === 8 ||
-                      unit === 9
-                        ? "minute"
-                        : "minutes"}
+                      {unit} {show_value(unit, "minutes")}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -338,35 +261,19 @@ const AddActivityLogPage = () => {
         </View>
 
         <TouchableOpacity
-          style={{
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            borderRadius: 10,
-            backgroundColor: colors.button,
-            marginTop: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          style={addActivityLogStyles.submit_button}
           onPress={() => {
             update_calorie();
           }}
         >
-          <Text
-            style={{
-              fontSize: 16,
-              color: colors.text,
-              fontFamily: font_family.font_semibold,
-            }}
-          >
-            Add
-          </Text>
+          <Text style={addActivityLogStyles.submit_button_text}>Add</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export const EditActivityWrapper = (colors: Colors) =>
+export const AddActivityLogWrapper = (colors: Colors) =>
   StyleSheet.create({
     header: {
       flexDirection: "row",
@@ -398,6 +305,58 @@ export const EditActivityWrapper = (colors: Colors) =>
       marginVertical: 5,
       fontFamily: font_family.font_medium,
       color: colors.text,
+    },
+    submit_button: {
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 10,
+      backgroundColor: colors.button,
+      marginTop: 10,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    submit_button_text: {
+      fontSize: 16,
+      color: colors.text,
+      fontFamily: font_family.font_semibold,
+    },
+    dropdown_controller: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      width: "100%",
+      borderRadius: 8,
+      backgroundColor: colors.foreground,
+      marginTop: 5,
+    },
+    dropdown_controller_text: {
+      fontSize: 16,
+      fontFamily: font_family.font_semibold,
+      marginRight: 8,
+      marginLeft: 10,
+      width: "90%",
+      color: colors.text,
+    },
+    dropdown_value_container: {
+      width: "100%",
+      left: 0,
+      zIndex: 99,
+      right: 0,
+      marginTop: 10,
+    },
+    dropdown_options_background: {
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      flexDirection: "row",
+      width: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    dropdown_option_text: {
+      fontSize: 16,
+      color: colors.text,
+      fontFamily: font_family.font_semibold,
     },
   });
 
