@@ -72,7 +72,7 @@ const EditActivityPage = () => {
   return (
     <SafeAreaView style={globalStyles.background}>
       <View style={globalStyles.header}>
-        <Text style={globalStyles.header_title}>Edit Calorie</Text>
+        <Text style={globalStyles.header_title}>Edit Activity</Text>
         <TouchableOpacity
           style={{
             padding: 8,
