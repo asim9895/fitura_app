@@ -145,7 +145,12 @@ const StepsTrackerPage = () => {
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
-      <DateHeader days={all_steps_of_achieved_goal?.length} />
+      <DateHeader
+        days={
+          all_steps_of_achieved_goal?.filter((item) => item.condition === true)
+            .length
+        }
+      />
       <DatesList
         onDateSelect={(date: any) => {
           // Do something with the selected date

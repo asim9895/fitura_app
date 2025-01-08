@@ -5,12 +5,12 @@
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/android.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "cover",
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#181919"
     },
     "newArchEnabled": true,
@@ -20,7 +20,7 @@
     "android": {
       "package": "com.fitura.fitura_app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./assets/images/android.png",
         "backgroundColor": "#181919"
       }
     },

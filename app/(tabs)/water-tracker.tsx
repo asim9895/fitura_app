@@ -114,7 +114,12 @@ const WaterTrackerPage = () => {
         update_target_water={update_target_water}
       />
 
-      <DateHeader days={all_water_of_achieved_goal?.length} />
+      <DateHeader
+        days={
+          all_water_of_achieved_goal.filter((item) => item.condition === true)
+            ?.length
+        }
+      />
       <DatesList
         onDateSelect={(date: any) => {
           // Do something with the selected date
