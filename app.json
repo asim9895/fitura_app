@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Fitura",
-    "slug": "fitura",
+    "slug": "fitura_app",
     "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
