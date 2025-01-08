@@ -29,7 +29,6 @@ export const profileStylesWrapper = (colors: Colors) =>
     },
     icon_container: {
       width: "15%",
-
       alignItems: "center",
     },
     show_icon: { width: 30, height: 30 },

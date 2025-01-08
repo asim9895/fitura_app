@@ -32,13 +32,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <Text style={[profileStyles.info_title]}>{title}</Text>
         <Text style={[profileStyles.info_value]}>{value}</Text>
       </View>
-      <View style={[profileStyles.icon_container]}>
-        <Image
-          source={icons.edit}
-          style={[profileStyles.edit_icon]}
-          tintColor={colors.light_gray}
-        />
-      </View>
     </View>
   );
 };

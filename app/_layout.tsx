@@ -95,6 +95,14 @@ function MainApp({ loaded }: { loaded: boolean }) {
         name="exercise/edit-exercise"
         options={{ headerShown: false, animation: "simple_push" }}
       />
+      <Stack.Screen
+        name="edit-profile"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
+      <Stack.Screen
+        name="setup-profile"
+        options={{ headerShown: false, animation: "simple_push" }}
+      />
     </Stack>
   );
 }

@@ -2,7 +2,6 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -19,7 +18,7 @@ import { useDispatch } from "react-redux";
 import { set_user_profile } from "@/redux/slices/user_slice";
 import { add_or_update_weight_of_selected_data_api } from "@/api/weight_apis";
 
-const SetupProfilePage = () => {
+const EditProfile = () => {
   const {
     gender,
     activity_factor,
@@ -31,11 +30,10 @@ const SetupProfilePage = () => {
     age,
     weight_loss_intensity,
     name,
+    creation_date,
     selected_date,
   } = useAppSelector((state: AppRootState) => state.user);
-  const { colors, theme } = useAppSelector(
-    (state: AppRootState) => state.theme
-  );
+  const { colors } = useAppSelector((state: AppRootState) => state.theme);
   const globalStyles = globalStylesWrapper(colors);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -64,8 +62,7 @@ const SetupProfilePage = () => {
         weight: edit_profile_form.weight,
         gender: edit_profile_form.gender,
         profile_completed: true,
-        creation_date: new Date(),
-
+        creation_date,
         weight_loss_intensity: edit_profile_form.weight_loss_intensity,
         target_weight: edit_profile_form.target_weight,
         activity_factor: edit_profile_form.activity_factor,
@@ -75,16 +72,24 @@ const SetupProfilePage = () => {
       selected_date,
       edit_profile_form.weight
     );
-    router.push("/calorie-tracker");
+    router.push("/profile");
   };
   return (
     <SafeAreaView style={globalStyles.background}>
-      <StatusBar
-        backgroundColor={colors.background}
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-      />
       <View style={globalStyles.header}>
-        <Text style={globalStyles.header_title}>Create Profile</Text>
+        <Text style={globalStyles.header_title}>Edit Profile</Text>
+        <TouchableOpacity
+          style={{
+            padding: 8,
+          }}
+          onPress={() => router.back()}
+        >
+          <Image
+            source={icons.cross}
+            style={globalStyles.close_icon}
+            tintColor={colors.text}
+          />
+        </TouchableOpacity>
       </View>
       <ScrollView
         style={{ marginHorizontal: 20 }}
@@ -98,13 +103,13 @@ const SetupProfilePage = () => {
           style={globalStyles.submit_button}
           onPress={edit_profile}
         >
-          <Text style={globalStyles.submit_button_text}>Create Profile</Text>
+          <Text style={globalStyles.submit_button_text}>Update</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default SetupProfilePage;
+export default EditProfile;
 
 const styles = StyleSheet.create({});

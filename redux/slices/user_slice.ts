@@ -25,13 +25,13 @@ interface UserCreation {
   target_weight: number;
   age: number;
   profile_completed?: boolean;
-  creation_date: Date;
+  creation_date: Date | null;
   weight_loss_intensity: WeightLossIntensity;
   activity_factor: ActivityFactor;
 }
 
 const initial_state: UserState = {
-  name: "",
+  name: "Human",
   gender: "Male",
   height: 0,
   weight: 0,
@@ -70,6 +70,12 @@ const user_slice = createSlice({
       state.weight = 0;
       state.profile_completed = false;
       state.creation_date = null;
+      state.weight_loss_intensity = 0.25;
+      state.target_weight = 0;
+      state.activity_factor = "active";
+      state.target_steps = 12000;
+      state.target_water = 10000;
+      state.selected_date = new Date();
     },
     set_selected_date: (
       state,

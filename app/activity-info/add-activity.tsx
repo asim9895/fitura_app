@@ -81,9 +81,9 @@ const AddActivityPage = () => {
 
   return (
     <SafeAreaView style={globalStyles.background}>
-      <View style={addActivityStyles.header}>
+      <View style={globalStyles.header}>
         {/* Dropdown Section */}
-        <Text style={addActivityStyles.header_text}>Add Activity</Text>
+        <Text style={globalStyles.header_title}>Add Activity</Text>
 
         {/* Close Button */}
         <TouchableOpacity
@@ -263,22 +263,6 @@ export default AddActivityPage;
 
 export const AddActivityWrapper = (colors: Colors) =>
   StyleSheet.create({
-    header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      backgroundColor: colors.background,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.foreground,
-      zIndex: 1000,
-    },
-    header_text: {
-      color: colors.text,
-      fontFamily: font_family.font_semibold,
-      fontSize: 17,
-    },
     activity_button_container: {
       marginTop: 10,
       marginHorizontal: 15,

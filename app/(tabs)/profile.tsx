@@ -1,40 +1,32 @@
-import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  Button,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  Touchable,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux_hooks";
 import { Colors } from "@/theme/colors";
 import { globalStylesWrapper } from "@/styles/global.style";
 import { AppRootState } from "@/redux/store";
 import { useSelector } from "react-redux";
-import { useNavigation, useRouter } from "expo-router";
-import {
-  clear_user_profile,
-  set_user_profile,
-  update_weight,
-} from "@/redux/slices/user_slice";
+import { useRouter } from "expo-router";
+import { clear_user_profile } from "@/redux/slices/user_slice";
 import { format_number } from "@/utils/variables";
-import {
-  add_or_update_weight_of_selected_data_api,
-  read_weight_data_api,
-  remove_all_weight_data,
-} from "@/api/weight_apis";
+import { remove_all_weight_data } from "@/api/weight_apis";
 import { icons } from "@/data/icons";
 import { profileStylesWrapper } from "@/styles/app/tabs/profile.style";
 import ProfileCard from "@/components/profile_components/ProfileCard";
 import { height_options } from "@/data/options";
-import { generate_uuid } from "@/utils/generate_uuid";
-import {
-  CalorieEatenData,
-  SingleActivityEntry,
-  SingleCalorieEatenEntry,
-} from "@/types";
-import {
-  add_food_data_api,
-  read_foods_data_api,
-  remove_all_food_data,
-} from "@/api/food_apis";
+import { remove_all_food_data } from "@/api/food_apis";
 import { remove_all_calorie_data } from "@/api/calorie_apis";
 import { remove_all_step_data } from "@/api/steps_apis";
-import { add_exercise_data_api } from "@/api/exercise_apis";
+import { font_family } from "@/theme/font_family";
+import { remove_all_activity_data } from "@/api/activity_apis";
 
 const ProfilePage = () => {
   const dispatch = useAppDispatch();
@@ -47,87 +39,37 @@ const ProfilePage = () => {
 
   const profileStyles = profileStylesWrapper(colors);
 
-  const updateProfile = () => {
-    dispatch(
-      set_user_profile({
-        name: "Jane Doe",
-        age: 28,
-        height: 170,
-        weight: 90.55,
-        gender: "Male",
-        profile_completed: true,
-        creation_date: new Date("2024-12-23T13:42:30.685Z"),
-        weight_loss_intensity: 1,
-        target_weight: 72,
-        activity_factor: "light",
-      })
-    );
-  };
-
   const clearProfile = async () => {
     await remove_all_food_data();
     await remove_all_calorie_data();
     await remove_all_step_data();
     await remove_all_weight_data();
+    await remove_all_activity_data();
     dispatch(clear_user_profile());
     router.push("/setup-profile");
   };
 
-  const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
-
-  const add_or_update_weight_data = async () => {
-    const weight = 96.55;
-    const request = await add_or_update_weight_of_selected_data_api(
-      selected_date,
-      weight
-    );
-    const all_weights = await read_weight_data_api();
-
-    const latest_weight = all_weights.records;
-
-    dispatch(
-      update_weight({
-        weight: latest_weight?.length !== 0 ? latest_weight[0].weight : weight,
-      })
-    );
-  };
-
-  const add_or_update_food = async () => {
-    // await remove_all_food_data();
-    const data: SingleCalorieEatenEntry = {
-      id: generate_uuid(),
-      name: "100g white rice",
-      calorie: 130,
-      protein: 3,
-      carbs: 30,
-      fat: 1,
-      note: "Boiled rice with extra salt",
-      serving_size: 100,
-      serving_unit: "g",
-    };
-    const request = await add_food_data_api(data);
-  };
-
-  const add_or_update_exercise = async () => {
-    // await remove_all_food_data();
-    const data: SingleActivityEntry = {
-      id: generate_uuid(),
-      activity: "Abs Workout",
-      hour: 0,
-      minutes: 30,
-      burned: 100,
-    };
-    const request = await add_exercise_data_api(data);
-  };
 
   return (
     <SafeAreaView style={globalStyles.background}>
-      <View style={[profileStyles.header_container]}>
+      <View
+        style={[
+          profileStyles.header_container,
+          { justifyContent: "space-between", flexDirection: "row" },
+        ]}
+      >
         <Text style={profileStyles.header_text}>Profile</Text>
+        <TouchableOpacity onPress={() => router.push("/edit-profile")}>
+          <Image
+            source={icons.edit}
+            style={[profileStyles.edit_icon]}
+            tintColor={colors.light_gray}
+          />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ marginTop: 15, marginBottom: 100 }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileCard show_icon={icons.name} title="Name" value={user.name} />
         <ProfileCard
           show_icon={icons.gender}
@@ -178,18 +120,30 @@ const ProfilePage = () => {
           title="Activity Factor"
           value={`${user.activity_factor?.toString()}`}
         />
-        <Button onPress={add_or_update_weight_data} title="Add Calorie" />
-        <Button onPress={add_or_update_weight_data} title="Add Activity" />
-        <Button onPress={add_or_update_food} title="Add Food" />
-        <Button onPress={add_or_update_exercise} title="Add Exercise" />
-        <Button title="Update Profile" onPress={updateProfile} />
-        <Button title="Clear Profile" onPress={clearProfile} />
-        <Button
-          title="Remove All Food"
-          onPress={async () => {
-            await remove_all_food_data();
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: colors.error,
+            padding: 10,
+            marginHorizontal: 20,
+            borderRadius: 10,
+            marginVertical: 10,
+            marginBottom: 100,
           }}
-        />
+          onPress={clearProfile}
+        >
+          <Text
+            style={{
+              color: colors.text,
+              fontFamily: font_family.font_medium,
+              fontSize: 15,
+              textAlign: "center",
+            }}
+          >
+            Clear Profile And Logout
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* <Button onPress={add_or_update_weight_data} title="Update Weight" />

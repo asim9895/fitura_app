@@ -120,19 +120,7 @@ const AddCaloriePage = () => {
 
   return (
     <SafeAreaView style={globalStyles.background}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-          backgroundColor: colors.background,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.foreground,
-          zIndex: 1000,
-        }}
-      >
+      <View style={globalStyles.header}>
         {/* Dropdown Section */}
         <View
           style={{
@@ -242,7 +230,7 @@ const AddCaloriePage = () => {
         >
           <Image
             source={icons.cross}
-            style={{ width: 16, height: 16, marginRight: 5 }}
+            style={globalStyles.close_icon}
             tintColor={colors.text}
           />
         </TouchableOpacity>
