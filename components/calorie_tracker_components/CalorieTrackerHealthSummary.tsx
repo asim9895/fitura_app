@@ -22,7 +22,7 @@ const CalorieTrackerHealthSummary: React.FC<
       <View
         style={{
           padding: 5,
-          margin: 5,
+
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 0,

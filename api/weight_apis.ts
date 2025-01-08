@@ -1,9 +1,5 @@
 import { SingleStepEntry } from "@/types";
-import {
-  steps_file_path,
-  water_file_path,
-  weight_file_path,
-} from "@/utils/file_paths";
+import { weight_file_path } from "@/utils/file_paths";
 import { todays_date } from "@/utils/variables";
 import { isSameDay } from "date-fns";
 import * as FileSystem from "expo-file-system";
@@ -12,12 +8,12 @@ const CHUNK_SIZE = 1024 * 1024;
 
 export const read_weight_data_api = async () => {
   try {
-    const fileExists = await FileSystem.getInfoAsync(water_file_path);
+    const fileExists = await FileSystem.getInfoAsync(weight_file_path);
     if (fileExists.exists) {
       let completeData = "";
       let offset = 0;
       while (true) {
-        const chunk = await FileSystem.readAsStringAsync(water_file_path, {
+        const chunk = await FileSystem.readAsStringAsync(weight_file_path, {
           encoding: FileSystem.EncodingType.UTF8,
           position: offset,
           length: CHUNK_SIZE,
@@ -79,7 +75,7 @@ export const add_or_update_weight_of_selected_data_api = async (
     });
   }
   await FileSystem.writeAsStringAsync(
-    water_file_path,
+    weight_file_path,
     JSON.stringify(data, null, 2)
   );
 

@@ -41,7 +41,7 @@ const CollapsibleView: React.FC<CollapsibleViewProps> = ({
   return (
     <View
       style={{
-        marginVertical: 8,
+        marginVertical: 4,
         borderWidth: 1,
         borderColor: colors.foreground,
         borderRadius: 8,

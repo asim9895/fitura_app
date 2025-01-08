@@ -48,6 +48,7 @@ const CalorieTrackerBudgetCalculator: React.FC<
 
         backgroundColor: colors.foreground,
         borderRadius: 10,
+        marginBottom: 5,
       }}
     >
       <View

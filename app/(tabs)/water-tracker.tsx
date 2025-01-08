@@ -1,4 +1,11 @@
-import { View, Text, StatusBar, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  StatusBar,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "@/hooks/redux_hooks";
 import { AppRootState } from "@/redux/store";
@@ -12,9 +19,21 @@ import { font_family } from "@/theme/font_family";
 import { isSameDay } from "date-fns";
 import { format_number } from "@/utils/variables";
 import { SingleWaterEntry, WaterData } from "@/types";
+import {
+  read_selected_date_water_data_api,
+  read_water_data_api,
+  remove_all_water_data,
+} from "@/api/water_apis";
+import { remove_all_weight_data } from "@/api/weight_apis";
+import SingleWaterItem from "@/components/water_tracker_components/SingleWaterItem";
+import AddWaterIntakeModal from "@/components/modals/AddWaterIntakeModal";
+import UpdateTargetWaterModal from "@/components/modals/UpdateTargetWaterModal";
 
 const WaterTrackerPage = () => {
   const [water_data, setwater_data] = useState<SingleWaterEntry[]>([]);
+  const [all_water_data, setall_water_data] = useState<WaterData[]>([]);
+  const [add_water_modal, setadd_water_modal] = useState(false);
+  const [update_target_water, setupdate_target_water] = useState(false);
 
   const { colors, theme } = useAppSelector(
     (state: AppRootState) => state.theme
@@ -25,7 +44,28 @@ const WaterTrackerPage = () => {
 
   const globalStyles = globalStylesWrapper(colors);
 
-  const all_water_of_achieved_goal = water?.map((water_entry) => {
+  const fetch_selected_date_water_data = async (selected_date: Date) => {
+    const selected_day_water_data = await read_selected_date_water_data_api(
+      selected_date
+    );
+
+    setwater_data(selected_day_water_data);
+  };
+
+  const fetch_all_water_data = async () => {
+    const all_water_data = await read_water_data_api();
+
+    setall_water_data(all_water_data?.records);
+  };
+  useEffect(() => {
+    fetch_selected_date_water_data(selected_date);
+  }, [selected_date]);
+
+  useEffect(() => {
+    fetch_all_water_data();
+  }, []);
+
+  const all_water_of_achieved_goal = all_water_data?.map((water_entry) => {
     const date = new Date(water_entry.date);
     const intake_of_day = water_entry.data.reduce((total: any, item: any) => {
       return total + item.intake;
@@ -44,7 +84,7 @@ const WaterTrackerPage = () => {
     };
   });
 
-  const total_water_intake_for_day = water
+  const total_water_intake_for_day = all_water_data
     .filter((data: any) => {
       const date = new Date(data.date);
       return isSameDay(date, selected_date);
@@ -56,27 +96,24 @@ const WaterTrackerPage = () => {
       0
     );
 
-  const set_water_data = (selected_date: Date) => {
-    const intake_of_selected_date: WaterData[] = water.filter((step) => {
-      return isSameDay(new Date(step.date), selected_date);
-    });
-
-    if (intake_of_selected_date?.length > 0) {
-      setwater_data(intake_of_selected_date[0]?.data);
-    } else {
-      setwater_data([]);
-    }
-  };
-  useEffect(() => {
-    set_water_data(selected_date);
-  }, [selected_date]);
-
   return (
     <View style={[globalStyles.background]}>
       <StatusBar
         backgroundColor={colors.background}
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
       />
+      <AddWaterIntakeModal
+        add_water_modal={add_water_modal}
+        setadd_water_modal={setadd_water_modal}
+        fetch_selected_date_water_data={fetch_selected_date_water_data}
+        fetch_all_water_data={fetch_all_water_data}
+      />
+
+      <UpdateTargetWaterModal
+        setupdate_target_water={setupdate_target_water}
+        update_target_water={update_target_water}
+      />
+
       <DateHeader days={all_water_of_achieved_goal?.length} />
       <DatesList
         onDateSelect={(date: any) => {
@@ -118,18 +155,23 @@ const WaterTrackerPage = () => {
                 Water Intake
               </Text>
             </View>
-            <View>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                setupdate_target_water(true);
+              }}
+            >
               <Image
                 source={icons.edit}
                 style={{ width: 18, height: 18 }}
                 tintColor={colors.light_gray}
               />
-            </View>
+            </TouchableOpacity>
           </View>
 
           <View style={{ alignItems: "center", marginVertical: 15 }}>
             <Progress.Circle
-              progress={0.5}
+              progress={total_water_intake_for_day / Number(target_water)}
               color={colors.button}
               thickness={10}
               size={230}
@@ -219,7 +261,8 @@ const WaterTrackerPage = () => {
                 alignItems: "center",
               }}
             >
-              <View
+              <TouchableOpacity
+                activeOpacity={0.8}
                 style={{
                   backgroundColor: colors.foreground,
                   flexDirection: "row",
@@ -228,6 +271,7 @@ const WaterTrackerPage = () => {
                   paddingHorizontal: 10,
                   borderRadius: 5,
                 }}
+                onPress={() => setadd_water_modal(true)}
               >
                 <Image
                   source={icons.plus}
@@ -249,69 +293,23 @@ const WaterTrackerPage = () => {
                 >
                   Add
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         )}
 
         <View style={{ marginBottom: 100 }}>
           {water_data.length > 0 ? (
-            water_data.map((step: SingleWaterEntry) => {
+            water_data.map((water: SingleWaterEntry) => {
               return (
-                <View
-                  key={step.id}
-                  style={{
-                    backgroundColor: colors.foreground,
-                    marginTop: 10,
-                    padding: 10,
-                    paddingHorizontal: 20,
-                    borderRadius: 10,
-                    display: "flex",
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
-                  >
-                    <View style={{ width: "15%" }}>
-                      <Image
-                        source={icons.water}
-                        style={{ width: 25, height: 25 }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        width: "85%",
-                      }}
-                    >
-                      <Text
-                        numberOfLines={2}
-                        style={{
-                          color: colors.text,
-                          fontSize: 16,
-                          fontFamily: font_family.font_medium,
-                          textTransform: "capitalize",
-                        }}
-                      >
-                        {step.day_time}
-                      </Text>
-                      <Text
-                        style={{
-                          color: colors.button,
-                          fontSize: 18,
-                          fontFamily: font_family.font_semibold,
-                        }}
-                      >
-                        {format_number(step.intake)}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
+                <SingleWaterItem
+                  key={water.id}
+                  water={water}
+                  fetch_all_waters_data={fetch_all_water_data}
+                  fetch_selected_date_water_data={
+                    fetch_selected_date_water_data
+                  }
+                />
               );
             })
           ) : (
@@ -331,7 +329,8 @@ const WaterTrackerPage = () => {
               >
                 No water intake added
               </Text>
-              <View
+              <TouchableOpacity
+                activeOpacity={0.8}
                 style={{
                   backgroundColor: colors.foreground,
                   flexDirection: "row",
@@ -341,6 +340,7 @@ const WaterTrackerPage = () => {
                   borderRadius: 5,
                   marginTop: 10,
                 }}
+                onPress={() => setadd_water_modal(true)}
               >
                 <Image
                   source={icons.plus}
@@ -361,7 +361,7 @@ const WaterTrackerPage = () => {
                 >
                   Add Water Intake
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           )}
         </View>

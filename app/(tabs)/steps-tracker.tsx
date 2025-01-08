@@ -227,6 +227,7 @@ const StepsTrackerPage = () => {
             steps_data.map((step: SingleStepEntry) => {
               return (
                 <SingleStepItem
+                  key={step.id}
                   step={step}
                   fetch_all_steps_data={fetch_all_steps_data}
                   fetch_selected_date_step_data={fetch_selected_date_step_data}

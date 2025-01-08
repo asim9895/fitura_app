@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   Dimensions,
+  BackHandler,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AppRootState } from "@/redux/store";
@@ -64,20 +65,32 @@ const AddActivityPage = () => {
     if (request?.status === 200) {
       router.push("/calorie-tracker");
     } else {
-      console.log("error", request);
     }
   };
 
   const remove_exercise = async () => {
     const request = await remove_exercise_by_id(current_exercise_id);
-    console.log(request);
 
     if (request.status === 200) {
       await fetch_exercise_items();
     } else {
-      console.log(request);
     }
   };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // Navigate to the specified route
+        router.push("/calorie-tracker");
+        // Return true to prevent default back behavior
+        return true;
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => backHandler.remove();
+  }, [router]);
 
   return (
     <SafeAreaView style={globalStyles.background}>
@@ -133,13 +146,6 @@ const AddActivityPage = () => {
         </TouchableOpacity>
       </View>
 
-      <View>
-        <TextInput
-          placeholder="Search Exercise"
-          placeholderTextColor={colors.light_gray}
-          style={addActivityStyles.search_input}
-        />
-      </View>
       <ExerciseOptionModal
         setshow_options={setshow_options}
         show_options={show_options}

@@ -14,7 +14,7 @@ const CalorieTrackerGoalSummary: React.FC<{ weight_goal_data: any }> = ({
       <View
         style={{
           padding: 5,
-          margin: 5,
+
           flexDirection: "row",
           alignItems: "center",
           marginHorizontal: 0,

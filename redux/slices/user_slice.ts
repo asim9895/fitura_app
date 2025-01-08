@@ -89,6 +89,12 @@ const user_slice = createSlice({
     ) => {
       state.target_steps = action.payload.target_steps;
     },
+    update_water_target: (
+      state,
+      action: PayloadAction<{ target_water: number }>
+    ) => {
+      state.target_water = action.payload.target_water;
+    },
     update_weight: (state, action: PayloadAction<{ weight: number }>) => {
       state.weight = action.payload.weight;
     },
@@ -101,6 +107,7 @@ export const {
   set_selected_date,
   update_steps_target,
   update_weight,
+  update_water_target,
 } = user_slice.actions;
 
 export default user_slice.reducer;

@@ -80,7 +80,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ form, setForm }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            paddingVertical: 8,
+            paddingVertical: 12,
             paddingHorizontal: 12,
             width: "100%",
             borderRadius: 8,
@@ -183,7 +183,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ form, setForm }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            paddingVertical: 8,
+            paddingVertical: 12,
             paddingHorizontal: 12,
             width: "100%",
             borderRadius: 8,

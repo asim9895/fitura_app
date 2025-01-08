@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   Dimensions,
+  BackHandler,
 } from "react-native";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -44,6 +45,22 @@ const meals: { name: DayTime; icon: any }[] = [
 ];
 
 const AddCaloriePage = () => {
+  const router = useRouter();
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // Navigate to the specified route
+        router.push("/calorie-tracker");
+        // Return true to prevent default back behavior
+        return true;
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => backHandler.remove();
+  }, [router]);
+
   const currentHour = new Date().getHours();
 
   const initial_value =
@@ -62,7 +79,6 @@ const AddCaloriePage = () => {
     SingleCalorieEatenEntry[]
   >([]);
 
-  const router = useRouter();
   const { colors } = useSelector((state: AppRootState) => state.theme);
   const { selected_date } = useSelector((state: AppRootState) => state.user);
   const globalStyles = globalStylesWrapper(colors);
@@ -104,7 +120,6 @@ const AddCaloriePage = () => {
     if (request?.status === 200) {
       router.push("/calorie-tracker");
     } else {
-      console.log("error", request);
     }
   };
 
@@ -114,7 +129,6 @@ const AddCaloriePage = () => {
     if (request.status === 200) {
       await fetch_food_items();
     } else {
-      console.log(request);
     }
   };
 
@@ -311,22 +325,6 @@ const AddCaloriePage = () => {
             Create Food
           </Text>
         </TouchableOpacity>
-      </View>
-
-      <View>
-        <TextInput
-          placeholder="Search Food Item"
-          placeholderTextColor={colors.light_gray}
-          style={{
-            backgroundColor: colors.foreground,
-            padding: 13,
-            borderRadius: 8,
-            marginVertical: 10,
-            marginHorizontal: 15,
-            fontFamily: font_family.font_medium,
-            color: colors.text,
-          }}
-        />
       </View>
 
       <FoodOptionModal

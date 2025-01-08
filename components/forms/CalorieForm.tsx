@@ -84,7 +84,7 @@ const CalorieForm: React.FC<CalorieFormProps> = ({
           style={{
             flexDirection: "row",
             alignItems: "center",
-            paddingVertical: 8,
+            paddingVertical: 12,
             paddingHorizontal: 12,
             width: "100%",
             borderRadius: 8,
