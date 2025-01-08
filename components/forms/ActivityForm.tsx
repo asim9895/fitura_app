@@ -51,7 +51,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ form, setForm }) => {
       <View style={{ marginVertical: 5 }}>
         <Text style={editActivityStyles.input_title}>Activity</Text>
         <TextInput
-          keyboardType="number-pad"
+          keyboardType="default"
           placeholder="Enter activity"
           value={form.activity}
           placeholderTextColor={colors.light_gray}

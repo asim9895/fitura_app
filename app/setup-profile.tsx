@@ -65,7 +65,6 @@ const SetupProfilePage = () => {
         gender: edit_profile_form.gender,
         profile_completed: true,
         creation_date: new Date(),
-
         weight_loss_intensity: edit_profile_form.weight_loss_intensity,
         target_weight: edit_profile_form.target_weight,
         activity_factor: edit_profile_form.activity_factor,
